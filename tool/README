@@ -1,0 +1,23 @@
+===================================================
+HTMLからWebページ用標準フォーマットに変換するツール
+===================================================
+
+kawahara <dk@nict.go.jp>	2006-08-18
+
+
+必要なもの
+----------
+
+  o perl
+
+  o perl module
+
+    - HTML::Parser
+    - XML::Parser
+    - XML::DOM
+    - KNP
+
+処理
+----
+
+./html2sf.sh sample.html > sample.sf
