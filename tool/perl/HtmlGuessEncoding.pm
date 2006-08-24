@@ -20,7 +20,7 @@ sub new {
 }
 
 sub ProcessEncoding {
-    my ($this, $buf_ref) = @_;
+    my ($this, $buf_ref, $option) = @_;
     my ($language, $encoding);
 
     # 指定した言語とページの言語が一致するか判定
@@ -77,7 +77,7 @@ sub ProcessEncoding {
 	else {
 	    if ($encoding ne 'utf8') {
 		# utf-8で扱う
-		$$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8');
+		$$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8') if $option->{change_to_utf8};
 	    }
 	}
     }
