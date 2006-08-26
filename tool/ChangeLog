@@ -1,0 +1,18 @@
+2006-08-24  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl: process_encodingの部分にモジュールを利用
+
+	* scripts/read-zaodata.perl: added.
+
+	* scripts/add-knp-result.perl: Juman/KNP解析結果を挿入
+
+	* scripts/read-sf.perl: added.
+
+2006-08-23  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl, scripts/extract-sentences.perl, scripts/format-www-xml.perl, scripts/format-www.perl, scripts/sentence-filter-xml.perl, scripts/sentence-filter.perl:
+	New file.
+
+	* scripts/add-knp-result.perl, scripts/extract-sentences.perl, scripts/format-www-xml.perl, scripts/format-www.perl, scripts/sentence-filter-xml.perl, scripts/sentence-filter.perl:
+	imported.
+
