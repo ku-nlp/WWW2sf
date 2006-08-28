@@ -44,6 +44,8 @@ sub add_knp_result {
 		for my $node ($s_child_node->getChildNodes) {
 		    my $text = $node->getNodeValue;
 
+		    next if $text eq '';
+
 		    # jmn
 		    if ($opt{jmn}) {
 			&append_node($sentence, $text, 'Juman');
