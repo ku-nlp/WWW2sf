@@ -1,5 +1,7 @@
 2006-08-28  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
+	* read-zaodata.perl: ページ内の助詞含有率をチェックするオプションを追加
+
 	* html2sf.sh: rmに-fオプションを追加
 
 	* html2sf.sh:
