@@ -9,7 +9,7 @@ use Compress::Zlib;
 use Getopt::Long;
 use HtmlGuessEncoding;
 use strict;
-use vars qw(%opt $RequireContentType $SplitSize $HtmlGuessEncoding);
+use vars qw(%opt $RequireContentType $SplitSize $HtmlGuessEncoding $Threshold_for_zyoshi);
 
 sub usage {
     $0 =~ /([^\/]+)$/;
@@ -17,7 +17,7 @@ sub usage {
     exit 1;
 }
 
-&GetOptions(\%opt, 'split=i', 'splithtml', 'language=s', 'help', 'debug');
+&GetOptions(\%opt, 'split=i', 'splithtml', 'language=s', 'checkzyoshi', 'help', 'debug');
 
 $RequireContentType = 'text/html'; # htmlだけを抽出
 $SplitSize = $opt{split};
@@ -25,6 +25,8 @@ $SplitSize = $opt{split};
 $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
 
 my ($z, $status, $output, $buf);
+
+$Threshold_for_zyoshi = 0.005;
 
 # for splithml
 my $filenum_in_dir = 10000;
@@ -88,6 +90,13 @@ for my $f (@ARGV) {
 			    }
 			}
 
+			# 助詞含有率をチェック
+			if ($opt{checkzyoshi}) {
+			    if (&postp_check($output) <= $Threshold_for_zyoshi) {
+				next;
+			    }
+			}
+
 			# $filenum_in_dirファイル出力されたら新しいディレクトリの作成
 # 			if ($fnum % $filenum_in_dir == 1) {
 # 			    $dirname = $head . "/" . int ($fnum / $filenum_in_dir);
@@ -120,4 +129,20 @@ for my $f (@ARGV) {
     close(DATA);
     close(ZL);
     close(IDX);
+}
+
+sub postp_check {
+    my ($buf) = @_;
+    my ($pp_count, $count);
+
+    while ($buf =~ /([^\x80-\xfe]|[\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/g) {
+	my $chr = $1;
+	next if $chr eq "\n";
+	if ($chr =~ /^が|を|に|は|の|で$/) {
+	    $pp_count++;
+	}
+	$count++;
+    }
+
+    return eval {$pp_count/$count};
 }
