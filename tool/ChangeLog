@@ -1,3 +1,9 @@
+2006-08-28  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl: RawStringが空の場合、nextするように
+
+	* scripts/format-www-xml.perl: 全文削除の時はRawStringを空にするように修正
+
 2006-08-24  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl: process_encodingの部分にモジュールを利用
