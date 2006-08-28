@@ -1,5 +1,8 @@
 2006-08-28  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
+	* scripts/add-knp-result.perl:
+	Juman/KNP.pmを使わずに、解析結果を読んでxmlに挿入するように修正
+
 	* scripts/add-knp-result.perl: RawStringが空の場合、nextするように
 
 	* scripts/format-www-xml.perl: 全文削除の時はRawStringを空にするように修正
