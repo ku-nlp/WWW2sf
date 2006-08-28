@@ -49,6 +49,7 @@ sub xml_check_sentence {
 		    }
 		    else {
 			$sentence->setAttribute('is_Japanese_Sentence', '0');
+			$node->setNodeValue('');
 		    }
 		    $sentence->setAttribute('Id', $count++);
 		    $sentence->setAttribute('Log', $log);
