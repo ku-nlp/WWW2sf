@@ -16,7 +16,7 @@ use KNP;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'help');
+GetOptions(\%opt, 'jmn', 'knp', 'help', 'usemodule');
 
 my ($juman, $knp);
 $juman = new Juman if $opt{jmn};
@@ -29,9 +29,61 @@ while (<STDIN>) {
 
 my $parser = new XML::DOM::Parser;
 my $doc = $parser->parse($buf);
-&add_knp_result($doc);
+
+if ($opt{usemodule}) {
+    &add_knp_result($doc);
+}
+# 解析結果を読み込む
+else {
+    &read_result($doc);
+}
+
 print $doc->toString();
 $doc->dispose();
+
+sub read_result {
+    my ($doc) = @_;
+
+    my $sentences = $doc->getElementsByTagName('S');
+    
+    open (F, "<:encoding(euc-jp)", "$ARGV[0]");
+
+    my ($sid, $result);
+    while (<F>) {
+	if (/S-ID:(\d+)/) {
+	    $sid = $1;
+	}
+	elsif (/^EOS$/) {
+	    $result .= $_;
+	    my $sentence = $sentences->item($sid - 1);
+	    for my $s_child_node ($sentence->getChildNodes) {
+		if ($s_child_node->getNodeName eq 'RawString') { # one of the children of S is Text
+		    for my $node ($s_child_node->getChildNodes) {
+			my $text = $node->getNodeValue;
+
+			my $type;
+			if ($opt{jmn}) {
+			    $type = 'Juman';
+			}
+			elsif ($opt{knp}) {
+			    $type = 'Knp';
+			}
+			my $newchild = $doc->createElement($type);
+
+			my $cdata = $doc->createCDATASection($result);
+			$newchild->appendChild($cdata);
+			$sentence->appendChild($newchild);
+		    }
+		}
+	    }
+	    $result = '';
+	}
+	else {
+	    $result .= $_;
+	}
+    }
+    close F;
+}
 
 sub add_knp_result {
     my ($doc) = @_;
@@ -46,13 +98,15 @@ sub add_knp_result {
 
 		    next if $text eq '';
 
-		    # jmn
-		    if ($opt{jmn}) {
-			&append_node($sentence, $text, 'Juman');
-		    }
-		    # knp
-		    if ($opt{knp}) {
-			&append_node($sentence, $text, 'Knp');
+		    if ($opt{usemodule}) {
+			# jmn
+			if ($opt{jmn}) {
+			    &append_node($sentence, $text, 'Juman');
+			}
+			# knp
+			if ($opt{knp}) {
+			    &append_node($sentence, $text, 'Knp');
+			}
 		    }
 		}
 	    }
