@@ -57,9 +57,9 @@ else
     cat $origfile
 fi
 
-rm $origfile
-rm $rawfile
+rm -f $origfile
+rm -f $rawfile
 if [ $jmn -eq 1 -o $knp -eq 1 ]; then
-    rm $jmnfile
+    rm -f $jmnfile
 fi
 
