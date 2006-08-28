@@ -1,5 +1,7 @@
 2006-08-28  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
+	* scripts/extract-rawstring.perl: added.
+
 	* scripts/add-knp-result.perl:
 	Juman/KNP.pmを使わずに、解析結果を読んでxmlに挿入するように修正
 
