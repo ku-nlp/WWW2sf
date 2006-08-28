@@ -6,10 +6,11 @@
 # $Id$
 
 use Compress::Zlib;
+use File::Basename;
 use Getopt::Long;
 use HtmlGuessEncoding;
 use strict;
-use vars qw(%opt $RequireContentType $SplitSize $HtmlGuessEncoding $Threshold_for_zyoshi);
+use vars qw(%opt $RequireContentType $SplitSize $HtmlGuessEncoding $Threshold_for_zyoshi $OFFSET);
 
 sub usage {
     $0 =~ /([^\/]+)$/;
@@ -27,12 +28,15 @@ $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
 my ($z, $status, $output, $buf);
 
 $Threshold_for_zyoshi = 0.005;
+$OFFSET = 0;
 
 # for splithml
 my $filenum_in_dir = 10000;
 
 for my $f (@ARGV) {
     my ($head) = ($f =~ /^([^.]+)/);
+    my ($filename, $path, $suffix) = fileparse($f, ".idx");
+
     my $fnum = $opt{splithtml} ? 0 : 1;
     my $filesize = 0;
 
@@ -50,13 +54,14 @@ for my $f (@ARGV) {
     my $write_filename = $opt{split} ? "$head-$fnum.html" : "$head.html";
     open(DATA, "> $write_filename") or die "$write_filename: $!\n" unless $opt{splithtml};
 
-    my $dirname;
+    my ($dirname, $xnum);
     # 最初のディレクトリの作成
-     if ($opt{splithtml}) {
-# 	$dirname = $head . "/0";
- 	$dirname = $head;
- 	mkdir $head or die unless -d $head;
-     }
+    if ($opt{splithtml}) {
+	($xnum = $filename) =~ s/^doc//;
+	$xnum += $OFFSET;
+	$dirname = sprintf("%sh%04d", $path, $xnum);
+	mkdir $dirname or die unless -d $dirname;
+    }
 
     while (<IDX>) {
 	my @line = split(/\s+/, $_);
@@ -104,9 +109,10 @@ for my $f (@ARGV) {
 # 			}
 			    
 #			$write_filename = sprintf "%s/%s-%05d.html", $dirname, $head, $fnum;
-			$write_filename = sprintf "%s/%08d.html", $dirname, $fnum;
+			$write_filename = sprintf "%s/%04d%04d.html", $dirname, $xnum, $fnum;
 		        open(DATA, "> $write_filename") or die "$write_filename: $!\n";
 			$fnum++;
+			exit if $fnum eq '10000';
 		    }
 
 		    print DATA "HTML $host:$port$urlpath $size\n";
