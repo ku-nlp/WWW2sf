@@ -1,5 +1,7 @@
 2006-08-28  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
+	* html2sf.sh: rmに-fオプションを追加
+
 	* html2sf.sh:
 	中間ファイルを出力して、Juman/KNPの解析結果を読めるように修正
 
