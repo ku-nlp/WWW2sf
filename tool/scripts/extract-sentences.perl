@@ -12,6 +12,7 @@ use XML::Writer;
 use File::stat;
 use POSIX qw(strftime);
 use HtmlGuessEncoding;
+use SentenceFilter;
 use Getopt::Long;
 
 sub usage {
@@ -20,13 +21,16 @@ sub usage {
     exit 1;
 }
 
-our (%opt, $writer);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml');
+our (%opt, $writer, $filter);
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese');
 $opt{language} = 'japanese' unless $opt{language};
 
 my ($buf, $timestamp);
 
 my $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
+my $Filter = new SentenceFilter if $opt{checkjapanese};
+
+our $Threshold_Filter = 0.6;
 
 # ファイル名が与えられていればタイムスタンプを取得
 if ($ARGV[0] and -f $ARGV[0]) {
@@ -83,8 +87,17 @@ sub print_extract_sentences {
 	    $prev_offset = $parsed->{PROPERTY}[$i]{offset};
 	    $prev_length = $parsed->{PROPERTY}[$i]{length};
 
-	    $line = &convert_code($line, 'euc-jp', 'utf8');
-	    $writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
+ 	    $line = &convert_code($line, 'euc-jp', 'utf8');
+
+	    if ($opt{checkjapanese}) {
+		my $score = sprintf("%.5f", $Filter->JapaneseCheck($line));
+		my $is_Japanese = $score > $Threshold_Filter ? '1' : '0';
+
+		$writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
+	    }
+	    else {
+		$writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
+	    }
 	    $writer->startTag('RawString');
 	    $writer->characters($line);
 	    $writer->endTag('RawString');

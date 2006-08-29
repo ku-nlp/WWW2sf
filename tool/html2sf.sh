@@ -39,7 +39,7 @@ rawfile=$f:r.raw
 jmnfile=$f:r.jmn
 
 
-perl -I perl scripts/extract-sentences.perl --xml $1 | perl -I perl scripts/sentence-filter-xml.perl | perl -I perl scripts/format-www-xml.perl > $origfile
+perl -I perl scripts/extract-sentences.perl --checkjapanese --xml $1 | perl -I perl scripts/format-www-xml.perl > $origfile
 # Ê¸¤ÎÃê½Ð
 cat $origfile | perl -I perl scripts/extract-rawstring.perl > $rawfile
 
