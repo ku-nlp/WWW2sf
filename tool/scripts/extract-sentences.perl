@@ -22,7 +22,7 @@ sub usage {
 }
 
 our (%opt, $writer, $filter);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese');
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi');
 $opt{language} = 'japanese' unless $opt{language};
 
 my ($buf, $timestamp);
@@ -31,6 +31,7 @@ my $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
 my $Filter = new SentenceFilter if $opt{checkjapanese};
 
 our $Threshold_Filter = 0.6;
+our $Threshold_Zyoshi = 0.005;
 
 # ファイル名が与えられていればタイムスタンプを取得
 if ($ARGV[0] and -f $ARGV[0]) {
@@ -43,14 +44,27 @@ while (<>) {
 }
 exit 0 unless $buf;
 
+my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {change_to_utf8 => 1});
+
+# HTMLを文のリストに変換
+my $parsed = new TextExtor2(\$buf, 'utf8', \%opt);
+
+# 助詞含有率をチェック
+if ($opt{checkzyoshi}) {
+    my $allbuf;
+    for my $i (0 .. $#{$parsed->{TEXT}}) {
+	$allbuf .= $parsed->{TEXT}[$i];
+    }
+    my $ratio = &postp_check($allbuf);
+    exit if $ratio <= $Threshold_Zyoshi;
+}
+
 # XML出力の準備
 if ($opt{xml}) {
     require XML::Writer;
     $writer = new XML::Writer(OUTPUT => *STDOUT, DATA_MODE => 'true', DATA_INDENT => 2);
     $writer->xmlDecl('utf-8');
 }
-
-my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {change_to_utf8 => 1});
 
 # 文に分割して出力
 &print_page_header($opt{url}, $encoding, $timestamp);
@@ -77,9 +91,6 @@ sub print_page_header {
 sub print_extract_sentences {
     my ($buf) = @_;
     my ($prev_offset, $prev_length);
-
-    # HTMLを文のリストに変換
-    my $parsed = new TextExtor2(\$buf, 'utf8', \%opt);
 
     for my $i (0 .. $#{$parsed->{TEXT}}) {
 	my $line = $parsed->{TEXT}[$i];
@@ -130,4 +141,22 @@ sub convert_code {
     }
 
     return $buf;
+}
+
+sub postp_check {
+    my ($buf) = @_;
+    my ($pp_count, $count);
+
+#    $buf = &convert_code($buf, 'utf8', 'euc-jp');
+
+    while ($buf =~ /([^\x80-\xfe]|[\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/g) {
+	my $chr = $1;
+	next if $chr eq "\n";
+	if ($chr =~ /^が|を|に|は|の|で$/) {
+	    $pp_count++;
+	}
+	$count++;
+    }
+
+    return eval {$pp_count/$count};
 }
