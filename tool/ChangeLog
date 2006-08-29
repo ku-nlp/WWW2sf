@@ -1,5 +1,14 @@
 2006-08-29  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
+	* www2sf.sh: added.
+
+	* html2sf.sh: 中間ファイルの名前の変更など
+
+	* scripts/extract-sentences.perl:
+	助詞含有率をチェックするオプションを追加
+
+2006-08-29  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
 	* scripts/extract-sentences.perl, html2sf.sh:
 	sentence-filter-xml.perlをモジュール化してextract-sentencesの中に入れることにより、若干高速化
 
