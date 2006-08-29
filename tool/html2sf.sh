@@ -34,32 +34,54 @@ if [ ! -f "$1" ]; then
 fi
 
 f=$1
-origfile=$f:r.orig
+sentencesfile=$f:r.sentences
 rawfile=$f:r.raw
 jmnfile=$f:r.jmn
+xmlfile1=$f:r.xml1
 
+perl -I perl scripts/extract-sentences.perl --checkzyoshi --checkjapanese --xml $1 > $xmlfile1
 
-perl -I perl scripts/extract-sentences.perl --checkjapanese --xml $1 | perl -I perl scripts/format-www-xml.perl > $origfile
+# 助詞のチェックで日本語ページとは判定されなかったもの
+if [ ! -s $xmlfile1 ]; then
+    rm -f $xmlfile1
+    exit
+fi
+
+cat $xmlfile1 | perl -I perl scripts/format-www-xml.perl > $rawfile
+
 # 文の抽出
-cat $origfile | perl -I perl scripts/extract-rawstring.perl > $rawfile
+cat $rawfile | perl -I perl scripts/extract-rawstring.perl > $sentencesfile
 
 # Juman/Knp
 if [ $jmn -eq 1 ]; then
-    cat $rawfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
+    cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
 elif [ $knp -eq 1 ]; then
-    cat $rawfile | nkf -e -d | juman -e2 -B -i \# | knp -tab> $jmnfile
+    cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# | knp -tab > $jmnfile
 fi
 
 # merge
 if [ $jmn -eq 1 -o $knp -eq 1 ]; then
-    cat $origfile | perl -I perl scripts/add-knp-result.perl $opts[*] $jmnfile
+    cat $rawfile | perl -I perl scripts/add-knp-result.perl $opts[*] $jmnfile
 else
-    cat $origfile
+    cat $rawfile
 fi
 
-rm -f $origfile
-rm -f $rawfile
+# clean
+if [ -e $sentencesfile ]; then
+    rm -f $sentencesfile
+fi
+
+if [ -e $rawfile ]; then
+    rm -f $rawfile
+fi
+
+if [ -e $xmlfile1 ]; then
+    rm -f $xmlfile1
+fi
+
 if [ $jmn -eq 1 -o $knp -eq 1 ]; then
-    rm -f $jmnfile
+    if [ -e $jmnfile ]; then
+	rm -f $jmnfile
+    fi
 fi
 
