@@ -38,7 +38,7 @@ for f in $hdir/*.html; do
     echo $f
     ./html2sf.sh $opts[*] $f > $xdir/$f:r:t.xml
 
-    # 出力が0の場合、削除                                                       
+    # 出力が0の場合、削除
     if [ ! -s $xdir/$f:r:t.xml ]; then
         rm -f $xdir/$f:r:t.xml
     fi
