@@ -1,0 +1,498 @@
+%!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi
+%!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; ps2pdf -sPAPERSIZE=a4 -dNOKANJI standard_format.ps
+%!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; psnup -2 standard_format.ps > standard_format_2.ps 
+%#!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; psnup -2 standard_format.ps > standard_format_2.ps ; ps2pdf -sPAPERSIZE=a4 -dNOKANJI standard_format_2.ps
+\documentclass[a4j]{jarticle}
+\usepackage{graphicx}
+\usepackage{soberj}
+\usepackage{pifont}
+\usepackage{color}
+\usepackage{pstricks,pst-node}
+\usepackage{fancybox}
+\usepackage{multirow}
+%\setlength{\oddsidemargin}{-15mm}\setlength{\textwidth}{187mm}
+%\setlength{\topmargin}{-15mm}\setlength{\headheight}{0mm}
+%\setlength{\textheight}{250mm}\setlength{\footskip}{10mm}
+\newpsobject{showgrid}{psgrid}{subgriddiv=1,griddots=10,gridlabels=6pt}
+\title{\bf NLPのためのWebページ用標準フォーマット}
+\author{橋本 力\footnotemark[1]
+\qquad 河原 大輔\footnotemark[2]
+\qquad 黒橋 禎夫\footnotemark[1]\hspace*{-1mm}\footnotemark[2]\\
+\footnotemark[1]京都大学情報学研究科
+\qquad \footnotemark[2]情報通信研究機構}
+\date{\today}
+\begin{document}
+\maketitle
+%\setlength{\baselineskip}{15pt}
+
+\section{はじめに}
+
+近年、WWWのデータが自然言語処理の様々なタスクで活発に利用されている。
+それにともない、多くの研究機関でWWWデータの蓄積が行われるようになった。
+
+蓄積されたデータの再利用性を高めるためには、標準フォーマットを制定し、そ
+れに基づいてデータの蓄積を行うべきである。
+また、蓄積されるデータには、抽出された文集合だけでなく、
+その出処情報も明示されるべきである。
+これは、情報検索研究においてはもちろん、言語処理研究においても、
+抽出された文がどのWebページのどの部分から
+得られたものなのかを知る必要がたびたび生じるためである。
+しかし、現在までに、このような標準フォーマットは提案されていない。
+
+そこで本稿では、以上の用件を満たす、NLPのためのWebページ用標準フォーマッ
+トを提案する。
+我々のフォーマットは、元のWebページとそこから抽出される文集合との間の中
+間形式として捉えることができる(図\ref{idea})。
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{pspicture}(10,2)%\showgrid
+\pnode(1.5,1){html}
+\psframe(0,0)(1.5,2)
+\rput(.75,1){HTML}
+\pnode(8.5,1){sentences}
+\psframe(8.5,0)(10,2)
+\rput(9.25,1){文集合}
+%%%
+{\psset{arrowsize=4pt 5,linewidth=1pt}
+\ncline{<->}{html}{sentences}
+}
+%%%
+\psframe[fillstyle=solid](3.5,0)(6.5,2)
+\rput(5,1){\shortstack{標準\\フォーマット}}
+\end{pspicture}
+\end{center}
+\caption{中間形式としてのWebページ用標準フォーマット}
+\label{idea}
+\end{figure}
+
+%また本稿では、Webページからの日本語文の抽出方法についても述べる。
+
+\section{Webページ用標準フォーマット \label{sf}}
+
+我々のWebページ用標準フォーマット(以下、標準フォーマット)では、
+表\ref{contents}の情報が明示されている。
+%
+\begin{table}[htbp]
+\caption{標準フォーマットに明示されている情報}
+\begin{center}
+\label{contents}
+\begin{tabular}{l|l|l|p{17zw}}
+\hline
+\multicolumn{1}{c|}{\bf 種類} &
+\multicolumn{1}{c|}{\bf 情報} &
+\multicolumn{1}{c|}{\bf XMLタグ／属性} &
+\multicolumn{1}{c}{\bf 備考}\\
+\hline\hline
+ \multirow{3}*{出処情報} & URL & \tt Url &  \\ \cline{2-4}
+ & エンコーディング & \tt OriginalEncoding &  \\ \cline{2-4}
+ & ページ取得日時 & \tt Time & 「yyyy-mm-dd hh:mm:ss」形式。 \\ \cline{2-4}
+\hline\hline
+\multirow{5}*{本文情報} & 著者 & \tt Author & 任意。\\ \cline{2-4}
+ & 更新日 & \tt Date & 任意。\\ \cline{2-4}
+ & タイトル & \tt Title & 任意。\\ \cline{2-4}
+ & 種類 & \tt Type & 通常のWebページかブログ、またはブログのコメント\\ \cline{2-4}
+\hline\hline
+\multirow{6}*{文情報} & 文ID & \tt Id & \\ \cline{2-4}
+ & バイト長 & \tt Length & \\ \cline{2-4}
+ & 開始位置 & \tt Offset & ファイル先頭からのバイトオフセット。\\
+ \cline{2-4}
+ & 文字列 & \tt RawString & 文そのもの。\\ \cline{2-4}
+ & NLPツールの解析結果 & \tt Annotation & 任意。\\ \cline{2-4}
+ & NLPツールの名称 & \tt Scheme & \\ \cline{2-4}
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+%
+「URL」と「開始位置」により、抽出された文がどのWebページのどの位置から得
+られたものなのか分かるようになっている。
+「本文情報」の「種類」は、その本文がブログ(\texttt{blog})か、
+ブログに対するコメントか(\texttt{comment})、あるいは通常のWebページの本
+文(\texttt{default})かを表す。
+「NLPツールの解析結果」として、以下の例ではKNPの解析結果を用いる。
+
+標準フォーマットに基づくデータ(以下、標準フォーマットデータ)はXMLで記述
+されるが、そのDTDは図\ref{dtd}のようになる。
+%
+\begin{figure}[htbp]
+\begin{center}
+\shadowbox{
+\begin{minipage}{.9\textwidth}
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT StandardFormat (Text+)>
+<!ATTLIST StandardFormat
+    OriginalEncoding CDATA #REQUIRED
+    Time CDATA #REQUIRED
+    Url CDATA #REQUIRED
+>
+<!ELEMENT Text (S+)>
+<!ATTLIST Text
+    Author CDATA #IMPLIED
+    Date CDATA #IMPLIED
+    Title CDATA #IMPLIED
+    Type (default|blog|comment) "default"
+>
+<!ELEMENT S (RawString,Annotation?)>
+<!ATTLIST S
+    Id CDATA #REQUIRED
+    Length CDATA #REQUIRED
+    Offset CDATA #REQUIRED>
+<!ELEMENT RawString (#PCDATA)>
+<!ELEMENT Annotation (#PCDATA)>
+<!ATTLIST Annotation
+    Scheme CDATA #REQUIRED>
+\end{verbatim}
+\end{minipage}
+}
+\caption{標準フォーマットのDTD}
+\label{dtd}
+\end{center}
+\end{figure}
+
+また、標準フォーマットデータのエンコーディングはUTF-8とする。
+
+\subsection{例1 \label{ex1}}
+
+以下、\S\ref{ex1}で、通常のWebページからの標準フォーマットへの変換の例を
+挙げ、
+\S\ref{ex2}では、ブログからの変換の例を挙げる。
+
+まず、図\ref{source}のHTMLが標準フォーマットデータの派生元である。
+\hspace*{-2mm}\footnote{
+この例は
+\texttt{http://www.kantei.go.jp/jp/koizumiprofile/1\_sinnen.html}
+を加工して得たものである。
+}
+%
+\begin{figure}[htbp]
+\begin{center}
+\shadowbox{
+\begin{minipage}{.9\textwidth}
+\begin{verbatim}
+<html><head><title>小泉総理プロフィール・信念</title>
+<meta http-equiv="Content-Type"
+   content="text/html;charset=Shift_JIS">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<center>
+<table cellpadding="0" cellspacing="0" width="610">
+<tbody><tr> 
+<td valign="top" width="172">
+<img src="sample_files/0_001.jpg"
+   alt="無信不立" height="160" width="160">
+</td>
+<td valign="top" width="426"><b><font color="#0066ff">
+ ▼座右の銘</font></b> 
+<br>
+<img src="sample_files/1px_spacer.gif" alt="" height="5" width="426">
+<br>
+　小泉総理の好きな格言のひとつに「無信不立(信無くば立たず)」があります。論語の下篇「顔淵」の言葉で、弟子の子貢（しこう）が政治について尋ねたところ、孔子は「食料を十分にし軍備を十分にして、人民には信頼を持たせることだ」と答えました。<br>
+</td>
+</tr>
+</tbody></table>
+</center>
+</body></html>
+\end{verbatim}
+\end{minipage}
+}
+\caption{派生元のHTMLファイル}
+\label{source}
+\end{center}
+\end{figure}
+%
+そして、図\ref{sf-example-1}が標準フォーマットデータの例である。
+図\ref{source}下部の2文が抽出されている。
+この例では「NLPツールの解析結果」は付与されていない。
+%
+\begin{figure}[htbp]
+\begin{center}
+\shadowbox{
+\begin{minipage}{.9\textwidth}
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardFormat
+  Url="http://www.kantei.go.jp/jp/koizumiprofile/1_sinnen.html"
+  OriginalEncoding="Shift_JIS" Time="2006-08-14 19:48:51">
+  <Text Type="dafault">
+    <S Id="1" Length="70" Offset="525">
+      <RawString>小泉総理の好きな格言のひとつに「無信不立」があります。</RawString>
+    </S>
+    <S Id="2" Length="160" Offset="595">
+      <RawString>
+        論語の下篇「顔淵」の言葉で、弟子の子貢（しこう）が政治について尋ねたところ、孔子は「食料を十分にし軍備を十分にして、人民には信頼を持たせることだ」と答えました。</RawString>
+    </S>
+  </Text>
+</StandardFormat>
+\end{verbatim}
+\end{minipage}
+}
+\caption{標準フォーマットデータの例 (NLPツールの解析結果無し)}
+\label{sf-example-1}
+\end{center}
+\end{figure}
+%
+図\ref{sf-example-2}は「NLPツールの解析結果」が付与されている標準フォー
+マットデータの例である。
+%
+\begin{figure}[htbp]
+\begin{center}
+\shadowbox{
+\begin{minipage}{.9\textwidth}
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardFormat
+  Url="http://www.kantei.go.jp/jp/koizumiprofile/1_sinnen.html"
+  OriginalEncoding="Shift_JIS" Time="2006-08-14 19:48:51">
+  <Text Type="default">
+    <S Id="1" Length="70" Offset="525">
+      <RawString>小泉総理の好きな格言のひとつに「無信不立(信無くば立たず)」があります。</RawString>
+      <Annotation Scheme="KNP">
+        <![CDATA[# S-ID:1 KNP:2006/08/10
+* 1D <文頭><サ変><人名><助詞><連体修飾><体言><係:ノ格><区切:0-4><RID:1056>
+小泉 こいずみ 小泉 名詞 6 人名 5 * 0 * 0 NIL <文頭><漢字><かな漢字><名詞相当語><自立><タグ単位始><文節始><固有キー>
+ ...中略...
+ます ます ます 接尾辞 14 動詞性接尾辞 7 動詞性接尾辞ます型 31 基本形 2 NIL <表現文末><かな漢字><ひらがな><活用語><付属><非独立無意味接尾辞>
+。 。 。 特殊 1 句点 1 * 0 * 0 NIL <文末><英記号><記号><付属>
+EOS]]>
+      </Annotation>
+    </S>
+    <S Id="2" Length="160" Offset="595">
+      <RawString>
+        論語の下篇「顔淵」の言葉で、弟子の子貢（しこう）が政治について尋ねたところ、孔子は「食料を十分にし軍備を十分にして、人民には信頼を持たせることだ」と答えました。</RawString>
+      <Annotation Scheme="KNP">
+        <![CDATA[# S-ID:1 KNP:2006/08/10
+* 1D <文頭><助詞><連体修飾><体言><係:ノ格><区切:0-4><RID:1056>
+論 ろん 論 名詞 6 普通名詞 1 * 0 * 0 "漢字読み:音 代表表記:論" <漢字読み:音><代表表記:論><文頭><漢字><かな漢字><名詞相当語><自立><タグ単位始><文節始>
+ ...中略...
+ました ました ます 接尾辞 14 動詞性接尾辞 7 動詞性接尾辞ます型 31 タ形 5 NIL <表現文末><かな漢字><ひらがな><活用語><付属><非独立無意味接尾辞>
+。 。 。 特殊 1 句点 1 * 0 * 0 NIL <文末><英記号><記号><付属>
+EOS]]>
+      </Annotation>
+    </S>
+  </Text>
+</StandardFormat>
+\end{verbatim}
+\end{minipage}
+}
+\caption{標準フォーマットデータの例 (NLPツールの解析結果有り)}
+\label{sf-example-2}
+\end{center}
+\end{figure}
+
+\subsection{例2 \label{ex2}}
+
+以下にブログから派生した標準フォーマットデータの例を挙げる。
+ブログは、通常、1ファイルに複数の本文(タイトルと記事のペア)が含まれると
+いう独特の内部構造を持つ。
+そのため、ブログから派生した標準フォーマットデータの場合、通常、本文に相
+当する\texttt{Text}タグが複数回現れる。
+
+ここで、タイトルは記事中の一文としても扱われることに注意されたい。
+そのため各記事のタイトルは、標準フォーマットにおいて、
+\texttt{<Text>}タグの\texttt{Title}属性だけでなく、
+\texttt{<RawString>}タグの値としても現れる。
+
+図\ref{source-blog}は標準フォーマットデータの派生元のブログである。\hspace*{-2mm}%
+\footnote{この例は\texttt{http://xtc.bz/}を加工して得たものである。}
+%
+\begin{figure}[htbp]
+\begin{center}
+\shadowbox{
+\begin{minipage}{.9\textwidth}
+\begin{verbatim}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+<title>音楽配信メモ</title>
+<div class="theday">
+<h3 class="date5">2006年08月04日(金) </h3>
+<h4 class="title">はてなの音楽ブログが地味にヤバい</h4>
+<p class="news">この前紹介したPOP2*0がヤバいのは、音楽フリークの中でもはや既に常識であることは当然として、音楽業界に興味がある人も、この↓エントリは読んでおくべき。</p>
+<p class="newsfoot">| <a href="http://xtc.bz/index.php?cID=11">サイト紹
+介</a> | <a href="http://xtc.bz/index.php?ID=366">この記事のURI</a> |
+Posted at 23時17分 |</p>
+<p class="toplink">
+<a href="#top">▲ページトップへ</a></p>
+</div>
+<div class="theday">
+<h3 class="date1">2006年07月31日(月) </h3>
+<h4 class="title">第４回著作権分科会私的録音録画小委員会のまとめ</h4>
+<p class="news">相変わらずお仕事が早いzfylさんのところでまとめ記事が上がっています。</p>
+<p class="newsfoot">| <a href="http://xtc.bz/index.php?cID=3">著作権</a>
+ | <a href="http://xtc.bz/index.php?ID=365">この記事のURI</a> | Posted
+at 11時58分 |</p>
+<p class="toplink"><a href="#top">▲ページトップへ</a></p></div>
+<div id="footer">
+<p>作成者：津田大介<br>
+デザイン：milkboy studio<br>
+</p></div>
+</body></html>
+\end{verbatim}
+\end{minipage}
+}
+\caption{派生元のブログ}
+\label{source-blog}
+\end{center}
+\end{figure}
+%
+図\ref{sf-example-3}がそのブログから得られた標準フォーマットデータである。
+この例では「NLPツールの解析結果」は付与されていない。
+%
+\begin{figure}[htbp]
+\begin{center}
+\shadowbox{
+\begin{minipage}{.9\textwidth}
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardFormat Url="http://xtc.bz/" OriginalEncoding="EUC-JP"
+  Time="2006-08-14 19:48:51">
+  <Text Author="津田大介" Date="2006-08-04"
+    Title="はてなの音楽ブログが地味にヤバい" Type="blog">
+    <S Id="1" Length="32" Offset="254">
+      <RawString>はてなの音楽ブログが地味にヤバい</RawString>
+    </S>
+    <S Id="2" Length="148" Offset="308">
+      <RawString>
+        この前紹介したPOP2*0がヤバいのは、音楽フリークの中でもはや既に常識であることは当然として、音楽業界に興味がある人も、この↓エントリは読んでおくべき。</RawString>
+    </S>
+  </Text>
+  <Text Author="津田大介" Date="2006-07-31"
+    Title="第４回著作権分科会私的録音録画小委員会のまとめ" Type="blog">
+    <S Id="3" Length="46" Offset="777">
+      <RawString>第４回著作権分科会私的録音録画小委員会のまとめ</RawString>
+    </S>
+    <S Id="4" Length="68" Offset="845">
+      <RawString>相変わらずお仕事が早いzfylさんのところでまとめ記事が上がっています。</RawString>
+    </S>
+  </Text>
+</StandardFormat>
+\end{verbatim}
+\end{minipage}
+}
+\caption{ブログからの標準フォーマットデータの例 (NLPツールの解析結果無し)}
+\label{sf-example-3}
+\end{center}
+\end{figure}
+%
+図\ref{sf-example-4}に「NLPツールの解析結果」有りの例を挙げる。
+%
+\begin{figure}[htbp]
+\begin{center}
+\shadowbox{
+\begin{minipage}{.9\textwidth}
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardFormat Url="http://xtc.bz/" OriginalEncoding="EUC-JP"
+  Time="2006-08-14 19:48:51">
+  <Text Author="津田大介" Date="2006-08-04"
+    Title="はてなの音楽ブログが地味にヤバい" Type="blog">
+    <S Id="1" Length="32" Offset="254">
+      <RawString>はてなの音楽ブログが地味にヤバい</RawString>
+      <Annotation Scheme="Knp">
+        <![CDATA[# S-ID:1 KNP:2006/08/11
+* 3D <文頭><形副名詞><体言><用言:判><タグ単位受:-1><係:未格><レベル:B><区切:3-5><ID:〜の〜><RID:346><連体並列条件><格要素><連用要素>
+ ...中略...
+い い い 名詞 6 普通名詞 1 * 0 * 0 "代表表記:居" <代表表記:居><品曖><ALT-い-い-いる-2-0-1-7-"代表表記:射る"><ALT-い-い-いる-2-0-1-7-"代表表記:鋳る"><品曖-動詞><品曖-その他><文末><表現文末><かな漢 字><ひらがな><品詞変更:い-い-いる-2-0-1-7><名詞相当語><自立><複合←><タグ単位始>
+EOS]]>
+      </Annotation>
+    </S>
+    <S Id="2" Length="148" Offset="308">
+      <RawString>
+        この前紹介したPOP2*0がヤバいのは、音楽フリークの中でもはや既に常識であることは当然として、音楽業界に興味がある人も、この↓エントリは読んでおくべき。</RawString>
+      <Annotation Scheme="Knp">
+        <![CDATA[# S-ID:1 KNP:2006/08/18
+* 1D <文頭><時間><強時間><外の関係><体言><係:無格><区切:0-0><RID:1316><格要素><連用要素>
+ ...中略...
+。 。 。 特殊 1 句点 1 * 0 * 0 NIL <文末><英記号><記号><付属>
+EOS]]>
+      </Annotation>
+    </S>
+  </Text>
+  <Text Author="津田大介" Date="2006-07-31"
+   Title="第４回著作権分科会私的録音録画小委員会のまとめ" Type="blog">
+   ... 中略 ...
+  </Text>
+</StandardFormat>
+\end{verbatim}
+\end{minipage}
+}
+\caption{ブログからの標準フォーマットデータの例 (NLPツールの解析結果有り)}
+\label{sf-example-4}
+\end{center}
+\end{figure}
+
+\section{HTMLから標準フォーマットへの変換}
+
+%以上、標準フォーマットデータの例を挙げたが、
+%大規模に収集されたWebページを全て人手で標準フォーマットへ変換するのは困
+%難である。
+%そのため、
+我々は、標準フォーマットの制定とともに、
+HTMLから標準フォーマットへの変換ツールを開発した。
+本節では、この変換で最も問題となる、Webページからの日本語文の抽出方
+法について、その大枠を述べる。
+
+我々のツールの日本語文抽出の大枠は以下の通りである。
+
+\begin{enumerate}
+ \item まず、日本語ページかどうか判定する。
+       これには、文字コードや、日本語の助詞（「が」「を」「に」等）の有
+       無などの情報を利用する。
+ \item 次に、ページを文リストへ分割する。
+       これには、HTMLタグ（\texttt{<br>}や\texttt{<p>}など）と句点を利用
+       する。
+ \item 最後に、文リストから日本語文だけを抽出する。
+       これは、日本語ページと判定されていても、文ごとに見ると英語の場合
+       もあるためである。
+       ひらがな、カタカナ、漢字のいずれかが60\%以上含まれる文のみを抽出
+       する。
+\end{enumerate}
+
+%\section{Webページからの日本語文の抽出}
+%各Webページを以下のように処理し、日本語文を抽出する。
+%\begin{enumerate}
+% \item 文字コード情報を用いた日本語ページ判定
+%       \begin{enumerate}
+%	\item ページにcharset情報が明示されており、それが日本語の
+%	      encoding(euc-jp, x-euc-jp, iso-2022-jp, shift\_jis,
+%	      windows-932, x-sjis, shift-jp, utf-8)であれば、そのペー
+%	      ジを選択する。
+%	\item charset情報が明示されていなければ、perlの
+%	      Encode::guess\_encoding()関数を用いてencodingを推定する。
+%	      この関数は、各encodingの特徴的なバイト列を手がかりにして
+%	      encodingを判定している。encodingがeuc-jp, shiftjis,
+%	      7bit-jis, utf8のいずれかに判定されれば日本語と判定し、その
+%	      ページを選択する。
+%       \end{enumerate}
+% \item 言語情報を用いた日本語ページ判定
+%       1の日本語判定では、日本語と中国語を区別することが難しく、日本語と
+%       判定されていても、中国語が混ざっていることが多い。そこで、日本語
+%       の助詞の含有率を用いて日本語かどうかを再度チェックする。以下に示
+%       す助詞の文字を0.5\%以上含むページのみ用いる。
+%       \begin{quote}
+%	が, を, に, は, の, で
+%       \end{quote}
+%       %この結果、日本語と判定された約1億ページを得た。
+% \item ページの文リストへの分割
+%       ページのHTMLをparseし、HTMLタグと句点を利用して文のリストを得る。
+%       HTMLタグとしては、例えばbr, pなどのタグを文区切りと認識する。pre
+%       タグ内であれば改行も文区切りと認識する。残りの部分は句点で分割す
+%       る。
+% \item 日本語文の抽出
+%       日本語ページと判定されていても、文ごとに見ると英語の場合もあるの
+%       で、日本語文のみを抽出する必要がある。ひらがな、カタカナ、漢字の
+%       いずれかが60\%以上含まれる文のみを抽出する。
+%%       この結果、14億日本語文(単語のみも含む)を得た。実際のところ、まと
+%%       もな日本語文は5〜6億文と思われる。
+%\end{enumerate}
+
+\section{おわりに}
+
+本稿では、NLPのためのWebページ用標準フォーマットを提案した。
+標準フォーマットは、Webページとそこから抽出される文集合との間の中間形式
+としての役割を果たすため、抽出された文だけでなく、その文の出処情報も含む。
+
+また本稿では、Webページからの日本語文の抽出方法についても述べた。
+\end{document}

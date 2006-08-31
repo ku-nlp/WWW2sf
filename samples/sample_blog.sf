@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardFormat Url="http://xtc.bz/" OriginalEncoding="EUC-JP" Time="2006-08-14 19:48:51">
+  <Text Author="津田大介" Date="2006-08-04" Title="はてなの音楽ブログが地味にヤバい" Type="blog">
+    <S Id="1" Length="32" Offset="1937">
+      <RawString>はてなの音楽ブログが地味にヤバい</RawString>
+    </S>
+    <S Id="2" Length="148" Offset="1992">
+      <RawString>
+        この前紹介したPOP2*0がヤバいのは、音楽フリークの中でもはや既に常識であることは当然として、音楽業界に興味がある人も、この↓エントリは読んでおくべき。</RawString>
+    </S>
+  </Text>
+  <Text Author="津田大介" Date="2006-07-31" Title="第４回著作権分科会私的録音録画小委員会のまとめ" Type="blog">
+    <S Id="3" Length="46" Offset="2559">
+      <RawString>第４回著作権分科会私的録音録画小委員会のまとめ</RawString>
+    </S>
+    <S Id="4" Length="68" Offset="2628">
+      <RawString>相変わらずお仕事が早いzfylさんのところでまとめ記事が上がっています。</RawString>
+    </S>
+  </Text>
+</StandardFormat>

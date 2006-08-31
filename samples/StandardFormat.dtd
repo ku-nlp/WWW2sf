@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT StandardFormat (Text+)>
+<!ATTLIST StandardFormat
+    OriginalEncoding CDATA #REQUIRED
+    Time CDATA #REQUIRED
+    Url CDATA #REQUIRED
+>
+<!ELEMENT Text (S+)>
+<!ATTLIST Text
+    Author CDATA #IMPLIED
+    Date CDATA #IMPLIED
+    Title CDATA #IMPLIED
+    Type (default|blog|comment) "default"
+>
+<!ELEMENT S (RawString,Annotation?)>
+<!ATTLIST S
+    Id CDATA #REQUIRED
+    Length CDATA #REQUIRED
+    Offset CDATA #REQUIRED>
+<!ELEMENT RawString (#PCDATA)>
+<!ELEMENT Annotation (#PCDATA)>
+<!ATTLIST Annotation
+    Scheme CDATA #REQUIRED>

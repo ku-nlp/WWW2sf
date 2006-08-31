@@ -1,0 +1,30 @@
+*sample.html
+-変換前のWebページのサンプル。
+-次のサイトから得たものを、人手で内容を削った。
+--http://www.kantei.go.jp/jp/koizumiprofile/1_sinnen.html
+*sample_files/
+-sample.htmlから参照される画像ファイルが収められているディレクトリ。
+*sample.sf
+-sample.htmlをStandardFormatに変換したもの。
+*sample_knp.sf
+-sample.htmlをStandardFormatに変換したもの。(NLPツール解析結果つき)
+-KNP解析結果つき。
+-KNP要素の子要素は以下のコマンドの出力とした。
+ % echo "テキスト" | juman | knp -tab
+*sample_blog.html
+-変換前のblogのサンプル。
+-次のサイトから得たものを、人手で内容を削った。
+--http://xtc.bz/
+*sample_blog_files/
+-sample_blog.htmlから参照される画像ファイルが収められているディレクトリ。
+*sample_blog.sf
+-sample_blog.htmlをStandardFormatに変換したもの。
+*sample_blog_knp.sf
+-sample_blog.htmlをStandardFormatに変換したもの。(NLPツール解析結果つき)
+-KNP解析結果つき。
+-KNP要素の子要素は以下のコマンドの出力とした。
+ % echo "テキスト" | juman | knp -tab
+*StandardFormat.dtd
+-XMLファイル*.sfの文書定義
+*README
+-このファイル。

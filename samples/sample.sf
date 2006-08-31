@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardFormat Url="http://www.kantei.go.jp/jp/koizumiprofile/1_sinnen.html"
+  OriginalEncoding="Shift_JIS" Time="2006-08-14 19:48:51">
+  <Text Type="default">
+    <S Id="1" Length="70" Offset="2387">
+      <RawString>小泉総理の好きな格言のひとつに「無信不立」があります。</RawString>
+    </S>
+    <S Id="2" Length="160" Offset="2458">
+      <RawString>
+        論語の下篇「顔淵」の言葉で、弟子の子貢（しこう）が政治について尋ねたところ、孔子は「食料を十分にし軍備を十分にして、人民には信頼を持たせることだ」と答えました。</RawString>
+    </S>
+  </Text>
+</StandardFormat>
