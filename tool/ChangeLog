@@ -3,6 +3,10 @@
 	* scripts/read-zaodata.perl:
 	offsetを指定できるようにした
 
+	* scripts/read-zaodata.sh:
+	offsetを-oで指定できるようにした
+	tar.gzで固めるのをオプション(-t)にした
+
 2006-08-31  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* www2sf-tar.sh: added.
