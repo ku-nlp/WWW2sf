@@ -1,3 +1,8 @@
+2006-08-31  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/read-zaodata.perl:
+	offsetを指定できるようにした
+
 2006-08-31  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* www2sf-tar.sh: added.
