@@ -18,7 +18,7 @@ sub usage {
     exit 1;
 }
 
-&GetOptions(\%opt, 'split=i', 'splithtml', 'language=s', 'checkzyoshi', 'help', 'debug');
+&GetOptions(\%opt, 'split=i', 'splithtml', 'language=s', 'checkzyoshi', 'offset=i', 'help', 'debug');
 
 $RequireContentType = 'text/html'; # htmlだけを抽出
 $SplitSize = $opt{split};
@@ -28,7 +28,7 @@ $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
 my ($z, $status, $output, $buf);
 
 $Threshold_for_zyoshi = 0.005;
-$OFFSET = 0;
+$OFFSET = $opt{offset} ? $opt{offset} : 0;
 
 # for splithml
 my $filenum_in_dir = 10000;
