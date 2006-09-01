@@ -3,7 +3,7 @@
 # zaodataを読み込むシェルスクリプト
 # ./read-zaodata.sh tsubame00 doc0000000000
 # -o num: offsetの指定
-# -t: tar.gzで固める
+# -r: tar.gzで固めない
 
 usage() {
     echo "$0 [-o num] [-t] tsubame00 doc0000000000"
@@ -13,15 +13,15 @@ usage() {
 
 read_zaodata_args=
 offset=0
-targz_flag=0
+targz_flag=1
 
-while getopts o:th OPT
+while getopts o:rh OPT
 do
     case $OPT in
         o)  read_zaodata_args="--offset $OPTARG $read_zaodata_args"
 	    offset=$OPTARG
             ;;
-	t)  targz_flag=1
+	r)  targz_flag=0
 	    ;;
         h)  usage
             ;;
