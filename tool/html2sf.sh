@@ -1,4 +1,4 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/env zsh
 
 # $Id$
 
@@ -84,4 +84,3 @@ if [ $jmn -eq 1 -o $knp -eq 1 ]; then
 	rm -f $jmnfile
     fi
 fi
-
