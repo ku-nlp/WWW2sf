@@ -27,7 +27,7 @@ fi
 # copy
 if [ -f $sourcedir/$h.tar.gz ]; then
     cp $sourcedir/$h.tar.gz $localdir/$block/
-    tar zxvf $h.tar.gz -C $localdir/$block
+    tar -C $localdir/$block -zxvf $localdir/$block/$h.tar.gz
 elif [ -d $sourcedir/$h ]; then
     tar -C $sourcedir -cf - $h | tar -xvf - -C $localdir/$block
 else
