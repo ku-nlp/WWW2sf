@@ -5,6 +5,7 @@ HTMLからWebページ用標準フォーマットに変換するツール
 kawahara <dk@nict.go.jp>	2006-08-18
 shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
 
+
 必要なもの
 ----------
 
@@ -16,6 +17,7 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
     - XML::Parser
     - XML::DOM
     - KNP
+
 
 処理
 ----
@@ -31,3 +33,17 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
 # h0000ディレクトリ以下のhtmlを標準フォーマットに変換して、x0000以下に出力
 
 ./www2sf.sh [-j|-k] h0000 x0000
+
+※ h????.tar.gzをx????.tar.gzに変換する場合は、./www2sf-tar.shを使う。
+   これは./www2sf.sh -jへのラッパーとなっている。
+
+
+# 田浦先生クローラの結果をh????.tar.gzに変換
+
+cd scripts
+./read-zaodata.sh tsubame00 doc0000000000
+./read-zaodata.sh tsubame00 doc0000000001
+：
+./read-zaodata.sh tsubame00 doc0000000627
+./read-zaodata.sh -o 628 tsubame01 doc0000000000
+：
