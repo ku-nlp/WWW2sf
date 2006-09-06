@@ -38,11 +38,9 @@ fi
 # ÊÑ´¹
 ./www2sf.sh -j $localdir/$block/$h $localdir/$block/$x 
 
-cd $localdir/$block/
-
-tar zcvf $x.tar.gz ./$x
-
-mv $x.tar.gz $destdir
+scripts/rename-continuously.sh $localdir/$block/$h $localdir/$block/$x 
+tar -C $localdir/$block -zcvf $destdir/$h.tar.gz ./$h
+tar -C $localdir/$block -zcvf $destdir/$x.tar.gz ./$x
 
 rm -f $localdir/$block/$h.tar.gz
 rm -fr $localdir/$block/$h
