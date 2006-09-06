@@ -25,7 +25,7 @@ our (%opt, $writer, $filter);
 &GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi');
 $opt{language} = 'japanese' unless $opt{language};
 
-my ($buf, $timestamp);
+my ($buf, $timestamp, $url);
 
 my $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
 my $Filter = new SentenceFilter if $opt{checkjapanese};
@@ -40,6 +40,9 @@ if ($ARGV[0] and -f $ARGV[0]) {
 }
 
 while (<>) {
+    if (!$buf and /^HTML (\S+)/) { # 1行目からURLを取得(read-zaodataが出力している)
+	$url = $1;
+    }
     $buf .= $_;
 }
 exit 0 unless $buf;
@@ -67,7 +70,7 @@ if ($opt{xml}) {
 }
 
 # 文に分割して出力
-&print_page_header($opt{url}, $encoding, $timestamp);
+&print_page_header($opt{url} ? $opt{url} : $url, $encoding, $timestamp);
 &print_extract_sentences($buf);
 &print_page_footer();
 
