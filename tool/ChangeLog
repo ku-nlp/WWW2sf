@@ -1,3 +1,11 @@
+2006-09-06  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* www2sf-tar.sh:
+	rename-continuously.shを呼ぶようにした
+
+	* scripts/extract-sentences.perl:
+	read-zaodataが出力するURL情報を読み取るように修正
+
 2006-09-04  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/rename-continuously.sh:
