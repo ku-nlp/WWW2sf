@@ -22,7 +22,7 @@ sub usage {
 }
 
 our (%opt, $writer, $filter);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi');
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f');
 $opt{language} = 'japanese' unless $opt{language};
 
 my ($buf, $timestamp, $url);
@@ -31,7 +31,7 @@ my $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
 my $Filter = new SentenceFilter if $opt{checkjapanese};
 
 our $Threshold_Filter = 0.6;
-our $Threshold_Zyoshi = 0.005;
+our $Threshold_Zyoshi = $opt{zyoshi_threshold} ? $opt{zyoshi_threshold} : 0.005;
 
 # ファイル名が与えられていればタイムスタンプを取得
 if ($ARGV[0] and -f $ARGV[0]) {
