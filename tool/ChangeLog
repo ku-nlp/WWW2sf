@@ -1,3 +1,8 @@
+2006-09-09  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/extract-sentences.perl:
+	助詞含有率の閾値をオプションで指定可能にした
+
 2006-09-06  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* www2sf-tar.sh:
