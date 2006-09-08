@@ -3,6 +3,9 @@
 	* scripts/extract-sentences.perl:
 	助詞含有率の閾値をオプションで指定可能にした
 
+	* scripts/rename-all.sh:
+	added.
+
 2006-09-06  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* www2sf-tar.sh:
