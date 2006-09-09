@@ -10,7 +10,7 @@ usage() {
 }
 
 # -h, -x: 指定したところに足していく (前回の最後を指定)
-
+# -n: 始まる数字を指定するとき e.g., -n 0153
 
 rename_all() {
     tmp_hgoal_dir=$1
@@ -24,6 +24,9 @@ rename_all() {
     count=0
     for tmp_f in $tmp_xgoal_dir/*
     do
+	if [ ! -f "$tmp_f" ]; then
+	    continue
+	fi
 	# count=`expr $tmp_f : "$tmp_xgoal_dir/$n\([0-9]*\)"`
 	count=`expr $count + 1`
     done
@@ -48,6 +51,7 @@ rename_all() {
 	    tmp_xgoal_dir="$tmp_dst_dir/$xbase"
 	    mkdir $tmp_hgoal_dir
 	    mkdir $tmp_xgoal_dir
+	    n=$new_n
 	    count=0
 	fi
 
@@ -64,7 +68,7 @@ hfile=
 hext=html
 xext=xml
 
-while getopts h:x: OPT
+while getopts h:x:n: OPT
 do
     case $OPT in
         h)  if [ ! -f "$OPTARG" ]; then
@@ -84,6 +88,8 @@ do
 	    if [ -z "$xbase" ]; then
 		usage
 	    fi
+	    ;;
+	n)  new_n=$OPTARG
 	    ;;
     esac
 done
@@ -106,9 +112,16 @@ if [ -n "$xfile" -a -n "$hfile" ]; then
     $www2sf_dir/rename-continuously.sh $tmp_dst_dir/$hbase $tmp_dst_dir/$xbase
 elif [ -n "$xfile" -o -n "$hfile" ]; then
     usage
+elif [ -n "$new_n" ]; then
+    # 数字指定するとき
+    hbase="h$new_n"
+    xbase="x$new_n"
+    mkdir $tmp_dst_dir/$hbase
+    mkdir $tmp_dst_dir/$xbase
+    xfile="$tmp_dst_dir/$xbase.tar.gz" # dummy
 fi
 
-for f in $xdir/*.tar.gz
+for f in $xdir/x*.tar.gz
 do
     base=`basename $f .tar.gz`
     if [ -z "$xfile" ]; then
