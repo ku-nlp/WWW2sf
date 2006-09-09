@@ -1,3 +1,8 @@
+2006-09-10  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/rename-all.sh:
+	開始番号を与えられるように修正
+
 2006-09-09  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/extract-sentences.perl:
