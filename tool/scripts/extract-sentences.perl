@@ -22,7 +22,7 @@ sub usage {
 }
 
 our (%opt, $writer, $filter);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f');
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding');
 $opt{language} = 'japanese' unless $opt{language};
 
 my ($buf, $timestamp, $url);
@@ -48,6 +48,7 @@ while (<>) {
 exit 0 unless $buf;
 
 my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {change_to_utf8 => 1});
+exit if $opt{checkencoding} and !$encoding;
 
 # HTMLを文のリストに変換
 my $parsed = new TextExtor2(\$buf, 'utf8', \%opt);
