@@ -33,7 +33,7 @@ rename_all() {
 
     for tmp_f in $tmp_xdir/*
     do
-	base_tmp_f=`expr $tmp_f : "$tmp_xdir/\([0-9]*\)\.$xext"`
+	base_tmp_f=`basename $tmp_f .$xext`
 
 	# 10000個になり一杯になったので、次の受け皿を作る
 	if [ $count -ge 10000 ]; then
@@ -67,10 +67,13 @@ xfile=
 hfile=
 hext=html
 xext=xml
+call_rename_continuously_flag=0
 
-while getopts h:x:n: OPT
+while getopts ch:x:n: OPT
 do
     case $OPT in
+	c)  call_rename_continuously_flag=1
+	    ;;
         h)  if [ ! -f "$OPTARG" ]; then
 		usage
 	    fi
@@ -89,7 +92,7 @@ do
 		usage
 	    fi
 	    ;;
-	n)  new_n=$OPTARG
+	n)  new_n=`printf %04d $OPTARG`
 	    ;;
     esac
 done
@@ -109,7 +112,9 @@ if [ -n "$xfile" -a -n "$hfile" ]; then
     # 受け皿
     tar zxf $xfile -C $tmp_dst_dir
     tar zxf $hfile -C $tmp_dst_dir
-    $www2sf_dir/rename-continuously.sh $tmp_dst_dir/$hbase $tmp_dst_dir/$xbase
+    if [ $call_rename_continuously_flag -eq 1 ]; then
+	$www2sf_dir/rename-continuously.sh $tmp_dst_dir/$hbase $tmp_dst_dir/$xbase
+    fi
 elif [ -n "$xfile" -o -n "$hfile" ]; then
     usage
 elif [ -n "$new_n" ]; then
@@ -134,7 +139,9 @@ do
 	hfile=$hdir/$hbase.tar.gz
 	tar zxf $hfile -C $tmp_dst_dir
 
-	$www2sf_dir/rename-continuously.sh $tmp_dst_dir/$hbase $tmp_dst_dir/$xbase
+	if [ $call_rename_continuously_flag -eq 1 ]; then
+	    $www2sf_dir/rename-continuously.sh $tmp_dst_dir/$hbase $tmp_dst_dir/$xbase
+	fi
 	continue
     elif [ $f = $xfile ]; then
 	echo "skipped $f in $xdir"
@@ -145,7 +152,10 @@ do
     xcur_base=`basename $f .tar.gz`
     hcur_base=`echo $xcur_base | sed 's/^x/h/'`
     tar zxf $hdir/$hcur_base.tar.gz -C $tmp_src_dir
-    $www2sf_dir/rename-continuously.sh $tmp_src_dir/$hcur_base $tmp_src_dir/$xcur_base
+
+    if [ $call_rename_continuously_flag -eq 1 ]; then
+	$www2sf_dir/rename-continuously.sh $tmp_src_dir/$hcur_base $tmp_src_dir/$xcur_base
+    fi
 
     # 移動関数
     rename_all $tmp_dst_dir/$hbase $tmp_dst_dir/$xbase $tmp_src_dir/$hcur_base $tmp_src_dir/$xcur_base
