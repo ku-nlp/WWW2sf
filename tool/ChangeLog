@@ -1,3 +1,11 @@
+2006-10-09  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/parse-comp.sh, scripts/cut-one-sentence.perl, scripts/check-article.perl:
+	added.
+
+	* html2sf.sh:
+	modified to use parse-comp.sh.
+
 2006-10-05  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/rename-all.sh:
