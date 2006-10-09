@@ -37,6 +37,7 @@ f=$1
 sentencesfile=$f:r.sentences
 rawfile=$f:r.raw
 jmnfile=$f:r.jmn
+knpfile=$f:r.knp
 xmlfile1=$f:r.xml1
 
 perl -I perl scripts/extract-sentences.perl --checkzyoshi --checkjapanese --xml $1 > $xmlfile1
@@ -53,10 +54,12 @@ cat $xmlfile1 | perl -I perl scripts/format-www-xml.perl > $rawfile
 cat $rawfile | perl -I perl scripts/extract-rawstring.perl > $sentencesfile
 
 # Juman/Knp
-if [ $jmn -eq 1 ]; then
+if [ $jmn -eq 1 -o $knp -eq 1 ]; then
     cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
-elif [ $knp -eq 1 ]; then
-    cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# | knp -tab > $jmnfile
+fi
+if [ $knp -eq 1 ]; then
+    scripts/parse-comp.sh $jmnfile
+    mv -f $knpfile $jmnfile
 fi
 
 # merge
