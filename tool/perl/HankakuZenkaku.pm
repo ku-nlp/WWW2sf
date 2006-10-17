@@ -7,10 +7,11 @@ package HankakuZenkaku;
 
 use strict;
 use base qw(Exporter);
+use Encode qw(encode decode);
 use Encode::CJKConstants qw(:all);
 use Encode::JP::H2Z;
 
-our @EXPORT_OK = qw(ascii_h2z ascii_z2h);
+our @EXPORT_OK = qw(ascii_h2z ascii_z2h h2z4japanese_utf8);
 
 our %ASCII_Z2H = (
 "\xa1\xa1" => "\x20", #¡¡
@@ -115,6 +116,98 @@ our %ASCII_Z2H = (
 );
 our %ASCII_H2Z = reverse(%ASCII_Z2H);
 
+
+
+# È¾³Ñ¥«¥¿¥«¥Ê -> Á´³Ñ¥«¥¿¥«¥Ê
+sub _h2z4japanese_utf8(){
+    my($ch_code,$next_ch_code) = @_;
+    my $shift = 0;
+    if(0xff71 <= $ch_code && $ch_code <= 0xff75){
+	# ¥¢¡Á¥ª
+	$shift = (0xff71 - 0x30a2) - ($ch_code - 0xff71);
+    }elsif(0xff76 <= $ch_code && $ch_code <= 0xff81){
+	# ¥«¡Á¥Á
+	$shift = 0xff76 - 0x30ab - ($ch_code - 0xff76);
+    }elsif(0xff82 <= $ch_code && $ch_code <= 0xff84){
+	# ¥Ä¡Á¥È
+	$shift = 0xff82 - 0x30c4 - ($ch_code - 0xff82);
+    }elsif(0xff85 <= $ch_code && $ch_code <= 0xff89){
+	# ¥Ê¡Á¥Î
+	$shift = 0xcebb;
+    }elsif(0xff8a <= $ch_code && $ch_code <= 0xff8e){
+	# ¥Ï¡Á¥Û
+	$shift = 0xcebb - 2*($ch_code - 0xff8a);
+    }elsif(0xff8f <= $ch_code && $ch_code <= 0xff93){
+	# ¥Þ¡Á¥â
+	$shift = 0xceb1;
+    }elsif(0xff94 <= $ch_code && $ch_code <= 0xff96){
+	# ¥ä¡Á¥è
+	$shift = 0xceb0 - ($ch_code - 0xff94);
+    }elsif(0xff97 <= $ch_code && $ch_code <= 0xff9b){
+	# ¥é¡Á¥í
+	$shift = 0xceae;
+    }elsif(0xff67 <= $ch_code && $ch_code <= 0xff6b){
+	# ¥¡¡Á¥©
+	$shift = (0xff67 - 0x30a1) - ($ch_code - 0xff67);
+    }elsif(0xff6c <= $ch_code && $ch_code <= 0xff6e){
+	# ¥ã¡Á¥ç
+	$shift = (0xff6c - 0x30e3 ) - ($ch_code - 0xff6c);
+    }else{
+      SWITCH: {
+	  $shift = 0xff9c - 0x30ef, last SWITCH if($ch_code == 0xff9c); # ¥ï
+	  $shift = 0xff66 - 0x30f2, last SWITCH if($ch_code == 0xff66); # ¥ò
+	  $shift = 0xff9d - 0x30f3, last SWITCH if($ch_code == 0xff9d); # ¥ó
+	  $shift = 0xff6f - 0x30c3, last SWITCH if($ch_code == 0xff6f); # ¥Ã
+
+	  $shift = 0xff61 - 0x3002, last SWITCH if($ch_code == 0xff61); # Ž¡
+	  $shift = 0xff62 - 0x300c, last SWITCH if($ch_code == 0xff62); # Ž¢
+	  $shift = 0xff63 - 0x300d, last SWITCH if($ch_code == 0xff63); # Ž£
+	  $shift = 0xff64 - 0x3001, last SWITCH if($ch_code == 0xff64); # Ž¤
+	  $shift = 0xff65 - 0x30fb, last SWITCH if($ch_code == 0xff65); # Ž¥
+	  $shift = 0xff70 - 0x30fc, last SWITCH if($ch_code == 0xff70); # -
+      } # end of switch
+    } # end of else
+
+    ## Âù²»¤Î½èÍý
+    if($next_ch_code == 0xff9e){
+	# ¡«
+	if($ch_code == 0xff73){
+	    # ¥ô
+	    $shift = 0xff73 - 0x30f4;
+	}else{
+	    $shift -= 1;
+	}
+    }
+
+    ## È¾Âù²»¤Î½èÍý
+    if($next_ch_code == 0xff9f){
+	# ¡¬
+	$shift -= 2;
+    }
+
+    return ($ch_code - $shift);
+}
+
+sub h2z4japanese_utf8{
+    my($text) = @_;
+    my @cbuff = ();
+    my @ch_codes = unpack("U0U*", $$text);
+    for(my $i = 0; $i < scalar(@ch_codes); $i++){
+	my $ch_code = $ch_codes[$i];
+	unless(0xff60 < $ch_code && $ch_code < 0xffa0){
+	    push(@cbuff, $ch_code);
+	}else{
+	    my $next_ch_code = ($i + 1 < scalar(@ch_codes))?$ch_codes[$i+1]:0;
+	    my $zenkaku_code = &_h2z4japanese_utf8($ch_code, $next_ch_code);
+	    push(@cbuff, $zenkaku_code);
+	    if($next_ch_code == 0xff9e || $next_ch_code == 0xff9f){
+		$i++;
+	    }
+	}
+    }
+    my $stemp = encode('utf8', pack("U0U*",@cbuff));
+    return \$stemp;
+}
 
 sub _ascii_z2h {
     my $r = $ASCII_Z2H{$_[0]};
