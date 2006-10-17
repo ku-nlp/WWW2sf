@@ -5,7 +5,7 @@ package TextExtor2;
 use ModifiedTokeParser;
 use HTML::Entities;
 use SentenceExtractor2;
-use HankakuZenkaku qw(ascii_h2z);
+use HankakuZenkaku qw(ascii_h2z h2z4japanese_utf8);
 use Encode qw(encode decode from_to);
 use vars qw($VERSION %TAG_DELIMITER %TAG_PREMODE %TAG_HEADING %TAG_LIST);
 use strict;
@@ -75,9 +75,11 @@ $VERSION = sprintf("%d.%d", q$Revision$ =~ /(\d+)\.(\d+)/);
       dl         => 1,
     );
 
-
 sub new {
     my ($this, $text, $encoding, $opt) = @_;  # 対象となるHTMLファイルを引数として渡す
+
+    ## 半角平仮名、記号を全角に変換
+    $text = &h2z4japanese_utf8($text);
 
     my $title = '';        # <TITLE>
     my $title_offset;      # titleのoffset(バイト単位)
@@ -427,8 +429,19 @@ sub ProcessJapanese {
 
     # 1バイト文字を2バイトに変換する
     &ascii_h2z(\$buf);
-
     return $buf;
+}
+
+sub z2h{
+    my $string = shift;
+    if(utf8::is_utf8($string)){
+	$string = Encode::encode("euc-jp", $string);
+	Encode::JP::H2Z::h2z(\$string);
+	return Encode::decode("euc-jp", $string);
+    }else{
+	Encode::JP::H2Z::h2z(\$string);
+	  return $string;
+      }
 }
 
 sub convert_code {
