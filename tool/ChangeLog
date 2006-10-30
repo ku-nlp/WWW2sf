@@ -1,3 +1,9 @@
+2006-10-30  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/format-www-xml.perl, scripts/extract-rawstring.perl, scripts/add-knp-result.perl:
+	「全体削除」しても、RawStringを消さないように変更
+	「全体削除」された文(is_Japanese_Sentence==0)はデフォルト解析せず、--allオプション時に解析するように変更
+
 2006-10-09  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/parse-comp.sh, scripts/cut-one-sentence.perl, scripts/check-article.perl:
