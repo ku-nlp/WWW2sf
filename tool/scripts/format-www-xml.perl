@@ -44,12 +44,11 @@ sub xml_check_sentence {
 		for my $node ($s_child_node->getChildNodes) {
 		    my ($log, $new_sentence) = &check_sentence($node->getNodeValue);
 		    if ($new_sentence) {
-			$node->setNodeValue($new_sentence);
+			$node->setNodeValue($new_sentence); # modify RawString
 			$sentence->setAttribute('is_Japanese_Sentence', '1');
 		    }
 		    else {
 			$sentence->setAttribute('is_Japanese_Sentence', '0');
-			$node->setNodeValue('');
 		    }
 		    $sentence->setAttribute('Id', $count++);
 		    $sentence->setAttribute('Log', $log);

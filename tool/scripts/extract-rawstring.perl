@@ -5,12 +5,18 @@
 # Input : XML (utf8)
 # Output: RawFile (utf8)
 
+# --all: extract all the sentences including "全体削除"
+
 # $Id$
 
 use XML::DOM;
 use Encode qw(decode);
 use encoding 'utf8';
+use Getopt::Long;
 use strict;
+
+my (%opt);
+GetOptions(\%opt, 'all');
 
 my ($buf);
 while (<STDIN>) {
@@ -30,6 +36,11 @@ sub extract_rawstring {
     my $sentences = $doc->getElementsByTagName('S');
     for my $i (0 .. $sentences->getLength - 1) { # for each S
 	my $sentence = $sentences->item($i);
+
+	# skip non-Japanese sentences
+	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
+	next if !$opt{all} and !$jap_sent_flag; # not Japanese
+
 	my $sid = $sentence->getAttribute('Id');
 	for my $s_child_node ($sentence->getChildNodes) {
 	    if ($s_child_node->getNodeName eq 'RawString') { # one of the children of S is Text

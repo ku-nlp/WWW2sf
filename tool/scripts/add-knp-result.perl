@@ -16,7 +16,7 @@ use KNP;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'help', 'usemodule');
+GetOptions(\%opt, 'jmn', 'knp', 'help', 'usemodule', 'all');
 
 my ($juman, $knp);
 $juman = new Juman if $opt{jmn};
@@ -91,6 +91,11 @@ sub add_knp_result {
     my $sentences = $doc->getElementsByTagName('S');
     for my $i (0 .. $sentences->getLength - 1) { # for each S
 	my $sentence = $sentences->item($i);
+
+	# skip non-Japanese sentences
+	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
+	next if !$opt{all} and !$jap_sent_flag; # not Japanese
+
 	for my $s_child_node ($sentence->getChildNodes) {
 	    if ($s_child_node->getNodeName eq 'RawString') { # one of the children of S is Text
 		for my $node ($s_child_node->getChildNodes) {
