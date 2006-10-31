@@ -7,7 +7,7 @@
 
 # $Id$
 
-use XML::DOM;
+use XML::LibXML;
 use Encode qw(decode);
 use encoding 'utf8';
 use Getopt::Long;
@@ -27,8 +27,8 @@ while (<STDIN>) {
     $buf .= $_;
 }
 
-my $parser = new XML::DOM::Parser;
-my $doc = $parser->parse($buf);
+my $parser = new XML::LibXML;
+my $doc = $parser->parse_string($buf);
 
 if ($opt{usemodule}) {
     &add_knp_result($doc);
@@ -39,13 +39,14 @@ else {
 }
 
 print $doc->toString();
-$doc->dispose();
+
 
 sub read_result {
     my ($doc) = @_;
 
-    my $sentences = $doc->getElementsByTagName('S');
-    
+    my @sentences = $doc->getElementsByTagName('S');
+    my $start_sent = 0;
+
     open (F, "<:encoding(euc-jp)", "$ARGV[0]");
 
     my ($sid, $result);
@@ -55,25 +56,24 @@ sub read_result {
 	}
 	elsif (/^EOS$/) {
 	    $result .= $_;
-	    my $sentence = $sentences->item($sid - 1);
-	    for my $s_child_node ($sentence->getChildNodes) {
-		if ($s_child_node->getNodeName eq 'RawString') { # one of the children of S is Text
-		    for my $node ($s_child_node->getChildNodes) {
-			my $text = $node->getNodeValue;
-
-			my $type;
-			if ($opt{jmn}) {
-			    $type = 'Juman';
-			}
-			elsif ($opt{knp}) {
-			    $type = 'Knp';
-			}
-			my $newchild = $doc->createElement($type);
-
-			my $cdata = $doc->createCDATASection($result);
-			$newchild->appendChild($cdata);
-			$sentence->appendChild($newchild);
+	    for my $i ($start_sent .. $#sentences) {
+		my $sentence = $sentences[$i];
+		my $xml_sid = $sentence->getAttribute('Id');
+		if ($sid == $xml_sid) {
+		    my $type;
+		    if ($opt{jmn}) {
+			$type = 'Juman';
 		    }
+		    elsif ($opt{knp}) {
+			$type = 'Knp';
+		    }
+		    my $newchild = $doc->createElement($type);
+		    my $cdata = $doc->createCDATASection($result);
+		    $newchild->appendChild($cdata);
+		    $sentence->appendChild($newchild);
+
+		    $start_sent = $i + 1;
+		    last;
 		}
 	    }
 	    $result = '';
@@ -88,18 +88,14 @@ sub read_result {
 sub add_knp_result {
     my ($doc) = @_;
 
-    my $sentences = $doc->getElementsByTagName('S');
-    for my $i (0 .. $sentences->getLength - 1) { # for each S
-	my $sentence = $sentences->item($i);
-
-	# skip non-Japanese sentences
+    for my $sentence ($doc->getElementsByTagName('S')) { # for each S
 	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
 	next if !$opt{all} and !$jap_sent_flag; # not Japanese
 
 	for my $s_child_node ($sentence->getChildNodes) {
-	    if ($s_child_node->getNodeName eq 'RawString') { # one of the children of S is Text
+	    if ($s_child_node->nodeName eq 'RawString') { # one of the children of S is Text
 		for my $node ($s_child_node->getChildNodes) {
-		    my $text = $node->getNodeValue;
+		    my $text = $node->string_value;
 
 		    next if $text eq '';
 

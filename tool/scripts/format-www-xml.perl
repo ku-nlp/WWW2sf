@@ -7,7 +7,7 @@
 
 # $Id$
 
-use XML::DOM;
+use XML::LibXML;
 use Encode qw(decode);
 use encoding 'utf8';
 use strict;
@@ -19,40 +19,40 @@ while (<STDIN>) {
     $buf .= $_;
 }
 
-my $parser = new XML::DOM::Parser;
-my $doc = $parser->parse($buf);
+my $parser = new XML::LibXML;
+my $doc = $parser->parse_string($buf);
 &xml_check_sentence($doc);
-#print decode('utf8', $doc->toString());
 print $doc->toString();
-$doc->dispose();
 
 
 sub xml_check_sentence {
     my ($doc) = @_;
     my $count = 1;
 
-    my $sentences = $doc->getElementsByTagName('S');
-    for my $i (0 .. $sentences->getLength - 1) { # for each S
-	my $sentence = $sentences->item($i);
+    for my $sentence ($doc->getElementsByTagName('S')) { # for each S
 	if ($sentence->getAttribute('is_Japanese') == 0) { # do not process non-Japanese
 	    $sentence->setAttribute('is_Japanese_Sentence', '0');
 	    $sentence->setAttribute('Id', $count++);
 	    next;
 	}
-	for my $s_child_node ($sentence->getChildNodes) {
-	    if ($s_child_node->getNodeName eq 'RawString') { # one of the children of S is Text
-		for my $node ($s_child_node->getChildNodes) {
-		    my ($log, $new_sentence) = &check_sentence($node->getNodeValue);
-		    if ($new_sentence) {
-			$node->setNodeValue($new_sentence); # modify RawString
-			$sentence->setAttribute('is_Japanese_Sentence', '1');
-		    }
-		    else {
-			$sentence->setAttribute('is_Japanese_Sentence', '0');
-		    }
-		    $sentence->setAttribute('Id', $count++);
-		    $sentence->setAttribute('Log', $log);
+
+	for my $raw_string_node ($sentence->getChildNodes) {
+	    if ($raw_string_node->nodeName eq 'RawString') {
+		my $raw_string_element = $raw_string_node->getFirstChild; # text content node
+		my ($log, $new_sentence) = &check_sentence($raw_string_element->string_value);
+		if ($new_sentence) {
+		    $sentence->setAttribute('is_Japanese_Sentence', '1');
+		    $raw_string_node->removeChild($raw_string_element);
+		    $raw_string_node->appendChild(XML::LibXML::Text->new($new_sentence));
 		}
+		else {
+		    $sentence->setAttribute('is_Japanese_Sentence', '0');
+		    # $raw_string_node->removeChild($raw_string_element);
+		    # $raw_string_node->appendChild(XML::LibXML::Text->new(''));
+		}
+		$sentence->setAttribute('Id', $count++);
+		$sentence->setAttribute('Log', $log) if $log;
+		last;
 	    }
 	}
     }
