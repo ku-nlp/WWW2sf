@@ -1,5 +1,8 @@
 2006-10-31  Daisuke Kawahara  <dk@nict.go.jp>
 
+	* scripts/format-www-xml.perl, scripts/extract-rawstring.perl, scripts/add-knp-result.perl:
+	遅いXML::DOMをやめて、いくぶん速いXML::LibXMLを使うように変更
+
 	* scripts/ntcir2sf.sh:
 	added.
 
