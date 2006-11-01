@@ -13,9 +13,11 @@ usage() {
 
 jmn=0
 knp=0
+gzip=0
+make_subdir=0
 auto_args=
 knp_command="parse-comp.sh"
-while getopts jkh OPT
+while getopts jkgsh OPT
 do
     case $OPT in
 	j)  auto_args="--jmn"
@@ -23,6 +25,10 @@ do
 	    ;;
 	k)  auto_args="--knp"
 	    knp=1
+	    ;;
+	g)  gzip=1
+	    ;;
+	s)  make_subdir=1
 	    ;;
 	h)  usage
 	    ;;
@@ -52,6 +58,16 @@ do
     echo "LIST $list"
     dir=`dirname $list`
     site_num=`basename $list .filelist`
+
+    if [ $make_subdir -eq 1 ]; then
+	xdestdir="x$dirhead/$site_num"
+	hdestdir="h$dirhead/$site_num"
+	mkdir $xdestdir
+	mkdir $hdestdir
+    else
+	xdestdir="x$dirhead"
+	hdestdir="h$dirhead"
+    fi
 
     for line in `cat $list`
     do
@@ -88,21 +104,21 @@ do
 
 	echo "OK"
 
-	pathhead="x$dirhead/$filehead"
+	pathhead="$xdestdir/$filehead"
 
-	cp $f h$dirhead/$filehead.html
+	cp $f $hdestdir/$filehead.html
 	cat $tmp_file | perl -I $perl_dir $scripts_dir/format-www-xml.perl > $pathhead.xml
 
 	# Ê¸¤ÎÃê½Ð
 	if [ $jmn -eq 1 -o $knp -eq 1 ]; then
-	    cat $pathhead.xml | perl -I $perl_dir $scripts_dir/extract-rawstring.perl > $pathhead.sentences
+	    cat $pathhead.xml | perl -I $perl_dir $scripts_dir/extract-rawstring.perl --all > $pathhead.sentences
 	fi
 
 	# Juman/Knp
 	if [ $jmn -eq 1 ]; then
-	    cat $pathhead.sentences | nkf -e -d | juman -i \# > $pathhead.auto
+	    cat $pathhead.sentences | nkf -We -d | juman -i \# > $pathhead.auto
 	elif [ $knp -eq 1 ]; then
-	    cat $pathhead.sentences | nkf -e -d | juman -i \# > $pathhead.jmn
+	    cat $pathhead.sentences | nkf -We -d | juman -i \# > $pathhead.jmn
 	    $knp_command $pathhead.jmn
 	    mv -f $pathhead.knp $pathhead.auto
 	    rm -f $pathhead.jmn $pathhead.log
@@ -115,6 +131,11 @@ do
 	    rm -f $pathhead.sentences $pathhead.auto
 	else
 	    rm -f $tmp_file
+	fi
+
+	if [ $gzip -eq 1 ]; then
+	    gzip $pathhead.xml
+	    gzip $hdestdir/$filehead.html
 	fi
 
 	ok_count=`expr $ok_count + 1`
