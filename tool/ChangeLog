@@ -1,3 +1,9 @@
+2006-11-01  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/ntcir2sf.sh:
+	変換後の各ファイルを圧縮するオプション(-g)、変換したファイルをサブディレクトリを掘って置くオプション(-s)を追加
+	全体削除なども含めて、すべての文を解析するように修正
+
 2006-10-31  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/format-www-xml.perl, scripts/extract-rawstring.perl, scripts/add-knp-result.perl:
