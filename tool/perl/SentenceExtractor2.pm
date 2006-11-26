@@ -5,12 +5,15 @@ package SentenceExtractor2;
 
 # $Id$
 
-use vars qw($open_kakko $close_kakko $period @honorifics);
+use vars qw($open_kakko $close_kakko $period $dot $alphabet @honorifics);
 
-$open_kakko  = '（|〔|［|｛|＜|≪|「|『|【|(|[|{';
-$close_kakko = '）|〕|］|｝|＞|≫|」|』|】|)|]|}';
+$open_kakko  = qr/（|〔|［|｛|＜|≪|「|『|【|\(|\[|\{/;
+$close_kakko = qr/）|〕|］|｝|＞|≫|」|』|】|\)|\]|\}/;
 
-$period = '。|．|？|！';
+$period = qr/。|？|！/;
+$dot = qr/．/;
+$alphabet = qr/\xa3(?:[\xc1-\xda]|[\xe1-\xfa])/;
+
 @honorifics = qw(Adj. Adm. Adv. Asst. Bart. Brig. Bros. Capt. Cmdr. Col. Comdr. Con. Cpl. Dr. Ens. Gen. Gov. Hon. Hosp. Insp. Lt. M. MM. Maj. Messrs. Mlle. Mme. Mr. Mrs. Ms. Msgr. Op. Ord. Pfc. Ph. Prof. Pvt. Rep. Reps. Res. Rev. Rt. Sen. Sens. Sfc. Sgt. Sr. St. Supt. Surg. vs. v.);
 
 sub new
@@ -44,47 +47,50 @@ sub GetSentences
 ### カッコ内の句点では分割しない
 sub SplitJapanese {
     my ($str) = @_;
-    my (@chars, @buf, $char);
+    my (@chars, @buf, $ignore_level);
 
     # 字単位に分割 (EUC)
     while ($str =~ /([^\x80-\xfe]|[\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/g) {
 	push(@chars, $1);
     }
 
-    my @open = grep(/^\Q$open_kakko\E$/, @chars);
-    my @close = grep(/^\Q$close_kakko\E$/, @chars);
+    my @open = grep(/^$open_kakko$/o, @chars);
+    my @close = grep(/^$close_kakko$/o, @chars);
+
+    # 開きカッコと閉じカッコの数が整合しない場合、または
+    # カッコがない場合はカッコを考慮しない
     if ((scalar(@open) == 0 and scalar(@close) == 0) || 
         (scalar(@open) != scalar(@close))) {
-	# 開きカッコと閉じカッコの数が整合しない場合、または
-	# カッコがない場合はカッコを考慮しない
-        @buf = ('');
-	for $char (@chars) {
-	    $buf[$#buf] .= $char;
-	    if ($char =~ /^$period$/) {
-		push(@buf, '');
+	$ignore_level = 1;
+    }
+
+    my $level = 0;
+    @buf = ('');
+    for my $i (0 .. scalar(@chars) - 1) {
+	my $char = $chars[$i];
+	$buf[-1] .= $char;
+	if (($ignore_level || $level == 0) && 
+	    (($char =~ /^$dot$/o && !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^$alphabet$/o)) || # dotの後にアルファベットがある場合は切らない(URLなど)
+	     $char =~ /^$period$/o)) {
+	    if ($buf[-1] =~ /^$period|$dot$/o && scalar(@buf) > 1) { # periodの連続は前に結合
+		$buf[-2] .= $buf[-1];
+		$buf[-1] = '';
+	    }
+	    else {
+		push(@buf, ''); # 新しい文を始める
 	    }
 	}
-	pop(@buf) unless $buf[$#buf];
-    }
-    else {
-	my $i = 0;
-        @buf = ('');
-	for $char (@chars) {
-	    $buf[$#buf] .= $char;
-	    if ($char =~ /^$period$/o && $i == 0) {
-		push(@buf, '');
-	    }
-	    elsif ($char =~ /^\Q$open_kakko\E$/o ){
-		$i++;
-	    }
-	    elsif ($char =~ /^\Q$close_kakko\E$/o ){
-		$i--;
-	    }
+	elsif ($char =~ /^$open_kakko$/o) {
+	    $level++;
 	}
-	pop(@buf) unless $buf[$#buf];
+	elsif ($char =~ /^$close_kakko$/o) {
+	    $level--;
+	}
     }
+    pop(@buf) unless $buf[-1];
     return @buf;
 }
+
 
 sub SplitEnglish
 {
