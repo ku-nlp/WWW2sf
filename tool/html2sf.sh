@@ -40,7 +40,7 @@ jmnfile=$f:r.jmn
 knpfile=$f:r.knp
 xmlfile1=$f:r.xml1
 
-perl -I perl scripts/extract-sentences.perl --checkzyoshi --checkjapanese --xml $1 > $xmlfile1
+perl -I perl scripts/extract-sentences.perl --checkzyoshi --checkjapanese --checkencoding --xml $1 > $xmlfile1
 
 # 助詞のチェックで日本語ページとは判定されなかったもの
 if [ ! -s $xmlfile1 ]; then

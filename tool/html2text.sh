@@ -14,6 +14,6 @@ fi
 head=`basename $1 .html`
 tmpfile=$head.$$
 
-perl -I perl scripts/extract-sentences.perl $1 | perl -I perl scripts/sentence-filter.perl > $tmpfile
+perl -I perl scripts/extract-sentences.perl --checkzyoshi --checkjapanese --checkencoding $1 | perl -I perl scripts/sentence-filter.perl > $tmpfile
 perl -I perl scripts/format-www.perl $tmpfile
 rm -f $tmpfile
