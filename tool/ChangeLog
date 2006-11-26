@@ -1,3 +1,14 @@
+2006-11-26  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/format-www.perl, scripts/format-www-xml.perl:
+	オプションによって括弧の部分削除を抑制できるように変更
+
+	* perl/SentenceExtractor2.pm:
+	文切りの精度向上
+
+	* html2sf.sh, html2text.sh:
+	オプションを変更
+
 2006-11-01  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/ntcir2sf.sh:
