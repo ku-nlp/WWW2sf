@@ -17,13 +17,17 @@ use Getopt::Long;
 
 sub usage {
     $0 =~ /([^\/]+)$/;
-    print "Usage: $1 [--language english|japanese] [--xml] [--url string] file.html\n";
+    print "Usage: $1 [--language english|japanese] [--xml] [--url string] [--checkjapanese] [--checkzyoshi] [--checkencoding] file.html\n";
     exit 1;
 }
 
 our (%opt, $writer, $filter);
 &GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding');
 $opt{language} = 'japanese' unless $opt{language};
+
+# --checkencoding: encodingをチェックして、日本語ではないエンコーディングなら何も出力せず終了する
+# --checkjapanese: 日本語(ひらがな、カタカナ、漢字)含有率をチェックする
+# --checkzyoshi:   助詞含有率をチェックする
 
 my ($buf, $timestamp, $url);
 
