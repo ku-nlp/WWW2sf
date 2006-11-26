@@ -7,12 +7,17 @@
 
 # $Id$
 
+use Getopt::Long;
 use XML::LibXML;
 use Encode qw(decode);
 use encoding 'utf8';
 use strict;
 
 our @enu = ('０', '１', '２', '３', '４', '５', '６', '７', '８', '９');
+
+our (%opt);
+GetOptions(\%opt, 'include-paren');
+# --include-paren: 括弧を削除しない
 
 my ($buf);
 while (<STDIN>) {
@@ -108,28 +113,31 @@ sub check_sentence {
     my $paren_start = -1;
     my $paren_level = 0;
     my $paren_str = '';
-    for (my $i = 0; $i < @char_array; $i++) {
-	if ($char_array[$i] eq '（') {
-	    $paren_start = $i if $paren_level == 0;
-	    $paren_level++;
-	}
-	elsif ($char_array[$i] eq '）') {
-	    $paren_level--;
-	    if ($paren_level == 0) {
-		if ($paren_str eq $enu[$enu_num]) {
-		    $enu_num++;
-		}
-		else {
-		    for (my $j = $paren_start; $j <= $i; $j++) {
-			$check_array[$j] = 0;
-		    }
-		}
-	    $paren_start = -1;
-	    $paren_str = '';
+
+    if (!$opt{'include-paren'}) {
+	for (my $i = 0; $i < @char_array; $i++) {
+	    if ($char_array[$i] eq '（') {
+		$paren_start = $i if $paren_level == 0;
+		$paren_level++;
 	    }
-	}
-	else {
-	    $paren_str .= $char_array[$i] if $paren_level != 0;
+	    elsif ($char_array[$i] eq '）') {
+		$paren_level--;
+		if ($paren_level == 0) {
+		    if ($paren_str eq $enu[$enu_num]) {
+			$enu_num++;
+		    }
+		    else {
+			for (my $j = $paren_start; $j <= $i; $j++) {
+			    $check_array[$j] = 0;
+			}
+		    }
+		    $paren_start = -1;
+		    $paren_str = '';
+		}
+	    }
+	    else {
+		$paren_str .= $char_array[$i] if $paren_level != 0;
+	    }
 	}
     }
 

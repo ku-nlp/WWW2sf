@@ -10,7 +10,8 @@ use vars qw(%opt @enu);
 
 @enu = ("０", "１", "２", "３", "４", "５", "６", "７", "８", "９");
 
-GetOptions(\%opt, 'head');
+GetOptions(\%opt, 'head', 'include-paren');
+# --include-paren: 括弧を削除しない
 
 my ($head, $site, $file, $fileflag, $count, $url, $comment);
 my ($sid, $sentence) = @_;
@@ -110,34 +111,37 @@ while (<>) {
 
     # "（…）"の削除，ただし，"（１）"，"（２）"の場合は残す
     $enu_num = 1;
-    $paren_start = -1;
-    $paren_level = 0;
-    $paren_str = "";
-    for ($i = 0; $i < @char_array; $i++) {
-	if ($char_array[$i] eq "（") {
-	    $paren_start = $i if ($paren_level == 0);
-	    $paren_level++;
-	} 
-	elsif ($char_array[$i] eq "）") {
-	    $paren_level--;
-	    if ($paren_level == 0) {
-		if ($paren_str eq $enu[$enu_num]) {
-		    $enu_num++;
-		}
-		else {
-		    for ($j = $paren_start; $j <= $i; $j++) {
-			$check_array[$j] = 0;
+
+    if (!$opt{'include-paren'}) {
+	$paren_start = -1;
+	$paren_level = 0;
+	$paren_str = "";
+	for ($i = 0; $i < @char_array; $i++) {
+	    if ($char_array[$i] eq "（") {
+		$paren_start = $i if ($paren_level == 0);
+		$paren_level++;
+	    } 
+	    elsif ($char_array[$i] eq "）") {
+		$paren_level--;
+		if ($paren_level == 0) {
+		    if ($paren_str eq $enu[$enu_num]) {
+			$enu_num++;
 		    }
+		    else {
+			for ($j = $paren_start; $j <= $i; $j++) {
+			    $check_array[$j] = 0;
+			}
+		    }
+		    $paren_start = -1;
+		    $paren_str = "";
 		}
-	    $paren_start = -1;
-	    $paren_str = "";
+	    }
+	    else {
+		$paren_str .= $char_array[$i] if ($paren_level != 0);
 	    }
 	}
-	else {
-	    $paren_str .= $char_array[$i] if ($paren_level != 0);
-	}
+	# print STDERR "enu_num(+1) = $enu_num\n" if ($enu_num > 1);
     }
-    # print STDERR "enu_num(+1) = $enu_num\n" if ($enu_num > 1);
 
     # "＝…＝"の削除，ただし間に"，"がくればRESET
 
