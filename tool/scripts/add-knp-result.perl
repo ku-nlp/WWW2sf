@@ -59,7 +59,7 @@ sub read_result {
 	    for my $i ($start_sent .. $#sentences) {
 		my $sentence = $sentences[$i];
 		my $xml_sid = $sentence->getAttribute('Id');
-		if ($sid == $xml_sid) {
+		if ($sid eq $xml_sid) {
 		    my $type;
 		    if ($opt{jmn}) {
 			$type = 'Juman';
