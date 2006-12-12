@@ -5,14 +5,14 @@ package SentenceExtractor2;
 
 # $Id$
 
-use vars qw($open_kakko $close_kakko $period $dot $alphabet @honorifics);
+use vars qw($open_kakko $close_kakko $period $dot $alphabet_or_number @honorifics);
 
 $open_kakko  = qr/（|〔|［|｛|＜|≪|「|『|【|\(|\[|\{/;
 $close_kakko = qr/）|〕|］|｝|＞|≫|」|』|】|\)|\]|\}/;
 
 $period = qr/。|？|！/;
 $dot = qr/．/;
-$alphabet = qr/\xa3(?:[\xc1-\xda]|[\xe1-\xfa])/;
+$alphabet_or_number = qr/\xa3(?:[\xc1-\xda]|[\xe1-\xfa]|[\xb0-\xb9])/;
 
 @honorifics = qw(Adj. Adm. Adv. Asst. Bart. Brig. Bros. Capt. Cmdr. Col. Comdr. Con. Cpl. Dr. Ens. Gen. Gov. Hon. Hosp. Insp. Lt. M. MM. Maj. Messrs. Mlle. Mme. Mr. Mrs. Ms. Msgr. Op. Ord. Pfc. Ph. Prof. Pvt. Rep. Reps. Res. Rev. Rt. Sen. Sens. Sfc. Sgt. Sr. St. Supt. Surg. vs. v.);
 
@@ -43,6 +43,18 @@ sub GetSentences
 }
 
 
+sub FixParenthesis {
+    my ($slist) = @_;
+
+    for my $i (0 .. scalar(@{$slist} - 1)) {
+	# 1つ目の文以降で、閉じ括弧が文頭にある場合は、閉じ括弧をとって前の文にくっつける
+	if ($i > 0 && $slist->[$i] =~ /^($close_kakko)(.*)/) {
+	    $slist->[$i - 1] .= $1;
+	    $slist->[$i] = $2;
+	}
+    }
+}
+
 ### テキストを句点で文単位に分割する
 ### カッコ内の句点では分割しない
 sub SplitJapanese {
@@ -70,9 +82,11 @@ sub SplitJapanese {
 	my $char = $chars[$i];
 	$buf[-1] .= $char;
 	if (($ignore_level || $level == 0) && 
-	    (($char =~ /^$dot$/o && !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^$alphabet$/o)) || # dotの後にアルファベットがある場合は切らない(URLなど)
+	    (($char =~ /^$dot$/o && 
+	      !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^$alphabet_or_number$/o && 
+		($i == 0 || $chars[$i - 1] =~ /^$alphabet_or_number$/o))) || # dotの前後にアルファベットや数字がある場合は切らない(URLなど)
 	     $char =~ /^$period$/o)) {
-	    if ($buf[-1] =~ /^$period|$dot$/o && scalar(@buf) > 1) { # periodの連続は前に結合
+	    if ($buf[-1] =~ /^(?:$period|$dot)$/o && scalar(@buf) > 1) { # periodの連続は前に結合
 		$buf[-2] .= $buf[-1];
 		$buf[-1] = '';
 	    }
@@ -87,6 +101,8 @@ sub SplitJapanese {
 	    $level--;
 	}
     }
+
+    &FixParenthesis(\@buf);
     pop(@buf) unless $buf[-1];
     return @buf;
 }
