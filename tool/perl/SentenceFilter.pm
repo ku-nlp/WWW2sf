@@ -27,7 +27,7 @@ sub JapaneseCheck {
 
     for my $str (split(//, $buf)) {
 	# count Hiragana, Katakana or Kanji
-	if ($str =~ /^\p{Hiragana}|\p{Katakana}|ー|\p{Han}$/) {
+	if ($str =~ /^\p{Hiragana}|\p{Katakana}|ー|\p{Han}|\p{Punctuation}$/) {
 	    $count++;
 	}
 	$acount++;
