@@ -3,6 +3,9 @@
 	* perl/SentenceFilter.pm:
 	日本語文字の正規表現に句読点がマッチしなかったのを修正
 
+	* perl/SentenceExtractor2.pm:
+	文切りの精度向上(数字など)
+
 2006-11-26  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/format-www.perl, scripts/format-www-xml.perl:
