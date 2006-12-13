@@ -315,26 +315,28 @@ sub new {
 	my $buf = $text[$i];
 	$buf =~ s/&nbsp;/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
 	$buf = encode('euc-jp', decode_entities(decode('euc-jp', $buf))); # utf-8で処理しeuc-jpに戻す
-	$buf =~ tr/\n/ /;
-	# \n(\x0a) 以外のコントロールコードは空白に変換する
-	$buf =~ s/[\x00-\x09\x0b-\x1f\x7f-\x9f]/ /g;
 
-	if ($opt->{language} eq 'japanese') {
-	    $buf = &ProcessJapanese($buf, $property[$i]);
-	}
-	elsif ($opt->{language} eq 'english') {
-	    # $buf = &ProcessEnglish($buf);
-	}
-	else {
-	    die "Unknown language: $opt->{language}\n";
-	}
+	# \n(\x0a) 以外のコントロールコードは削除する
+	$buf =~ tr/\x00-\x09\x0b-\x1f\x7f-\x9f//d;
 
+	# 改行の処理
+ 	$buf =~ s/([^\x0a])\x0a+$/$1/; # 最後の改行を削除
+ 	$buf =~ s/^\x0a+([^\x0a])/$1/; # 頭の改行を削除
+	$buf =~ s/([^\x0a])\x0a([^\x0a])/$1 $2/g; # 単独の改行をスペースに (後でまわりをみて処理)
+
+	# 整形処理
 	my @buf;
-	# <pre> の場合は改行も文区切りとみなす
-	if (defined $property[$i]->{pre}) {
-	    @buf = split(/\n/, $buf);
-	} else {
-	    @buf = ($buf);
+	for my $str (split(/\n+/, $buf)) { # 2個以上の改行で文を切る
+	    if ($opt->{language} eq 'japanese') {
+		push(@buf, &ProcessJapanese($str, $property[$i]));
+	    }
+	    elsif ($opt->{language} eq 'english') {
+		# $buf = &ProcessEnglish($buf);
+		push(@buf, $str);
+	    }
+	    else {
+		die "Unknown language: $opt->{language}\n";
+	    }
 	}
 
 	my @buf2;
@@ -417,15 +419,18 @@ sub ProcessJapanese {
     my ($buf, $property) = @_;
 
     # 全角文字同士、全角文字と半角文字の間の空白は詰める
-    # (<pre> の場合は扱いが異なる)
-    unless (defined($property->{pre})) {
-	$buf =~ s/([\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])\s+([\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/$1$2/g;
-	$buf =~ s/([^\s\x80-\xfe])\s+([\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/$1$2/g;
-	$buf =~ s/([\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])\s+([^\s\x80-\xfe])/$1$2/g;
-    }
+    $buf =~ s/([\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])\s+([\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/$1$2/g;
+    $buf =~ s/([^\s\x80-\xfe])\s+([\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/$1$2/g;
+    $buf =~ s/([\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])\s+([^\s\x80-\xfe])/$1$2/g;
 
-    # 連続する空白は詰める
-    $buf =~ s/(?:　| |\t){2,}/ /g;
+    if (defined($property->{pre})) {
+	# <PRE>の中で連続する空白は削除
+	$buf =~ s/(?:　| |\t){2,}//g;
+    }
+    else {
+	# 連続する空白は詰める
+	$buf =~ s/(?:　| |\t){2,}/ /g;
+    }
 
     # 1バイト文字を2バイトに変換する
     &ascii_h2z(\$buf);
