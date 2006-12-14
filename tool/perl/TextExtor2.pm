@@ -434,6 +434,10 @@ sub ProcessJapanese {
 
     # 1バイト文字を2バイトに変換する
     &ascii_h2z(\$buf);
+
+    # カタカナの後についているハイフンを「ー」に正規化
+    $buf =~ s!(\xa5.)((?:ー|―|−|─|━|‐)+)!sprintf("%s%s", $1, 'ー' x (length($2) / 2))!ge;
+
     return $buf;
 }
 
