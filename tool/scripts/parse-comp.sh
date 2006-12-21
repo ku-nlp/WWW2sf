@@ -14,8 +14,8 @@ fi
 ScriptsDIR=scripts
 PERL=perl
 ParseCMD=knp
+KNParg="-dpnd -tab -check -postprocess"
 RCarg=
-# RCarg="-r /usr/local/etc/knprc"
 
 jmn=$1
 prejmn=$jmn
@@ -32,7 +32,7 @@ fi
 
 while true
 do
-    $ParseCMD -tab -check $RCarg < $prejmn > $head.knp$n 2> $head.log$n
+    $ParseCMD $KNParg $RCarg < $prejmn > $head.knp$n 2> $head.log$n
     $PERL $ScriptsDIR/check-article.perl --data $head.rst$n $prejmn $head.knp$n > /dev/null
     cat $head.knp$n >> $head.knp
     cat $head.log$n >> $head.log
