@@ -1,4 +1,9 @@
-2006-12-27  Keiji Shinzato  <shinzato@nict.go.jp>
+2006-12-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl:
+	解析結果の埋め込みを標準フォーマットに準拠するように変更.
+
+2006-12-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* ../doc/standard_format.pdf:
 	標準フォーマットマニュアルpdf版を追加.
