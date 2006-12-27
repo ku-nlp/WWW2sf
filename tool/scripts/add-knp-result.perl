@@ -67,7 +67,8 @@ sub read_result {
 		    elsif ($opt{knp}) {
 			$type = 'Knp';
 		    }
-		    my $newchild = $doc->createElement($type);
+		    my $newchild = $doc->createElement('Annotation');
+		    $newchild->setAttribute('Scheme', $type);
 		    my $cdata = $doc->createCDATASection($result);
 		    $newchild->appendChild($cdata);
 		    $sentence->appendChild($newchild);
@@ -120,7 +121,8 @@ sub add_knp_result {
 sub append_node {
     my ($sentence, $text, $type) = @_;
 
-    my $newchild = $doc->createElement($type);
+    my $newchild = $doc->createElement('Annotation');
+    $newchild->setAttribute('Scheme', $type);
 
     my $result_string;
     if ($type eq 'Juman') {
