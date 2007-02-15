@@ -1,5 +1,11 @@
 2007-02-15  Daisuke Kawahara  <dk@nict.go.jp>
 
+	* perl/TextExtor2.pm:
+	<br>と<p>を無視するオプションに対応
+
+	* perl/HtmlGuessEncoding.pm:
+	例外的なcharsetの扱いを追加
+
 	* scripts/extract-sentences.perl:
 	<br>と<p>を無視するオプション(--ignore_br)を追加
 
