@@ -16,8 +16,8 @@ use strict;
 our @enu = ('０', '１', '２', '３', '４', '５', '６', '７', '８', '９');
 
 our (%opt);
-GetOptions(\%opt, 'include-paren');
-# --include-paren: 括弧を削除しない
+GetOptions(\%opt, 'include_paren');
+# --include_paren: 括弧を削除しない
 
 my ($buf);
 while (<STDIN>) {
@@ -114,7 +114,7 @@ sub check_sentence {
     my $paren_level = 0;
     my $paren_str = '';
 
-    if (!$opt{'include-paren'}) {
+    if (!$opt{'include_paren'}) {
 	for (my $i = 0; $i < @char_array; $i++) {
 	    if ($char_array[$i] eq '（') {
 		$paren_start = $i if $paren_level == 0;

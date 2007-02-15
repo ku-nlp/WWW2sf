@@ -22,7 +22,7 @@ sub usage {
 }
 
 our (%opt, $writer, $filter);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding');
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br');
 $opt{language} = 'japanese' unless $opt{language};
 
 # --checkencoding: encodingをチェックして、日本語ではないエンコーディングなら何も出力せず終了する
