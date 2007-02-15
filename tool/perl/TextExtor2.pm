@@ -81,6 +81,12 @@ sub new {
     ## 半角平仮名、記号を全角に変換
     $text = &h2z4japanese_utf8($text);
 
+    # 改行を無視する場合
+    if ($opt->{'ignore_br'}) {
+	delete($TAG_DELIMITER{br});
+	delete($TAG_DELIMITER{p});
+    }
+
     my $title = '';        # <TITLE>
     my $title_offset;      # titleのoffset(バイト単位)
     my $title_length;      # titleのバイト長
@@ -240,7 +246,7 @@ sub new {
 		$title = $text;
 		$title_offset = $offset;
 		$title_length = $length;
-	    } elsif ($mode_script or $mode_form or $mode_style) {
+	    } elsif ($mode_script or $mode_style) {
 	    } else {
 		$text[$count] .= $text;
 		$property[$count]->{num} = $num;
