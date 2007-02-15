@@ -17,6 +17,7 @@
 	  -b: <br>と<p>を無視する
 	  -p: 括弧を保持する
 	  -f: エンコーディングを無視して変換する
+	  -a: すべての文を解析する
 
 2006-12-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 

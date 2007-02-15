@@ -29,6 +29,7 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
 ( -b: <br>と<p>を無視する)
 ( -p: 括弧を保持する)
 ( -f: エンコーディングを無視して変換する)
+( -a: 日本語と判定されなかった文(英語など)も解析する)
 
 ./html2sf.sh [-j|-k] [-b] [-p] [-f] sample.html > sample.sf
 
