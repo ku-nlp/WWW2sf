@@ -1,3 +1,17 @@
+2007-02-15  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/extract-sentences.perl:
+	<br>と<p>を無視するオプション(--ignore_br)を追加
+
+	* scripts/format-www-xml.perl:
+	括弧を保持するオプションを--include_parenに変更
+
+	* html2sf.sh:
+	オプション追加
+	  -b: <br>と<p>を無視する
+	  -p: 括弧を保持する
+	  -f: エンコーディングを無視して変換する
+
 2006-12-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl:
