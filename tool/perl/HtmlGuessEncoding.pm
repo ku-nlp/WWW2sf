@@ -43,7 +43,7 @@ sub ProcessEncoding {
 	    $encoding = '7bit-jis';
 	}
 	# ∆¸À‹∏ÏSJIS
-	elsif ($charset =~ /^shift_jis|windows-932|x-sjis|shift-jp$/) {
+	elsif ($charset =~ /^shift_jis|windows-932|x-sjis|shift-jp|shift-jis$/) {
 	    $language = 'japanese';
 	    $encoding = 'shiftjis';
 	}
