@@ -1,28 +1,35 @@
-#!/usr/bin/env zsh
+#!/bin/sh
 
 # $Id$
 
 usage() {
-    echo "$0 [-j] [-k] input.html"
+    echo "$0 [-j|-k] [-b] [-p] [-f] input.html"
     exit 1
 }
 
 opts=()
 jmn=0
 knp=0
-i=1
+extract_std_args="--checkzyoshi --checkjapanese --checkencoding"
+extract_args=""
+formatwww_args=
+addknp_args=
 
-while getopts jkh OPT
+while getopts bfjkph OPT
 do  
     case $OPT in
-	j)  opts[i]="--jmn"
-            i=`expr $i + 1`
+	b)  extract_args="--ignore_br $extract_args"
+	    ;;
+	f)  extract_std_args=""
+	    ;;
+	j)  addknp_args="--jmn"
 	    jmn=1
 	    ;;
-	k)  opts[i]="--knp"
-            i=`expr $i + 1`
+	k)  addknp_args="--knp"
 	    knp=1
 	    ;;
+        p)  formatwww_args="--include_paren $formatwww_args"
+            ;;
         h)  usage
             ;;
     esac
@@ -40,7 +47,7 @@ jmnfile=$f:r.jmn
 knpfile=$f:r.knp
 xmlfile1=$f:r.xml1
 
-perl -I perl scripts/extract-sentences.perl --checkzyoshi --checkjapanese --checkencoding --xml $1 > $xmlfile1
+perl -I perl scripts/extract-sentences.perl $extract_std_args $extract_args --xml $1 > $xmlfile1
 
 # 助詞のチェックで日本語ページとは判定されなかったもの
 if [ ! -s $xmlfile1 ]; then
@@ -48,7 +55,7 @@ if [ ! -s $xmlfile1 ]; then
     exit
 fi
 
-cat $xmlfile1 | perl -I perl scripts/format-www-xml.perl > $rawfile
+cat $xmlfile1 | perl -I perl scripts/format-www-xml.perl $formatwww_args > $rawfile
 
 # 文の抽出
 cat $rawfile | perl -I perl scripts/extract-rawstring.perl > $sentencesfile
@@ -64,7 +71,7 @@ fi
 
 # merge
 if [ $jmn -eq 1 -o $knp -eq 1 ]; then
-    cat $rawfile | perl -I perl scripts/add-knp-result.perl $opts[*] $jmnfile
+    cat $rawfile | perl -I perl scripts/add-knp-result.perl $addknp_args $jmnfile
 else
     cat $rawfile
 fi
