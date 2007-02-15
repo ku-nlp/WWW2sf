@@ -26,8 +26,11 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
 
 ( -j: Juman解析結果を挿入)
 ( -k: KNP解析結果を挿入)
+( -b: <br>と<p>を無視する)
+( -p: 括弧を保持する)
+( -f: エンコーディングを無視して変換する)
 
-./html2sf.sh [-j|-k] sample.html > sample.sf
+./html2sf.sh [-j|-k] [-b] [-p] [-f] sample.html > sample.sf
 
 
 # h0000ディレクトリ以下のhtmlを標準フォーマットに変換して、x0000以下に出力
