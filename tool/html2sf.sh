@@ -51,7 +51,7 @@ jmnfile="$base_f.jmn"
 knpfile="$base_f.knp"
 xmlfile1="$base_f.xml1"
 
-perl -I perl scripts/extract-sentences.perl $extract_std_args $extract_args --xml $1 > $xmlfile1
+perl -I perl scripts/extract-sentences.perl $extract_std_args $extract_args --xml $f > $xmlfile1
 
 # 助詞のチェックで日本語ページとは判定されなかったもの
 if [ ! -s $xmlfile1 ]; then
