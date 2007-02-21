@@ -10,30 +10,38 @@ use vars qw(%opt @enu);
 
 @enu = ("£°", "£±", "£²", "£³", "£´", "£µ", "£¶", "£·", "£¸", "£¹");
 
-GetOptions(\%opt, 'head', 'include-paren');
-# --include-paren: ³ç¸Ì¤òºï½ü¤·¤Ê¤¤
+GetOptions(\%opt, 'head:s', 'include_paren', 'pagenum=i');
+# --include_paren: ³ç¸Ì¤òºï½ü¤·¤Ê¤¤
+# --pagenum: ³«»Ï¥Ú¡¼¥¸ÈÖ¹æ¤ò»ØÄê
 
 my ($head, $site, $file, $fileflag, $count, $url, $comment);
 my ($sid, $sentence) = @_;
 my (@char_array, @check_array, $i, $j, $flag);
 my ($enu_num, $paren_start, $paren_level, $paren_str);
 
-if ($opt{head}) {
-    my ($tmp_filename);
-    if ($ARGV[0] =~ /([^\/]+)\/([^\/]+)$/) {
-	($head, $tmp_filename) = ($1, $2);
-	$head = (split(/\./, $head))[0]; # tsubame00.kototoi.org => tsubame00
-	($site) = ($tmp_filename =~ /^(?:doc)?([^.]+)/);
+if (defined($opt{head})) {
+    if ($opt{head}) {
+	$head = $opt{head};
     }
     else {
-	($tmp_filename) = ($ARGV[0] =~ /([^\/]+)$/);
-	($head) = ($tmp_filename =~ /^(?:doc)?([^.]+)/);
+	my ($tmp_filename);
+	if ($ARGV[0] =~ /([^\/]+)\/([^\/]+)$/) {
+	    ($head, $tmp_filename) = ($1, $2);
+	    $head = (split(/\./, $head))[0]; # tsubame00.kototoi.org => tsubame00
+	    ($site) = ($tmp_filename =~ /^(?:doc)?([^.]+)/);
+	}
+	else {
+	    ($tmp_filename) = ($ARGV[0] =~ /([^\/]+)$/);
+	    ($head) = ($tmp_filename =~ /^(?:doc)?([^.]+)/);
+	}
     }
 }
 else {
     my ($tmp_filename) = ($ARGV[0] =~ /([^\/]+)$/);
     ($head) = ($tmp_filename =~ /^(?:doc)?([^.]+)/);
 }
+
+$file = $opt{pagenum} - 1 if $opt{pagenum};
 
 while (<>) {
     chomp;
@@ -65,7 +73,7 @@ while (<>) {
     }
 
      # "¡Ú"¡¤"¡þ"¡¤"¢¦"¡¤"¡ü"¡¤"¡ã"¡¤"¡Ô"¤Ç»Ï¤Þ¤ëÊ¸¤ÏÁ´ÂÎ¤òºï½ü
-    if ($sentence =~ /^(¡¡)*(¢¢|¢£|¡þ|¢¡|¢¦|¢¤|¢§|¢¥|¡û|¡ý|¡ü|¡»|¢þ|¡ú|¡ù|¡¦|¡ã|¡Ô|¡Ú|¡Î)/) {
+    if (!$opt{'include_paren'} && $sentence =~ /^(¡¡)*(¢¢|¢£|¡þ|¢¡|¢¦|¢¤|¢§|¢¥|¡û|¡ý|¡ü|¡»|¢þ|¡ú|¡ù|¡¦|¡ã|¡Ô|¡Ú|¡Î)/) {
 	print "# S-ID:$sid Á´ÂÎºï½ü:$sentence\n";
 	next;
     }
@@ -111,11 +119,11 @@ while (<>) {
 
     # "¡Ê¡Ä¡Ë"¤Îºï½ü¡¤¤¿¤À¤·¡¤"¡Ê£±¡Ë"¡¤"¡Ê£²¡Ë"¤Î¾ì¹ç¤Ï»Ä¤¹
     $enu_num = 1;
+    $paren_start = -1;
+    $paren_level = 0;
+    $paren_str = "";
 
-    if (!$opt{'include-paren'}) {
-	$paren_start = -1;
-	$paren_level = 0;
-	$paren_str = "";
+    if (!$opt{'include_paren'}) {
 	for ($i = 0; $i < @char_array; $i++) {
 	    if ($char_array[$i] eq "¡Ê") {
 		$paren_start = $i if ($paren_level == 0);
