@@ -18,7 +18,7 @@ do
 	    ;;
 	f)  extract_std_args=""
 	    ;;
-        p)  formatwww_args="--include_paren $formatwww_args"
+        p)  formatwww_args="--include-paren $formatwww_args"
             ;;
         h)  usage
             ;;
