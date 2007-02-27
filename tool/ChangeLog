@@ -1,3 +1,14 @@
+2007-02-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* html2text.sh, html2sf.sh:
+	Movable Typeのトラックバック、コメント、メニュー部分から文抽出を行わないオプション -B を追加.
+
+
+2007-02-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl:
+	トラックバック、コメント、メニュー部分を削除するオプションを追加（Movable Typeのみ対応）
+
 2007-02-21  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/format-www.perl:
