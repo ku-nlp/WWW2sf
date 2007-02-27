@@ -22,8 +22,9 @@ sub usage {
 }
 
 our (%opt, $writer, $filter);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br');
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s');
 $opt{language} = 'japanese' unless $opt{language};
+$opt{blog} = 'none' unless $opt{blog};
 
 # --checkencoding: encodingをチェックして、日本語ではないエンコーディングなら何も出力せず終了する
 # --checkjapanese: 日本語(ひらがな、カタカナ、漢字)含有率をチェックする
@@ -53,6 +54,66 @@ exit 0 unless $buf;
 
 my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {change_to_utf8 => 1});
 exit if $opt{checkencoding} and !$encoding;
+
+# トラックバック、コメント、メニュー部分を削除（Movable Type用）
+if($opt{blog} eq 'mt'){
+    if($buf =~ /<div class=\"trackbacks\">/){
+	my $before_menu = "$`";
+	my $menu_part = "$&$'";
+	while(1){
+	    if($menu_part =~ m!</div>!){
+		my $fwd = "$`";
+		my $bck = "$'";
+		if($fwd =~ m!(( |.|\n|\r)*)<div !){
+		    $menu_part = $1 . $bck;
+		}else{
+		    last;
+		}
+	    }else{
+		print "nothing.\n";
+	    }
+	}
+	$buf = $before_menu . $menu_part;
+    }
+
+    if($buf =~ /<div id=\"comments\" class=\"comments\">/){
+	my $before_menu = "$`";
+	my $menu_part = "$&$'";
+	while(1){
+	    if($menu_part =~ m!</div>!){
+		my $fwd = "$`";
+		my $bck = "$'";
+		if($fwd =~ m!(( |.|\n|\r)*)<div !){
+		    $menu_part = $1 . $bck;
+		}else{
+		    last;
+		}
+	    }else{
+		print "nothing.\n";
+	    }
+	}
+	$buf = $before_menu . $menu_part;
+    }
+
+    if($buf =~ /<div id=\"beta-inner\" class=\"pkg\">/){
+	my $before_menu = "$`";
+	my $menu_part = "$&$'";
+	while(1){
+	    if($menu_part =~ m!</div>!){
+		my $fwd = "$`";
+		my $bck = "$'";
+		if($fwd =~ m!(( |.|\n|\r)*)<div !){
+		    $menu_part = $1 . $bck;
+		}else{
+		    last;
+		}
+	    }else{
+		print "nothing.\n";
+	    }
+	}
+	$buf = $before_menu . $menu_part;
+    }
+}
 
 # HTMLを文のリストに変換
 my $parsed = new TextExtor2(\$buf, 'utf8', \%opt);
