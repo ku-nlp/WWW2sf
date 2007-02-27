@@ -15,12 +15,14 @@ formatwww_args=
 addknp_args=
 rawstring_args=
 
-while getopts abfjkph OPT
+while getopts abfjkphB OPT
 do  
     case $OPT in
 	a)  rawstring_args="--all"
 	    ;;
 	b)  extract_args="--ignore_br $extract_args"
+	    ;;
+	B)  extract_args="--blog mt $extract_args"
 	    ;;
 	f)  extract_std_args=""
 	    rawstring_args="--all"
