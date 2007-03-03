@@ -30,8 +30,9 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
 ( -p: 括弧を保持する)
 ( -f: エンコーディングを無視して変換する)
 ( -a: 日本語と判定されなかった文(英語など)も解析する)
+( -B: ブログページのトラックバックなどから文抽出を行わない(Movable Typeのみ対応))
 
-./html2sf.sh [-j|-k] [-b] [-p] [-f] sample.html > sample.sf
+./html2sf.sh [-j|-k] [-b] [-p] [-f] [-B] sample.html > sample.sf
 
 
 # h0000ディレクトリ以下のhtmlを標準フォーマットに変換して、x0000以下に出力
