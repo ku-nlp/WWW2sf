@@ -71,7 +71,7 @@ if [ $jmn -eq 1 -o $knp -eq 1 ]; then
     cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
 fi
 if [ $knp -eq 1 ]; then
-    scripts/parse-comp.sh $jmnfile
+    scripts/parse-comp.sh $jmnfile > /dev/null
     mv -f $knpfile $jmnfile
 fi
 
