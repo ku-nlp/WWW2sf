@@ -1,8 +1,12 @@
+2007-03-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* html2sf.sh
+	parse-comp.shのログを/dev/nullに出力するように変更.
+
 2007-02-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2text.sh, html2sf.sh:
 	Movable Typeのトラックバック、コメント、メニュー部分から文抽出を行わないオプション -B を追加.
-
 
 2007-02-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
