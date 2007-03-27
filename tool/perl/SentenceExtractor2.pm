@@ -10,7 +10,7 @@ use vars qw($open_kakko $close_kakko $period $dot $alphabet_or_number @honorific
 $open_kakko  = qr/（|〔|［|｛|＜|≪|「|『|【|\(|\[|\{/;
 $close_kakko = qr/）|〕|］|｝|＞|≫|」|』|】|\)|\]|\}/;
 
-$period = qr/。|？|！/;
+$period = qr/。|？|！|♪|…/;
 $dot = qr/．/;
 $alphabet_or_number = qr/\xa3(?:[\xc1-\xda]|[\xe1-\xfa]|[\xb0-\xb9])/;
 
@@ -91,6 +91,38 @@ sub SplitJapanese {
 		$buf[-1] = '';
 	    }
 	    else {
+		## ・・・で文を区切る
+ 		my $cdot = '・';
+		my $sent = $buf[-1];
+		my @buf2 = ();
+ 		while($sent =~ /^(.*?)((?:$cdot){3,}(?:$period)?)/o){
+ 		    my $sent1 = $1 . $2;
+ 		    push(@buf2, $sent1);
+
+ 		    $sent = "$'";
+ 		}
+		push(@buf2, $sent);
+
+		my @buf3 = ();
+		foreach my $s (@buf2){
+		    if($s =~ /^(（.+?）)/){
+			my $sub_s = $1;
+			$s = "$'";
+			while($sub_s =~ m/(.+?(?:$period|$dot))/){
+			    push(@buf3, $1);
+			    $sub_s = "$'";
+			}
+			if($sub_s ne ''){
+			    push(@buf3, $sub_s);
+			}
+		    }
+		    push(@buf3, $s);
+		}
+
+		my $size = scalar(@buf) - 1;
+		foreach my $s (@buf3){
+		    $buf[$size++] = $s;
+		}
 		push(@buf, ''); # 新しい文を始める
 	    }
 	}
@@ -102,11 +134,37 @@ sub SplitJapanese {
 	}
     }
 
-    &FixParenthesis(\@buf);
+    my @buf2 = ();
+    foreach my $y (@buf) {
+	$y =~ s/^\s+//;
+	$y =~ s/\s+$//;
+	$y =~ s/^(?:　)+//;
+	$y =~ s/(?:　)+$//;
+
+	push(@buf2, $y);
+    }
+
+    &FixParenthesis(\@buf2);
+    @buf = &concatSentences(\@buf2);
     pop(@buf) unless $buf[-1];
     return @buf;
 }
 
+sub concatSentences{
+    my ($sents) = @_;
+    my @buff = ();
+    my $tail = scalar(@{$sents}) - 1;
+    while($tail > 0){
+	if($sents->[$tail - 1] =~ /(?:！|？|$close_kakko)$/ && $sents->[$tail] =~ /^(?:と|っ)/){
+	    $sents->[$tail - 1] .= $sents->[$tail];
+	}else{
+	    unshift(@buff, $sents->[$tail]);
+	}
+	$tail--;
+    }
+    unshift(@buff, $sents->[0]);
+    return @buff;
+}
 
 sub SplitEnglish
 {
