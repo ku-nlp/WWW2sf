@@ -11,10 +11,11 @@ if [ ! -f "$1" ]; then
     usage
 fi
 
+# please change these variables
 ScriptsDIR=scripts
 PERL=perl
 ParseCMD=knp
-KNParg="-dpnd -tab -check -postprocess"
+KNParg="-dpnd -tab -postprocess"
 RCarg=
 
 jmn=$1
