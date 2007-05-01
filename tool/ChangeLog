@@ -1,3 +1,9 @@
+2007-05-01  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/read-zaodata.pl:
+	shim-crawlerのフォーマット変更に対応
+	日本語判定処理を行わないオプション--ignore-check-japaneseを追加
+
 2007-04-13  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/parse-comp.sh:
