@@ -75,7 +75,7 @@ for my $f (@ARGV) {
 
 	      if ($output =~ /\nContent-Type:\s*$RequireContentType/) {
 		  if ($opt{splithtml}) {
-		      unless ($opt{ignore-check-japanese}) {
+		      unless ($opt{'ignore-check-japanese'}) {
 			  # 日本語判定
 			  if ($opt{language} eq 'japanese') {
 			      unless ($HtmlGuessEncoding->ProcessEncoding(\$output)) {
