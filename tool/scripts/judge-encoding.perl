@@ -43,7 +43,7 @@ while (<>) {
 # HTTPヘッダがある場合はhtmlかどうかをチェック
 # HTTPヘッダ中のcharsetは現在チェックしていない
 if ($header) {
-    if ($header =~ /\nContent-Type:\s*$RequireContentType([^\n]*)/) {
+    if ($header =~ /\ncontent-type:\s*$RequireContentType([^\n]*)/i) {
 	;
     }
     else {
