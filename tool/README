@@ -16,6 +16,7 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
     - HTML::Parser
     - XML::Parser
     - XML::DOM
+    - XML::LibXML
     - KNP
 
 
