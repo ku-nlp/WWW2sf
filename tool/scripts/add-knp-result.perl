@@ -38,8 +38,10 @@ else {
     &read_result($doc);
 }
 
-print $doc->toString();
+# XML-LibXML 1.63以降ではバイト列が返ってくるので、decodeする
+my $string = $doc->toString();
 
+print utf8::is_utf8($string) ? $string : decode($doc->actualEncoding(), $string);
 
 sub read_result {
     my ($doc) = @_;
