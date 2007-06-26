@@ -31,7 +31,8 @@ my $parser = new XML::LibXML;
 my $doc = $parser->parse_string($buf);
 
 if ($opt{usemodule}) {
-    &add_knp_result($doc);
+    &add_knp_result($doc, 'Title');
+    &add_knp_result($doc, 'S');
 }
 # 解析結果を読み込む
 else {
@@ -46,7 +47,9 @@ print utf8::is_utf8($string) ? $string : decode($doc->actualEncoding(), $string)
 sub read_result {
     my ($doc) = @_;
 
+    my @title = $doc->getElementsByTagName('Title');
     my @sentences = $doc->getElementsByTagName('S');
+    unshift(@sentences, $title[0]) if (defined(@title));
     my $start_sent = 0;
 
     open (F, "<:encoding(euc-jp)", "$ARGV[0]");
@@ -89,9 +92,9 @@ sub read_result {
 }
 
 sub add_knp_result {
-    my ($doc) = @_;
+    my ($doc, $tagName) = @_;
 
-    for my $sentence ($doc->getElementsByTagName('S')) { # for each S
+    for my $sentence ($doc->getElementsByTagName($tagName)) { # for each $tagName
 	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
 	next if !$opt{all} and !$jap_sent_flag; # not Japanese
 
