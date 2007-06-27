@@ -1,5 +1,10 @@
 2007-06-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
+	* www2sf.sh:
+	10Mを越えるファイルは標準フォーマット化しないように変更
+
+2007-06-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
 	* scripts/add-knp-result.perl:
 	Titleタグ内のRawStringを解析するように変更
 
