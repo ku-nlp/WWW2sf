@@ -35,12 +35,16 @@ if [ ! -d $xdir ]; then
 fi
 
 for f in $hdir/*.html; do
-    echo $f
-    ./html2sf.sh $opts[*] -a -p -f $f > $xdir/$f:r:t.xml
-
-    # 出力が0の場合、削除
-    if [ ! -s $xdir/$f:r:t.xml ]; then
-        rm -f $xdir/$f:r:t.xml
+    fsize=`wc -c $f | awk '{print $1}'`
+    # ファイルサイズが10M以下なら
+    if [ $fsize -lt 10000000 ];
+    then
+	echo $f
+	./html2sf.sh $opts[*] -a -p -f $f > $xdir/$f:r:t.xml
+	
+	# 出力が0の場合、削除
+	if [ ! -s $xdir/$f:r:t.xml ]; then
+            rm -f $xdir/$f:r:t.xml
+	fi
     fi
-
 done
