@@ -15,14 +15,17 @@ use Error qw(:try);
 
 
 
-my (%opt); GetOptions(\%opt, 'dir=s', 'z', 'syndbdir=s', 'hyponymy', 'antonymy');
-my $SynGraph = new SynGraph($opt{syndbdir});
+my (%opt); GetOptions(\%opt, 'dir=s', 'z', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i');
 
 if (!$opt{dir} || !$opt{syndbdir}) {
     print "Usage $0 -dir x0000 -syndbdir SYNDB_DIR_PATH [-z]\n";
     exit;
 }
 
+# 下位語数が $opt{hypocut}より大きければ、SYNノードをはりつけない
+$opt{hypocut} = 9 unless $opt{hypocut};
+
+my $SynGraph = new SynGraph($opt{syndbdir});
 
 my $cnt = 0;
 opendir(DIR, $opt{dir});
@@ -36,7 +39,8 @@ foreach my $file (sort readdir(DIR)){
     my $regnode_option;
     $regnode_option->{relation} = ($opt{hyponymy}) ? 1 : 0;
     $regnode_option->{antonym} = ($opt{antonymy}) ? 1 : 0;
-    
+    $regnode_option->{hypocut_attachnode} = $opt{hypocut} if $opt{hypocut};
+	
     my $fp = "$opt{dir}/$file";
     if ($opt{z}) {
 	open(READER, "zcat $fp |");
