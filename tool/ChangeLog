@@ -1,5 +1,8 @@
 2007-07-05  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
+	* scripts/format-www-xml.perl:
+	XML-LibXML1.63での$doc->toString()の仕様変更に対応
+
 	* scripts/embed-syngraph.perl:
 	下位語数が $opt{hypocut} より大きければ、SYNノードをはりつけないようにした(デフォルト値:9)
 
