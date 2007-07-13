@@ -33,9 +33,11 @@ if [ ! -f "$1" ]; then
 fi
 
 f=$1
+base_dir=`dirname $0`
 base_f=`expr $f : "\(.*\)\.[^\.]*$"`
 tmpfile=$base_f.$$
+trap 'rm -f $tmpfile; exit 1' 1 2 3 15
 
-perl -I perl scripts/extract-sentences.perl $extract_std_args $extract_args $f | tee hoge | perl -I perl scripts/sentence-filter.perl > $tmpfile
-perl -I perl scripts/format-www.perl $formatwww_args $tmpfile
+perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args $f | perl -I $base_dir/perl $base_dir/scripts/sentence-filter.perl > $tmpfile
+perl -I $base_dir/perl $base_dir/scripts/format-www.perl $formatwww_args $tmpfile
 rm -f $tmpfile

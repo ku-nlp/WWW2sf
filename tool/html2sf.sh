@@ -48,12 +48,19 @@ fi
 f=$1
 base_f=`expr $f : "\(.*\)\.[^\.]*$"`
 sentencesfile="$base_f.sentences"
-rawfile="$base_f.raw"
-jmnfile="$base_f.jmn"
-knpfile="$base_f.knp"
-xmlfile1="$base_f.xml1"
+rawfile="$base_f.raw.$$"
+jmnfile="$base_f.jmn.$$"
+knpfile="$base_f.knp.$$"
+xmlfile1="$base_f.xml1.$$"
 
-perl -I perl scripts/extract-sentences.perl $extract_std_args $extract_args --xml $f > $xmlfile1
+clean_tmpfiles() {
+    rm -f $sentencesfile $rawfile $xmlfile1 $jmnfile
+}
+
+trap 'clean_tmpfiles; exit 1' 1 2 3 15
+base_dir=`dirname $0`
+
+perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $f > $xmlfile1
 
 # 助詞のチェックで日本語ページとは判定されなかったもの
 if [ ! -s $xmlfile1 ]; then
@@ -61,42 +68,26 @@ if [ ! -s $xmlfile1 ]; then
     exit
 fi
 
-cat $xmlfile1 | perl -I perl scripts/format-www-xml.perl $formatwww_args > $rawfile
+cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
 
 # 文の抽出
-cat $rawfile | perl -I perl scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
+cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
 
 # Juman/Knp
 if [ $jmn -eq 1 -o $knp -eq 1 ]; then
     cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
 fi
 if [ $knp -eq 1 ]; then
-    scripts/parse-comp.sh $jmnfile > /dev/null
+    $base_dir/parse-comp.sh $jmnfile > /dev/null
     mv -f $knpfile $jmnfile
 fi
 
 # merge
 if [ $jmn -eq 1 -o $knp -eq 1 ]; then
-    cat $rawfile | perl -I perl scripts/add-knp-result.perl $addknp_args $jmnfile
+    cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl $addknp_args $jmnfile
 else
     cat $rawfile
 fi
 
-# clean
-if [ -e $sentencesfile ]; then
-    rm -f $sentencesfile
-fi
-
-if [ -e $rawfile ]; then
-    rm -f $rawfile
-fi
-
-if [ -e $xmlfile1 ]; then
-    rm -f $xmlfile1
-fi
-
-if [ $jmn -eq 1 -o $knp -eq 1 ]; then
-    if [ -e $jmnfile ]; then
-	rm -f $jmnfile
-    fi
-fi
+clean_tmpfiles
+exit 0

@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/bin/sh
 
 # htmlを標準フォーマットに変換
 
@@ -9,17 +9,21 @@ usage() {
     exit 1
 }
 
-opts=()
-i=1
+html2sf_extra_args=
 
-while getopts jkh OPT
+# ファイルサイズの閾値(default 5M)
+fsize_threshold=5242880
+
+base_dir=`dirname $0`
+
+while getopts jkhS: OPT
 do  
     case $OPT in
-	j)  opts[i]="-j"
-            i=`expr $i + 1`
+	j)  html2sf_extra_args="-j"
 	    ;;
-	k)  opts[i]="-k"
-            i=`expr $i + 1`
+	k)  html2sf_extra_args="-k"
+	    ;;
+	S)  fsize_threshold=$OPTARG
 	    ;;
         h)  usage
             ;;
@@ -34,17 +38,18 @@ if [ ! -d $xdir ]; then
     mkdir -p $xdir
 fi
 
-for f in $hdir/*.html; do
+for f in $hdir/*.html
+do
+    base_f=`basename $f .html`
     fsize=`wc -c $f | awk '{print $1}'`
-    # ファイルサイズが10M以下なら
-    if [ $fsize -lt 10000000 ];
-    then
+    # ファイルサイズが$fsize_threshold以下なら
+    if [ $fsize -lt $fsize_threshold ]; then
 	echo $f
-	./html2sf.sh $opts[*] -a -p -f $f > $xdir/$f:r:t.xml
+	$base_dir/html2sf.sh $html2sf_extra_args -a -p -f $f > $xdir/$base_f.xml
 	
 	# 出力が0の場合、削除
-	if [ ! -s $xdir/$f:r:t.xml ]; then
-            rm -f $xdir/$f:r:t.xml
+	if [ ! -s $xdir/$base_f.xml ]; then
+            rm -f $xdir/$base_f.xml
 	fi
     fi
 done
