@@ -11,8 +11,10 @@ if [ ! -f "$1" ]; then
     usage
 fi
 
+base_dir=`dirname $0`
+
 # please change these variables
-ScriptsDIR=scripts
+ScriptsDIR=$base_dir
 PERL=perl
 ParseCMD=knp
 KNParg="-dpnd -tab -postprocess"
