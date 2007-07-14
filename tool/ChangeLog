@@ -1,7 +1,12 @@
+2007-07-14  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/parse-comp.sh:
+	どのディレクトリでも実行できるように修正
+	
 2007-07-13  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* html2sf.sh, html2text.sh, www2sf.sh:
-	どのディレクトリで実行できるように修正
+	どのディレクトリでも実行できるように修正
 
 2007-07-05  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
