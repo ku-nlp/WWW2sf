@@ -48,10 +48,10 @@ fi
 f=$1
 base_f=`expr $f : "\(.*\)\.[^\.]*$"`
 sentencesfile="$base_f.sentences"
-rawfile="$base_f.raw.$$"
-jmnfile="$base_f.jmn.$$"
-knpfile="$base_f.knp.$$"
-xmlfile1="$base_f.xml1.$$"
+rawfile="$base_f.$$.raw"
+jmnfile="$base_f.$$.jmn"
+knpfile="$base_f.$$.knp"
+xmlfile1="$base_f.$$.xml1"
 
 clean_tmpfiles() {
     rm -f $sentencesfile $rawfile $xmlfile1 $jmnfile
@@ -78,7 +78,7 @@ if [ $jmn -eq 1 -o $knp -eq 1 ]; then
     cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
 fi
 if [ $knp -eq 1 ]; then
-    $base_dir/parse-comp.sh $jmnfile > /dev/null
+    $base_dir/scripts/parse-comp.sh $jmnfile > /dev/null
     mv -f $knpfile $jmnfile
 fi
 
