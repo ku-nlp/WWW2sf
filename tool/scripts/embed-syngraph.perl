@@ -57,26 +57,30 @@ foreach my $file (sort readdir(DIR)){
 	if($_ =~ /^\]\]\><\/Annotation>/){
 	    # KNP 解析結果終了
 	    $knp_result = decode('utf8', $knp_result) unless (utf8::is_utf8($knp_result));
-	    
-	    try {
-		my $result = new KNP::Result($knp_result);
-		$result->set_id($sid++);
-		
-		# SynGraph化
-		my $syn_result = $SynGraph->OutputSynFormat($result, $regnode_option);
-
-		$syn_doc .= "      <Annotation Scheme=\"SynGraph\"><![CDATA[";
-		$syn_doc .= encode('utf8', $syn_result); # SynGraph 結果の埋め込み
-		$syn_doc .= "]]></Annotation>\n";
-	    } catch Error with {
-		# Knp 解析結果が空の場合などの対処
-		my $e = shift;
-		print STDERR "Exception at line $e->{-line} in $e->{-file} file=$fp\n";
-		print STDERR encode('euc-jp', $knp_result) . "\n";
-	    } finally {
+	    if ($knp_result eq "EOS\n") {
 		$knp_result = undef;
 		$knp_flag = 0;
-	    };
+	    } else {
+		try {
+		    my $result = new KNP::Result($knp_result);
+		    $result->set_id($sid++);
+		    
+		    # SynGraph化
+		    my $syn_result = $SynGraph->OutputSynFormat($result, $regnode_option);
+		    
+		    $syn_doc .= "      <Annotation Scheme=\"SynGraph\"><![CDATA[";
+		    $syn_doc .= encode('utf8', $syn_result); # SynGraph 結果の埋め込み
+		    $syn_doc .= "]]></Annotation>\n";
+		} catch Error with {
+		    # Knp 解析結果が空の場合などの対処
+		    my $e = shift;
+		    print STDERR "Exception at line $e->{-line} in $e->{-file} file=$fp\n";
+		    print STDERR "knp_result=[" . encode('euc-jp', $knp_result) . "]\n";
+		} finally {
+		    $knp_result = undef;
+		    $knp_flag = 0;
+		};
+	    }
 	} elsif ($_ =~ /.*\<Annotation Scheme=\"$TAG_NAME\"\>\<\!\[CDATA\[/){
 	    # KNP 解析結果開始
 	    $knp_flag = 1;
