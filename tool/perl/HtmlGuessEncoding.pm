@@ -1,12 +1,13 @@
 package HtmlGuessEncoding;
 
-# HTML¤ÎEncoding¤òGuess
+# HTMLã®Encodingã‚’Guess
 
 # $Id$
 
 use Encode qw(from_to);
 use Encode::Guess;
 use strict;
+use utf8;
 
 sub new {
     my ($this, $opt) = @_;
@@ -23,26 +24,26 @@ sub ProcessEncoding {
     my ($this, $buf_ref, $option) = @_;
     my ($language, $encoding);
 
-    # »ØÄê¤·¤¿¸À¸ì¤È¥Ú¡¼¥¸¤Î¸À¸ì¤¬°ìÃ×¤¹¤ë¤«È½Äê
+    # æŒ‡å®šã—ãŸè¨€èªã¨ãƒšãƒ¼ã‚¸ã®è¨€èªãŒä¸€è‡´ã™ã‚‹ã‹åˆ¤å®š
 
-    # meta¾ğÊó¤Î¥Á¥§¥Ã¥¯
+    # metaæƒ…å ±ã®ãƒã‚§ãƒƒã‚¯
     if ($$buf_ref =~ /<meta [^>]*content=[" ]*text\/html[; ]*charset=([^" >]+)/) { 
         my $charset = lc($1);
-	# ±Ñ¸ì/À¾²¤¸À¸ì
+	# è‹±èª/è¥¿æ¬§è¨€èª
 	if ($charset =~ /^iso-8859-1|iso-8859-15|windows-1252|macintosh|x-mac-roman$/) {
 	    $language = 'english';
 	}
-	# ÆüËÜ¸ìEUC
+	# æ—¥æœ¬èªEUC
 	elsif ($charset =~ /^euc-jp|x-euc-jp$/) {
 	    $language = 'japanese';
 	    $encoding = 'euc-jp';
 	}
-	# ÆüËÜ¸ìJIS
+	# æ—¥æœ¬èªJIS
 	elsif ($charset =~ /^iso-2022-jp$/) {
 	    $language = 'japanese';
 	    $encoding = '7bit-jis';
 	}
-	# ÆüËÜ¸ìSJIS
+	# æ—¥æœ¬èªSJIS
 	elsif ($charset =~ /^shift_jis|windows-932|x-sjis|shift-jp|shift-jis$/) {
 	    $language = 'japanese';
 	    $encoding = 'shiftjis';
@@ -56,7 +57,7 @@ sub ProcessEncoding {
 	    return undef;
 	}
     }
-    # meta¤¬¤Ê¤¤¾ì¹ç¤Ï¿äÄê
+    # metaãŒãªã„å ´åˆã¯æ¨å®š
     else {
 	my $enc = guess_encoding($$buf_ref, qw/ascii euc-jp shiftjis 7bit-jis utf8/); # range
 	return unless ref($enc);
@@ -69,19 +70,19 @@ sub ProcessEncoding {
 	}
     }
 
-    # ÆüËÜ¸ì»ØÄê
+    # æ—¥æœ¬èªæŒ‡å®š
     if ($this->{opt}{language} eq 'japanese') {
 	if ($language ne 'japanese') {
 	    return undef;
 	}
 	else {
 	    if ($encoding ne 'utf8') {
-		# utf-8¤Ç°·¤¦
+		# utf-8ã§æ‰±ã†
 		$$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8') if $option->{change_to_utf8};
 	    }
 	}
     }
-    # ±Ñ¸ì»ØÄê
+    # è‹±èªæŒ‡å®š
     elsif ($this->{opt}{language} eq 'english') {
 	if ($language ne 'english') {
 	    return undef;
@@ -97,7 +98,13 @@ sub ProcessEncoding {
 sub convert_code {
     my ($buf, $from_enc, $to_enc) = @_;
 
-    eval {from_to($buf, $from_enc, $to_enc)};
+    unless ($from_enc =~ /shiftjis/i) {
+	eval {from_to($buf, $from_enc, $to_enc)};
+    } else {
+	use ShiftJIS::CP932::MapUTF;
+	eval {cp932_to_unicode($buf)};
+    }
+
     if ($@) {
 	print STDERR $@;
 	return undef;
