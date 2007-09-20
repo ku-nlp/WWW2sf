@@ -18,6 +18,7 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
     - XML::DOM
     - XML::LibXML
     - KNP
+    - ShiftJIS::CP932::MapUTF
 
 
 ฝ่อý
