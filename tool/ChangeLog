@@ -1,5 +1,10 @@
 2007-09-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
+	* scripts/to_utf8.perl:
+	HTML文書の文字コードをutf8に変更するプログラムを追加 (metaタグにてcharset属性が指定されている場合は、その値をutf8に変更する)
+	
+2007-09-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
 	* README
 	必要なものにShiftJIS::CP932::MapUTFを追加.
 	
