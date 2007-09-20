@@ -27,29 +27,29 @@ sub ProcessEncoding {
     # 指定した言語とページの言語が一致するか判定
 
     # meta情報のチェック
-    if ($$buf_ref =~ /<meta [^>]*content=[" ]*text\/html[; ]*charset=([^" >]+)/) { 
+    if ($$buf_ref =~ /<meta [^>]*content=[" ]*text\/html[; ]*charset=([^" >]+)/i) { 
         my $charset = lc($1);
 	# 英語/西欧言語
-	if ($charset =~ /^iso-8859-1|iso-8859-15|windows-1252|macintosh|x-mac-roman$/) {
+	if ($charset =~ /^iso-8859-1|iso-8859-15|windows-1252|macintosh|x-mac-roman$/i) {
 	    $language = 'english';
 	}
 	# 日本語EUC
-	elsif ($charset =~ /^euc-jp|x-euc-jp$/) {
+	elsif ($charset =~ /^euc-jp|x-euc-jp$/i) {
 	    $language = 'japanese';
 	    $encoding = 'euc-jp';
 	}
 	# 日本語JIS
-	elsif ($charset =~ /^iso-2022-jp$/) {
+	elsif ($charset =~ /^iso-2022-jp$/i) {
 	    $language = 'japanese';
 	    $encoding = '7bit-jis';
 	}
 	# 日本語SJIS
-	elsif ($charset =~ /^shift_jis|windows-932|x-sjis|shift-jp|shift-jis$/) {
+	elsif ($charset =~ /^shift_jis|windows-932|x-sjis|shift-jp|shift-jis$/i) {
 	    $language = 'japanese';
 	    $encoding = 'shiftjis';
 	}
 	# UTF-8
-	elsif ($charset =~ /^utf-8$/) {
+	elsif ($charset =~ /^utf-8$/i) {
 	    $language = 'japanese'; # ?????
 	    $encoding = 'utf8';
 	}
@@ -97,12 +97,11 @@ sub ProcessEncoding {
 
 sub convert_code {
     my ($buf, $from_enc, $to_enc) = @_;
-
     unless ($from_enc =~ /shiftjis/i) {
 	eval {from_to($buf, $from_enc, $to_enc)};
     } else {
 	use ShiftJIS::CP932::MapUTF;
-	eval {cp932_to_unicode($buf)};
+	eval {$buf = cp932_to_utf8($buf)};
     }
 
     if ($@) {
