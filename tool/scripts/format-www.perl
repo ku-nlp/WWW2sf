@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl
 
 # WWWから収集した文を整形, 削除, S-ID付与
 
@@ -10,9 +10,12 @@ use vars qw(%opt @enu);
 
 @enu = ("０", "１", "２", "３", "４", "５", "６", "７", "８", "９");
 
-GetOptions(\%opt, 'head:s', 'include_paren', 'pagenum=i');
+GetOptions(\%opt, 'head:s', 'include_paren', 'divide_paren', 'pagenum=i');
 # --include_paren: 括弧を削除しない
+# --divide_paren: 括弧を別文として出力
 # --pagenum: 開始ページ番号を指定
+
+$opt{'include_paren'} = 1 if $opt{'divide_paren'};
 
 my ($head, $site, $file, $fileflag, $count, $url, $comment);
 my ($sid, $sentence) = @_;
@@ -64,6 +67,7 @@ while (<>) {
 
     $count++;
     $sid = defined($site) ? "$head-$site-$file-$count" : "$head-$file-$count";
+    $sid .= '-01' if $opt{'divide_paren'}; # 括弧を別文に分けるとき
     $sentence = $_;
     @char_array = ();
 
@@ -123,33 +127,31 @@ while (<>) {
     $paren_level = 0;
     $paren_str = "";
 
-    if (!$opt{'include_paren'}) {
-	for ($i = 0; $i < @char_array; $i++) {
-	    if ($char_array[$i] eq "（") {
-		$paren_start = $i if ($paren_level == 0);
-		$paren_level++;
-	    } 
-	    elsif ($char_array[$i] eq "）") {
-		$paren_level--;
-		if ($paren_level == 0) {
-		    if ($paren_str eq $enu[$enu_num]) {
-			$enu_num++;
-		    }
-		    else {
-			for ($j = $paren_start; $j <= $i; $j++) {
-			    $check_array[$j] = 0;
-			}
-		    }
-		    $paren_start = -1;
-		    $paren_str = "";
+    for ($i = 0; $i < @char_array; $i++) {
+	if ($char_array[$i] eq "（") {
+	    $paren_start = $i if ($paren_level == 0);
+	    $paren_level++;
+	}
+	elsif ($char_array[$i] eq "）") {
+	    $paren_level--;
+	    if ($paren_level == 0) {
+		if ($paren_str eq $enu[$enu_num]) {
+		    $enu_num++;
 		}
-	    }
-	    else {
-		$paren_str .= $char_array[$i] if ($paren_level != 0);
+		else {
+		    for ($j = $paren_start; $j <= $i; $j++) {
+			$check_array[$j] = 0;
+		    }
+		}
+		$paren_start = -1;
+		$paren_str = "";
 	    }
 	}
-	# print STDERR "enu_num(+1) = $enu_num\n" if ($enu_num > 1);
+	else {
+	    $paren_str .= $char_array[$i] if ($paren_level != 0);
+	}
     }
+    # print STDERR "enu_num(+1) = $enu_num\n" if ($enu_num > 1);
 
     # "＝…＝"の削除，ただし間に"，"がくればRESET
 
@@ -209,29 +211,70 @@ while (<>) {
 	    last;
 	}			# 有効部分がなければ全体削除
     }
-    if ($enu_num > 2) {		# （１）（２）とあれば全体削除
+    if (!$opt{'include_paren'} && $enu_num > 2) {		# （１）（２）とあれば全体削除
 	# print STDERR "# S-ID:$sid 全体削除:$sentence\n";
 	$flag = 0;
     }
 
     if ($flag == 0) {
-	print "# S-ID:$sid 全体削除:$sentence\n";
+	if ($opt{'include_paren'}) {
+	    print "# S-ID:$sid\n$sentence\n";
+	}
+	else {
+	    print "# S-ID:$sid 全体削除:$sentence\n";
+	}
     } else {
 	print "# S-ID:$sid $comment";
 
+	unless ($opt{'include_paren'}) { # 括弧を部分削除してS-ID行に出す場合
+	    for ($i = 0; $i < @char_array; $i++) {
+		if ($check_array[$i] == 0) {
+		    print " 部分削除:$i:" 
+			if ($i == 0 || $check_array[$i-1] == 1);
+		    print $char_array[$i];
+		}
+	    }
+	}
+
+	print "\n";
+
 	for ($i = 0; $i < @char_array; $i++) {
-	    if ($check_array[$i] == 0) {
-		print " 部分削除:$i:" 
-		    if ($i == 0 || $check_array[$i-1] == 1);
+	    if ($check_array[$i] == 1 || ($opt{'include_paren'} && !$opt{'divide_paren'})) {
 		print $char_array[$i];
 	    }
 	}
 	print "\n";
 
-	for ($i = 0; $i < @char_array; $i++) {
-	    print $char_array[$i] if ($check_array[$i] == 1);
+	# 括弧を別文として出力する場合
+	if ($opt{'divide_paren'}) {
+	    my $paren_start_char = '';
+	    my $paren_count = 2;
+	    my $current_sid;
+	    for ($i = 0; $i < @char_array; $i++) {
+		if ($check_array[$i] == 0) {
+		    if ($i == 0 || $check_array[$i-1] == 1) {
+			$current_sid = $sid;
+			$current_sid =~ s/01$/sprintf("%02d", $paren_count)/e;
+			$paren_start = $i;
+			$paren_start_char = $char_array[$i];
+		    }
+		}
+		elsif ($paren_start >= 0) {
+		    my $paren_type = &CheckParenType([@char_array[$paren_start + 1 .. $i - 2]]);
+		    print "# S-ID:$current_sid 括弧タイプ:$paren_type 括弧位置:$paren_start 括弧始:$paren_start_char 括弧終:$char_array[$i - 1]\n";
+		    print join('', @char_array[$paren_start + 1 .. $i - 2]), "\n";
+		    $paren_start = -1;
+		    $paren_count++;
+		}
+	    }
+
+	    # 最後のひとつ
+	    if ($paren_start >= 0) {
+		my $paren_type = &CheckParenType([@char_array[$paren_start + 1 .. $i - 2]]);
+		print "# S-ID:$sid 括弧タイプ:$paren_type 括弧位置:$paren_start 括弧始:$paren_start_char 括弧終:$char_array[$i - 1]\n";
+		print join('', @char_array[$paren_start + 1 .. $i - 2]), "\n";
+	    }
 	}
-	print "\n";
     }
 }
 
@@ -241,6 +284,32 @@ sub CheckKanji {
 
     for my $str (@$list) {
 	if ($str =~ /^[\x00-\xaf]/) {
+	    return 0;
+	}
+    }
+
+    return 1;
+}
+
+# すべてひらがななら1
+sub CheckHiragana {
+    my ($list) = @_;
+
+    for my $str (@$list) {
+	if ($str !~ /^\xa4/) {
+	    return 0;
+	}
+    }
+
+    return 1;
+}
+
+# すべて数字なら1
+sub CheckNum {
+    my ($list) = @_;
+
+    for my $str (@$list) {
+	if ($str !~ /^\xa3[\xb0-\xb9]$/) {
 	    return 0;
 	}
     }
@@ -258,4 +327,19 @@ sub CheckChar {
 	}
     }
     return 0;
+}
+
+# 括弧タイプを判定
+sub CheckParenType {
+    my ($chrs) = @_;
+
+    if (&CheckNum($chrs)) {
+	return '年齢';
+    }
+    elsif (&CheckHiragana($chrs)) {
+	return '読み';
+    }
+    else {
+	return 'その他';
+    }
 }
