@@ -11,7 +11,7 @@ extract_std_args="--checkzyoshi --checkjapanese --checkencoding"
 extract_args=
 formatwww_args=
 
-while getopts bfphB OPT
+while getopts bfpPhB OPT
 do  
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -21,6 +21,8 @@ do
 	f)  extract_std_args=""
 	    ;;
         p)  formatwww_args="--include_paren $formatwww_args"
+            ;;
+        P)  formatwww_args="--divide_paren $formatwww_args"
             ;;
         h)  usage
             ;;
