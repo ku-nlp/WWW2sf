@@ -1,3 +1,11 @@
+2007-10-23  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* html2text.sh:
+	括弧を別の文に分けるオプション(-P)を追加
+
+	* scripts/format-www.perl:
+	括弧を別の文に分けるオプション(--divide_paren)を追加
+
 2007-09-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/to_utf8.perl:
