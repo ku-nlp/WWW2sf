@@ -247,6 +247,7 @@ while (<>) {
 
 	# 括弧を別文として出力する場合
 	if ($opt{'divide_paren'}) {
+	    $paren_start = -1;
 	    my $paren_start_char = '';
 	    my $paren_count = 2;
 	    my $current_sid;
