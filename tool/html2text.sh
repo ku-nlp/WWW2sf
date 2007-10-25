@@ -38,8 +38,15 @@ f=$1
 base_dir=`dirname $0`
 base_f=`expr $f : "\(.*\)\.[^\.]*$"`
 tmpfile=$base_f.$$
+tmpfile2=${base_f}_2.$$
 trap 'rm -f $tmpfile; exit 1' 1 2 3 15
 
-perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args $f | perl -I $base_dir/perl $base_dir/scripts/sentence-filter.perl > $tmpfile
+perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args $f > $tmpfile
+
+if [ -n "$extract_std_args" ]; then
+    perl -I $base_dir/perl $base_dir/scripts/sentence-filter.perl $tmpfile > $tmpfile2
+    mv -f $tmpfile2 $tmpfile
+fi
+
 perl -I $base_dir/perl $base_dir/scripts/format-www.perl $formatwww_args $tmpfile
 rm -f $tmpfile
