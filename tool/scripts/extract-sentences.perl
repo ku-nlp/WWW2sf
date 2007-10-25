@@ -57,6 +57,22 @@ exit if $opt{checkencoding} and !$encoding;
 
 # トラックバック、コメント、メニュー部分を削除（Movable Type用）
 if($opt{blog} eq 'mt'){
+    # <head>削除
+    if ($buf =~ m!^((?:.|\n|\r)+)<head>(?:.|\n|\r)+?</head>((?:.|\n|\r)+)$!) {
+	$buf = $1 . $2;
+    }
+
+    # banner-inner, content-nav, entry-footerを削除
+    if ($buf =~ m!^((?:.|\n|\r)+)<div id="banner-inner" class="pkg">(?:.|\n|\r)+?</div>((?:.|\n|\r)+)$!) {
+	$buf = $1 . $2;
+    }
+    if ($buf =~ m!^((?:.|\n|\r)+)<p class="content-nav">(?:.|\n|\r)+?</p>((?:.|\n|\r)+)$!) {
+	$buf = $1 . $2;
+    }
+    if ($buf =~ m!^((?:.|\n|\r)+)<p class="entry-footer">(?:.|\n|\r)+?</p>((?:.|\n|\r)+)$!) {
+	$buf = $1 . $2;
+    }
+
     if($buf =~ /<div class=\"trackbacks\">/){
 	my $before_menu = "$`";
 	my $menu_part = "$&$'";
