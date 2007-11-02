@@ -1,3 +1,21 @@
+2007-11-02  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* perl/SentenceFormatter.pm: added.
+
+	* perl/SentenceFormatter.pm:
+	Modified for other types of parenthesis.
+
+	* scripts/format-www.perl:
+	Use 'use encoding'
+	Cut a module (SentenceFormatter.pm).
+
+	* scripts/format-www-xml.perl:
+	Use SentenceFormatter.pm.
+	Added parenthesis processing.
+
+	* html2sf.sh:
+	Added "-P" option (enable "--divide_paren").
+
 2007-10-26  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* html2text.sh:
