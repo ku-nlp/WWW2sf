@@ -15,6 +15,8 @@ use utf8;
 use strict;
 
 our @enu = ('０', '１', '２', '３', '４', '５', '６', '７', '８', '９');
+our $PARENB = '(?:（)'; # '(?:（|＜|〈|《|≪)';
+our %PARENE = ('（' => '）'); # ('（' => '）', '＜' => '＞', '〈' => '〉', '《' => '》', '≪' => '≫');
 
 sub new {
     my ($this, $opt) = @_;
@@ -34,7 +36,7 @@ sub FormatSentence {
     my (@char_array) = split(//, $sentence);
 
      # "【"，"◇"，"▽"，"●"，"＜"，"《"で始まる文は全体を削除
-    if ($sentence =~ /^(　)*(□|■|◇|◆|▽|△|▼|▲|○|◎|●|〇|◯|★|☆|・|＜|《|【|［)/) { # ］
+    if (!$this->{opt}{'include_paren'} and $sentence =~ /^(　)*(□|■|◇|◆|▽|△|▼|▲|○|◎|●|〇|◯|★|☆|・|＜|《|【|［)/) { # ］
 	return ({sid => $sid, comment => "全体削除:$sentence", sentence => undef});
     }
 
@@ -76,13 +78,15 @@ sub FormatSentence {
     my $paren_start = -1;
     my $paren_level = 0;
     my $paren_str = '';
+    my $paren_start_char = '';
 
     for (my $i = 0; $i < @char_array; $i++) {
-	if ($char_array[$i] eq '（') {
+	if ($char_array[$i] =~ /^($PARENB)$/) {
+	    $paren_start_char = $1;
 	    $paren_start = $i if $paren_level == 0;
 	    $paren_level++;
 	}
-	elsif ($char_array[$i] eq '）') {
+	elsif ($char_array[$i] =~ /^$PARENE{$paren_start_char}$/) {
 	    $paren_level--;
 	    if ($paren_level == 0) {
 		if ($paren_str eq $enu[$enu_num]) {
@@ -158,13 +162,13 @@ sub FormatSentence {
             last;
 	}                       # 有効部分がなければ全体削除
     }
-    if (!$this->{opt}{'include_paren'} && $enu_num > 2) {         # （１）（２）とあれば全体削除
+    if (!$this->{opt}{'include_paren'} and $enu_num > 2) {         # （１）（２）とあれば全体削除
 	$flag = 0;
     }
 
     if ($flag == 0) {
 	if ($this->{opt}{'include_paren'}) {
-	    return ({sid => $sid, comment => "全体削除:$sentence", sentence => $sentence});
+	    return ({sid => $sid, comment => undef, sentence => $sentence});
 	}
 	else {
 	    return ({sid => $sid, comment => "全体削除:$sentence", sentence => undef});
@@ -189,7 +193,7 @@ sub FormatSentence {
 	# 括弧を別文として出力する場合
 	if ($this->{opt}{'divide_paren'}) {
 	    $paren_start = -1;
-	    my $paren_start_char = '';
+	    $paren_start_char = '';
 	    my $paren_count = 2;
 	    my $current_sid;
 	    for (my $i = 0; $i < @char_array; $i++) {
@@ -211,12 +215,12 @@ sub FormatSentence {
 		}
 	    }
 
-	    # 最後のひとつ
+	    # 最後の文字が括弧終
 	    if ($paren_start >= 0) {
-		my $paren_type = &CheckParenType([@char_array[$paren_start + 1 .. scalar(@char_array) - 1]]);
+		my $paren_type = &CheckParenType([@char_array[$paren_start + 1 .. scalar(@char_array) - 2]]);
 		push(@paren_sentences, {sid => $current_sid, 
-					comment => "括弧タイプ:$paren_type 括弧位置:$paren_start 括弧始:$paren_start_char", 
-					sentence => join('', @char_array[$paren_start + 1 .. scalar(@char_array) - 1])});
+					comment => "括弧タイプ:$paren_type 括弧位置:$paren_start 括弧始:$paren_start_char 括弧終:$char_array[scalar(@char_array) - 1]", 
+					sentence => join('', @char_array[$paren_start + 1 .. scalar(@char_array) - 2])});
 	    }
 	}
     }
