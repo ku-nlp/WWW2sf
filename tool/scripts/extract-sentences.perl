@@ -6,13 +6,13 @@
 
 use strict;
 use TextExtor2;
-use Encode qw(from_to);
 use Encode::Guess;
 use XML::Writer;
 use File::stat;
 use POSIX qw(strftime);
 use HtmlGuessEncoding;
 use SentenceFilter;
+use ConvertCode qw(convert_code);
 use Getopt::Long;
 
 sub usage {
@@ -214,18 +214,6 @@ sub print_page_footer {
     else {
 	print "</PAGE>\n";
     }
-}
-
-sub convert_code {
-    my ($buf, $from_enc, $to_enc) = @_;
-
-    eval {from_to($buf, $from_enc, $to_enc)};
-    if ($@) {
-	print STDERR $@;
-	return undef;
-    }
-
-    return $buf;
 }
 
 sub postp_check {

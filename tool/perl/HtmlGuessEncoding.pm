@@ -4,7 +4,7 @@ package HtmlGuessEncoding;
 
 # $Id$
 
-use Encode qw(from_to);
+use ConvertCode qw(convert_code);
 use Encode::Guess;
 use strict;
 use utf8;
@@ -92,24 +92,7 @@ sub ProcessEncoding {
 	return undef;
     }
 
-    return $language eq 'english' ? 'ascii' : $encoding;	
-}
-
-sub convert_code {
-    my ($buf, $from_enc, $to_enc) = @_;
-    unless ($from_enc =~ /shiftjis/i) {
-	eval {from_to($buf, $from_enc, $to_enc)};
-    } else {
-	use ShiftJIS::CP932::MapUTF;
-	eval {$buf = cp932_to_utf8($buf)};
-    }
-
-    if ($@) {
-	print STDERR $@;
-	return undef;
-    }
-
-    return $buf;
+    return $language eq 'english' ? 'ascii' : $encoding;
 }
 
 1;
