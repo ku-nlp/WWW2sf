@@ -6,7 +6,8 @@ use ModifiedTokeParser;
 use HTML::Entities;
 use SentenceExtractor2;
 use HankakuZenkaku qw(ascii_h2z h2z4japanese_utf8);
-use Encode qw(encode decode from_to);
+use ConvertCode qw(convert_code);
+use Encode qw(encode decode);
 use vars qw($VERSION %TAG_DELIMITER %TAG_PREMODE %TAG_HEADING %TAG_LIST);
 use strict;
 
@@ -157,11 +158,11 @@ sub new {
 	    } elsif ($tag eq 'meta') {
 		my $name = $token->[2]->{name};
 		if ($name =~ /^keyword/i) {
-		    $keywords = &convert_code($token->[2]->{content}, $encoding, 'euc-jp');
+		    $keywords = &convert_code($token->[2]->{content}, $encoding, 'euc-jp', 1); # with normalization
 		    $keywords_offset = $offset;
 		    $keywords_length = $length;
 		} elsif ($name =~ /^description/i) {
-		    $description = &convert_code($token->[2]->{content}, $encoding, 'euc-jp');
+		    $description = &convert_code($token->[2]->{content}, $encoding, 'euc-jp', 1); # with normalization
 		    $description_offset = $offset;
 		    $description_length = $length;
 		}
@@ -240,7 +241,7 @@ sub new {
 
 	# テキスト
         } elsif ($type eq 'T') {
-            my $text = &convert_code($token->[1], $encoding, 'euc-jp');
+            my $text = &convert_code($token->[1], $encoding, 'euc-jp', 1); # with normalization
 
 	    if ($mode_title) {
 		$title = $text;
@@ -457,18 +458,6 @@ sub z2h{
 	Encode::JP::H2Z::h2z(\$string);
 	  return $string;
       }
-}
-
-sub convert_code {
-    my ($buf, $from_enc, $to_enc) = @_;
-
-    eval {from_to($buf, $from_enc, $to_enc)};
-    if ($@) {
-	print STDERR $@;
-	return undef;
-    }
-
-    return $buf;
 }
 
 1;
