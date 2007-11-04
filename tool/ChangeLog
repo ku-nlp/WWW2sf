@@ -1,3 +1,13 @@
+2007-11-03  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* perl/ConvertCode.pm: added.
+
+	* perl/HtmlGuessEncoding.pm, scripts/extract-sentences.perl:
+	Modified to use ConvertCode.pm.
+
+	* perl/TextExtor2.pm:
+	Applied NFKC normalization.
+
 2007-11-02  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/SentenceFormatter.pm: added.
