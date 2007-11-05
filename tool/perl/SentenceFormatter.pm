@@ -4,7 +4,7 @@ package SentenceFormatter;
 # method: FormatSentence
 
 # 以下のオプションはnewに渡す
-# --include_paren: 括弧は処理せず、元の文に含める
+# --include_paren: 括弧は処理せず、元の文に含める(また、他の全体削除もできるだけ含める)
 # --divide_paren: 括弧を原文から取り除き、別の文として分割する
 #                 原文のIDに"-01"を付加し、括弧文のIDは"-02", "-03",.. となる
 #                 (括弧がなくても、原文のIDに"-01"が付加される)
@@ -51,12 +51,12 @@ sub FormatSentence {
     }
 
     # "｜"を含む文は全体を削除 (メニューなど)
-    if (&CheckChar(\@char_array, '｜|┃')) {
+    if (!$this->{opt}{'include_paren'} and &CheckChar(\@char_array, '｜|┃')) {
 	return ({sid => $sid, comment => "全体削除:$sentence", sentence => undef});
     }
 
     # すべて漢字なら全体を削除
-    if (&CheckKanji(\@char_array)) {
+    if (!$this->{opt}{'include_paren'} and &CheckKanji(\@char_array)) {
 	return ({sid => $sid, comment => "全体削除:$sentence", sentence => undef});
     }
 
