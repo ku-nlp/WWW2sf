@@ -62,6 +62,13 @@ sub FixParenthesis {
 		splice(@$slist, $i, $i);
 	    }
 	}
+
+	# 当該文が^(アルファベット|数字)．$にマッチする場合、箇条書きと判断し、次の文とくっつける
+ 	if ($slist->[$i] =~ /^$alphabet_or_number．$/) {
+ 	    $slist->[$i] .= $slist->[$i + 1];
+ 	    splice(@$slist, $i + 1, $i + 1);
+ 	    redo;
+ 	}
     }
 }
 
