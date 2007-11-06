@@ -1,3 +1,13 @@
+2007-11-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/SentenceExtractor2.pm:
+	アルファベットまたは数字の直後に．(ピリオド)がある場合は箇条書きとして見なすように変更．
+
+2007-11-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/SentenceExtractor2.pm:
+	””内の句点で文を区切らないように変更．
+
 2007-11-05  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/SentenceFormatter.pm:
