@@ -52,6 +52,16 @@ sub FixParenthesis {
 	    $slist->[$i - 1] .= $1;
 	    $slist->[$i] = $2;
 	}
+
+	# 1つ前の文と当該文に”が奇数個含まれている場合は、前の文に該当文をくっつける
+	my $num_of_zenaku_quote_prev = scalar(split('”', $slist->[$i - 1])) - 1;
+	my $num_of_zenaku_quote_curr = scalar(split('”', $slist->[$i])) - 1;
+	if ($num_of_zenaku_quote_prev > 0 && $num_of_zenaku_quote_curr > 0) {
+	    if ($num_of_zenaku_quote_prev % 2 == 1 && $num_of_zenaku_quote_curr % 2 == 1) {
+		$slist->[$i - 1] .= $slist->[$i];
+		splice(@$slist, $i, $i);
+	    }
+	}
     }
 }
 
