@@ -1,3 +1,8 @@
+2007-11-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtor2.pm:
+	文中で箇条書きが列挙されている場合は　を間に挟んで要素を連結するように変更．（文の外の場合は単独の文として認識される）
+
 2007-11-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/SentenceExtractor2.pm:
