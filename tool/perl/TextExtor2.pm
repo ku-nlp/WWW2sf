@@ -388,6 +388,68 @@ sub new {
 	$num_before = $property[$i]->{num};
     }
 
+
+    my $period = qr/。|？|！|♪|…/;
+    my $dot = qr/．/;
+    my $alphabet_or_number = qr/\xa3(?:[\xc1-\xda]|[\xe1-\xfa]|[\xb0-\xb9])/;
+    my $itemize_header = qr/$alphabet_or_number．/;
+    my @buff2 = ();
+
+#    print "=====\n";
+    my $ends_with_period = 1;
+    for (my $i = 0; $i < scalar(@s_text); $i++) {
+#	print $s_text[$i] . "=sentence $ends_with_period ";
+	# 箇条書きかどうか
+	if ($s_text[$i] =~ /^$itemize_header/) {
+#	    print "itemize\n";
+	    if ($ends_with_period > 0) {
+		# 以下にお店を列挙します。
+		# ・さえずり
+		# ・のら酒房
+		# ・串カツ
+		#
+		# 型箇条書きの場合
+		#     ↓
+		# S1 以下にお店を列挙します。
+		# S2 ・さえずり
+		# S3 ・のら酒房
+		# S4 ・串カツ
+		push(@buff2, $s_text[$i]);
+	    } else {
+		# 以下にお店
+		# ・さえずり
+		# ・のら酒房
+		# ・串カツ
+		# は美味しいです。
+		#
+		    # 型箇条書きの場合
+		#     ↓
+		# S1 以下にお店＿・さえずり＿・のら酒房＿・串カツは美味しいです。（＿は全角空白に読み替えてください）
+		$buff2[-1] .= ('　' . $s_text[$i]);
+	    }
+	} else {
+#	    print "\n";
+	    if ($i > 0 && $s_text[$i - 1] =~ /^$itemize_header/) {
+		if ($ends_with_period > 0) {
+		    push(@buff2, $s_text[$i]);
+		} else {
+		    # は美味しいです。を連結
+		    if (scalar(@buff2) < 1) {
+			$buff2[0] = $s_text[$i];
+		    } else {
+			$buff2[-1] .= $s_text[$i];
+		    }
+		}
+	    } else {
+		push(@buff2, $s_text[$i]);
+	    }
+	    $ends_with_period = ($s_text[$i] =~ /(?:$dot|$period)$/) ? 1 : 0;
+	}
+#	print "$s_text[$i] $ends_with_period\n";
+    }
+
+    @s_text = @buff2;
+
     if ($opt->{debug} == 1) {
 	for (my $i = 0; $i <= $#s_text; $i++) {
 	    my @p;
