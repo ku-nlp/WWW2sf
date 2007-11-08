@@ -179,7 +179,7 @@ sub concatSentences{
     my @buff = ();
     my $tail = scalar(@{$sents}) - 1;
     while($tail > 0){
-	if($sents->[$tail - 1] =~ /(?:！|？|$close_kakko)$/ && $sents->[$tail] =~ /^(?:と|っ)/){
+	if($sents->[$tail - 1] =~ /(?:！|？|$close_kakko)$/ && $sents->[$tail] =~ /^(?:と|っ|です)/){
 	    $sents->[$tail - 1] .= $sents->[$tail];
 	}else{
 	    unshift(@buff, $sents->[$tail]);
