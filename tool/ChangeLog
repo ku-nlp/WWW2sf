@@ -1,6 +1,11 @@
 2007-11-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/SentenceExtractor2.pm:
+	箇条書きの列挙中に文が分割されないように変更．
+
+2007-11-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/SentenceExtractor2.pm:
 	括弧の対応関係をまじめに考えるように変更．コメント追加．「！」の後に「です」がくる場合は、「！」で文を区切らないように変更．
 
 2007-11-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
