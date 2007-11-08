@@ -83,26 +83,31 @@ sub SplitJapanese {
 	push(@chars, $1);
     }
 
-    my @open = grep(/^$open_kakko$/o, @chars);
-    my @close = grep(/^$close_kakko$/o, @chars);
+#   my @open = grep(/^$open_kakko$/o, @chars);
+#   my @close = grep(/^$close_kakko$/o, @chars);
 
     # 開きカッコと閉じカッコの数が整合しない場合、または
     # カッコがない場合はカッコを考慮しない
-    if ((scalar(@open) == 0 and scalar(@close) == 0) || 
-        (scalar(@open) != scalar(@close))) {
-	$ignore_level = 1;
-    }
+    # 括弧の対応をまじめに考えるように変更
+#   if ((scalar(@open) == 0 and scalar(@close) == 0) || 
+#       (scalar(@open) != scalar(@close))) {
+#	$ignore_level = 1;
+#   }
 
     my $level = 0;
     @buf = ('');
     for my $i (0 .. scalar(@chars) - 1) {
 	my $char = $chars[$i];
+
 	$buf[-1] .= $char;
+	# ((括弧内でない && ．の両側にアルファベット・数字が現れていない) || $char が句読点) ならば
 	if (($ignore_level || $level == 0) && 
+	    # dotの前後にアルファベットや数字がある場合は切らない(URLなど)
 	    (($char =~ /^$dot$/o && 
-	      !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^$alphabet_or_number$/o && 
-		($i == 0 || $chars[$i - 1] =~ /^$alphabet_or_number$/o))) || # dotの前後にアルファベットや数字がある場合は切らない(URLなど)
+	      !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^$alphabet_or_number$/o && # 右側にアルファベットがあるかどうか
+		($i == 0 || $chars[$i - 1] =~ /^$alphabet_or_number$/o))) || # 右側にアルファベットがあるかどうか
 	     $char =~ /^$period$/o)) {
+
 	    if ($buf[-1] =~ /^(?:$period|$dot)$/o && scalar(@buf) > 1) { # periodの連続は前に結合
 		$buf[-2] .= $buf[-1];
 		$buf[-1] = '';
@@ -122,6 +127,7 @@ sub SplitJapanese {
 
 		my @buf3 = ();
 		foreach my $s (@buf2){
+		    # 文の先頭から（...）が始まっていたら
 		    if($s =~ /^(（.+?）)/){
 			my $sub_s = $1;
 			$s = "$'";
@@ -141,13 +147,14 @@ sub SplitJapanese {
 		    $buf[$size++] = $s;
 		}
 		push(@buf, ''); # 新しい文を始める
+		$level = 0; # 括弧の対応をリセット
 	    }
 	}
 	elsif ($char =~ /^$open_kakko$/o) {
 	    $level++;
 	}
 	elsif ($char =~ /^$close_kakko$/o) {
-	    $level--;
+	    $level-- if ($level > 0); # 開き括弧が既出であれば
 	}
     }
 
