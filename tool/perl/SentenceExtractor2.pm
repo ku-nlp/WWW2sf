@@ -13,6 +13,7 @@ $close_kakko = qr/）|〕|］|｝|＞|≫|」|』|】|\)|\]|\}/;
 $period = qr/。|？|！|♪|…/;
 $dot = qr/．/;
 $alphabet_or_number = qr/\xa3(?:[\xc1-\xda]|[\xe1-\xfa]|[\xb0-\xb9])/;
+$itemize_header = qr/$alphabet_or_number．/;
 
 @honorifics = qw(Adj. Adm. Adv. Asst. Bart. Brig. Bros. Capt. Cmdr. Col. Comdr. Con. Cpl. Dr. Ens. Gen. Gov. Hon. Hosp. Insp. Lt. M. MM. Maj. Messrs. Mlle. Mme. Mr. Mrs. Ms. Msgr. Op. Ord. Pfc. Ph. Prof. Pvt. Rep. Reps. Res. Rev. Rt. Sen. Sens. Sfc. Sgt. Sr. St. Supt. Surg. vs. v.);
 
@@ -63,8 +64,8 @@ sub FixParenthesis {
 	    }
 	}
 
-	# 当該文が^(アルファベット|数字)．$にマッチする場合、箇条書きと判断し、次の文とくっつける
- 	if ($slist->[$i] =~ /^$alphabet_or_number．$/) {
+	# 当該文が^$itemize_header$にマッチする場合、箇条書きと判断し、次の文とくっつける
+ 	if ($slist->[$i] =~ /^$itemize_header$/) {
  	    $slist->[$i] .= $slist->[$i + 1];
  	    splice(@$slist, $i + 1, $i + 1);
  	    redo;
@@ -174,14 +175,18 @@ sub SplitJapanese {
     return @buf;
 }
 
-sub concatSentences{
+sub concatSentences {
     my ($sents) = @_;
     my @buff = ();
     my $tail = scalar(@{$sents}) - 1;
-    while($tail > 0){
-	if($sents->[$tail - 1] =~ /(?:！|？|$close_kakko)$/ && $sents->[$tail] =~ /^(?:と|っ|です)/){
+    while ($tail > 0) {
+	if ($sents->[$tail - 1] =~ /(?:！|？|$close_kakko)$/ && $sents->[$tail] =~ /^(?:と|っ|です)/) {
 	    $sents->[$tail - 1] .= $sents->[$tail];
-	}else{
+	}
+	elsif ($sents->[$tail - 1] =~ /$itemize_header$/ && $sents->[$tail] =~ /^(?:と|や|の)($itemize_header)?/) {
+	    $sents->[$tail - 1] .= $sents->[$tail];
+	}
+	else {
 	    unshift(@buff, $sents->[$tail]);
 	}
 	$tail--;
