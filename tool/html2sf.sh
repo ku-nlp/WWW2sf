@@ -15,7 +15,7 @@ formatwww_args=
 addknp_args=
 rawstring_args=
 
-while getopts abfjkpPhB OPT
+while getopts abfjkpPhBs OPT
 do  
     case $OPT in
 	a)  rawstring_args="--all"
@@ -36,6 +36,8 @@ do
         p)  formatwww_args="--include_paren $formatwww_args"
             ;;
         P)  formatwww_args="--divide_paren $formatwww_args"
+            ;;
+        s)  formatwww_args="--save_all $formatwww_args"
             ;;
         h)  usage
             ;;
