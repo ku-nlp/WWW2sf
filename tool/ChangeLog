@@ -1,3 +1,11 @@
+2007-11-12  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* perl/SentenceFormatter.pm, scripts/format-www.perl, scripts/format-www-xml.perl:
+	全体削除をせず、すべて保持するオプション(--save_all)を追加.
+
+	* html2text.sh, html2sf.sh:
+	Added "-s" (--save_all) option.
+
 2007-11-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtor2.pm:
