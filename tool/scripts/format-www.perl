@@ -11,7 +11,8 @@ use strict;
 
 our (%opt);
 
-GetOptions(\%opt, 'head:s', 'include_paren', 'divide_paren', 'pagenum=i');
+GetOptions(\%opt, 'head:s', 'include_paren', 'divide_paren', 'pagenum=i', 'save_all');
+# --save_all: 全体削除しない
 # --include_paren: 括弧を削除しない
 # --divide_paren: 括弧を別文として出力
 # --pagenum: 開始ページ番号を指定

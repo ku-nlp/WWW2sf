@@ -4,7 +4,8 @@ package SentenceFormatter;
 # method: FormatSentence
 
 # 以下のオプションはnewに渡す
-# --include_paren: 括弧は処理せず、元の文に含める(また、他の全体削除もできるだけ含める)
+# --save_all: 全体削除しない
+# --include_paren: 括弧は処理せず、元の文に含める
 # --divide_paren: 括弧を原文から取り除き、別の文として分割する
 #                 原文のIDに"-01"を付加し、括弧文のIDは"-02", "-03",.. となる
 #                 (括弧がなくても、原文のIDに"-01"が付加される)
@@ -36,27 +37,28 @@ sub FormatSentence {
     my (@char_array) = split(//, $sentence);
 
      # "【"，"◇"，"▽"，"●"，"＜"，"《"で始まる文は全体を削除
-    if (!$this->{opt}{'include_paren'} and $sentence =~ /^(　)*(□|■|◇|◆|▽|△|▼|▲|○|◎|●|〇|◯|★|☆|・|＜|《|【|［)/) { # ］
+    if (!$this->{opt}{'save_all'} and !$this->{opt}{'include_paren'} and 
+	$sentence =~ /^(　)*(□|■|◇|◆|▽|△|▼|▲|○|◎|●|〇|◯|★|☆|・|＜|《|【|［)/) { # ］
 	return ({sid => $sid, comment => "全体削除:$sentence", sentence => undef});
     }
 
     # "。"が内部に5回以上または長さ256文字以上(多くは引用文)は全体を削除
-    if ($sentence =~ /^.+。.+。.+。.+。.+。.+/ || length($sentence) >= 256) {
+    if (!$this->{opt}{'save_all'} and ($sentence =~ /^.+。.+。.+。.+。.+。.+/ or length($sentence) >= 256)) {
 	return ({sid => $sid, comment => "全体削除:$sentence", sentence => undef});
     }
 
     # "………"だけの文は全体を削除
-    if ($sentence =~ /^(…)+$/) {
+    if (!$this->{opt}{'save_all'} and $sentence =~ /^(…)+$/) {
 	return ({sid => $sid, comment => "全体削除:$sentence", sentence => undef});
     }
 
     # "｜"を含む文は全体を削除 (メニューなど)
-    if (!$this->{opt}{'include_paren'} and &CheckChar(\@char_array, '｜|┃')) {
+    if (!$this->{opt}{'save_all'} and &CheckChar(\@char_array, '｜|┃')) {
 	return ({sid => $sid, comment => "全体削除:$sentence", sentence => undef});
     }
 
     # すべて漢字なら全体を削除
-    if (!$this->{opt}{'include_paren'} and &CheckKanji(\@char_array)) {
+    if (!$this->{opt}{'save_all'} and &CheckKanji(\@char_array)) {
 	return ({sid => $sid, comment => "全体削除:$sentence", sentence => undef});
     }
 
@@ -162,12 +164,12 @@ sub FormatSentence {
             last;
 	}                       # 有効部分がなければ全体削除
     }
-    if (!$this->{opt}{'include_paren'} and $enu_num > 2) {         # （１）（２）とあれば全体削除
+    if (!$this->{opt}{'save_all'} and !$this->{opt}{'include_paren'} and $enu_num > 2) { # （１）（２）とあれば全体削除
 	$flag = 0;
     }
 
     if ($flag == 0) {
-	if ($this->{opt}{'include_paren'}) {
+	if ($this->{opt}{'save_all'} or $this->{opt}{'include_paren'}) {
 	    return ({sid => $sid, comment => undef, sentence => $sentence});
 	}
 	else {

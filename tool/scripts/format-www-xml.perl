@@ -15,7 +15,8 @@ use encoding 'utf8';
 use strict;
 
 our (%opt);
-GetOptions(\%opt, 'include_paren', 'divide_paren');
+GetOptions(\%opt, 'include_paren', 'divide_paren', 'save_all');
+# --save_all: 全体削除しない
 # --include_paren: 括弧を削除しない
 # --divide_paren: 括弧を別文として出力
 
