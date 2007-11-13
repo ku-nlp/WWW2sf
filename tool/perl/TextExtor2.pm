@@ -80,9 +80,8 @@ my $ALPHABET_OR_NUMBER = qr/\xa3(?:[\xc1-\xda]|[\xe1-\xfa]|[\xb0-\xb9])/;
 my $ITEMIZE__HEADER = qr/$ALPHABET_OR_NUMBER．/;
 my $CHARS_OF_BEGINNING_OF_ITEMIZATION = qr/、|，|：/;
 
-my %CHAR_MAP = ();
-$CHAR_MAP{'￣'} = '〜';
-
+my $NUMBER = qr/\xa3(?:[\xa0-\xb9])/;
+my $CHAR = qr/[^\x80-\xfe]|[\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe]/;
 
 sub new {
     my ($this, $text, $encoding, $opt) = @_;  # 対象となるHTMLファイルを引数として渡す
@@ -503,9 +502,12 @@ sub ProcessJapanese {
     $buf =~ s!(\xa5.)((?:ー|―|−|─|━|‐)+)!sprintf("%s%s", $1, 'ー' x (length($2) / 2))!ge;
 
     # Unicode変換のバグ
-    foreach my $ch (keys %CHAR_MAP) {
-	$buf =~ s/$ch/$CHAR_MAP{$ch}/g;
-    }
+
+    # 数字￣数字 → 数字〜数字
+    $buf =~ s/($NUMBER+)￣($NUMBER+)/\1〜\2/g;
+
+    # 数字(単位)￣数字(単位) → 数字(単位)〜数字(単位)
+    $buf =~ s/($NUMBER+)($CHAR{1,2})￣($NUMBER+)(\2)/\1\2〜\3\2/g;
 
     return $buf;
 }
