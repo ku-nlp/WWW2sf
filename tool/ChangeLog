@@ -1,3 +1,8 @@
+2007-11-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtor2.pm:
+	￣を〜へ強制的に変換するように変更．
+
 2007-11-12  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/SentenceFormatter.pm, scripts/format-www.perl, scripts/format-www-xml.perl:
