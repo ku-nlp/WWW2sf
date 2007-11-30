@@ -6,6 +6,8 @@ package SentenceExtractor2;
 # $Id$
 
 use vars qw($open_kakko $close_kakko $period $dot $alphabet_or_number @honorifics);
+use Encode;
+use Data::Dumper;
 
 $open_kakko  = qr/（|〔|［|｛|＜|≪|「|『|【|\(|\[|\{/;
 $close_kakko = qr/）|〕|］|｝|＞|≫|」|』|】|\)|\]|\}/;
@@ -14,6 +16,7 @@ $period = qr/。|？|！|♪|…/;
 $dot = qr/．/;
 $alphabet_or_number = qr/\xa3(?:[\xc1-\xda]|[\xe1-\xfa]|[\xb0-\xb9])/;
 $itemize_header = qr/$alphabet_or_number．/;
+my $euc_char = qr/[^\x80-\xfe]|[\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe]/;
 
 @honorifics = qw(Adj. Adm. Adv. Asst. Bart. Brig. Bros. Capt. Cmdr. Col. Comdr. Con. Cpl. Dr. Ens. Gen. Gov. Hon. Hosp. Insp. Lt. M. MM. Maj. Messrs. Mlle. Mme. Mr. Mrs. Ms. Msgr. Op. Ord. Pfc. Ph. Prof. Pvt. Rep. Reps. Res. Rev. Rt. Sen. Sens. Sfc. Sgt. Sr. St. Supt. Surg. vs. v.);
 
@@ -128,25 +131,25 @@ sub SplitJapanese {
  		}
 		push(@buf2, $sent);
 
-		my @buf3 = ();
-		foreach my $s (@buf2){
-		    # 文の先頭から（...）が始まっていたら
-		    if($s =~ /^(（.+?）)/){
-			my $sub_s = $1;
-			$s = "$'";
-			while($sub_s =~ m/(.+?(?:$period|$dot))/){
-			    push(@buf3, $1);
-			    $sub_s = "$'";
-			}
-			if($sub_s ne ''){
-			    push(@buf3, $sub_s);
-			}
-		    }
-		    push(@buf3, $s);
-		}
+#		my @buf3 = ();
+#		foreach my $s (@buf2){
+#		    # 文の先頭から（...）が始まっていたら
+# 		    if($s =~ /^(（.+?）)/){
+#			push(@buf3, $1);
+# 			$s = "$'";
+# 			while($sub_s =~ m/(.+?(?:$period|$dot))/){
+# 			    push(@buf3, $1);
+# 			    $sub_s = "$'";
+# 			}
+# 			if($sub_s ne ''){
+# 			    push(@buf3, $sub_s);
+# 			}
+# 		    }
+#		    push(@buf3, $s);
+#		}
 
 		my $size = scalar(@buf) - 1;
-		foreach my $s (@buf3){
+		foreach my $s (@buf2){
 		    $buf[$size++] = $s;
 		}
 		push(@buf, ''); # 新しい文を始める
