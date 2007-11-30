@@ -1,3 +1,11 @@
+2007-12-01  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtor2.pm:
+	空白が挿入されるバグを修正．A。(B)Cの時、A。(B)で文を区切るように変更．B-C間は、括弧の後に空白・改行がある場合区切るように変更．
+
+	* perl/SentenceExtractor2.pm:
+	括弧内の文を区切らないように変更．
+
 2007-11-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtor2.pm:
