@@ -10,6 +10,7 @@ use ConvertCode qw(convert_code);
 use Encode qw(encode decode);
 use vars qw($VERSION %TAG_DELIMITER %TAG_PREMODE %TAG_HEADING %TAG_LIST);
 use strict;
+use Data::Dumper;
 
 $VERSION = sprintf("%d.%d", q$Revision$ =~ /(\d+)\.(\d+)/);
 
@@ -336,6 +337,8 @@ sub new {
 	# 改行の処理
  	$buf =~ s/([^\x0a])\x0a+$/$1/; # 最後の改行を削除
  	$buf =~ s/^\x0a+([^\x0a])/$1/; # 頭の改行を削除
+	$buf =~ s/(。)(\(|（)/$1\x{0a}\x{0a}$2/g; # 。と（の間の改行は文区切りと見なす
+	$buf =~ s/(）|\))(\x0a| |　)/$1\x{0a}\x{0a}/g; # ）の後ろの改行、空白は文区切りと見なす
 	$buf =~ s/([^\x0a])\x0a([^\x0a])/$1 $2/g; # 単独の改行をスペースに (後でまわりをみて処理)
 
 	# 整形処理
@@ -397,6 +400,7 @@ sub new {
 
     my @buff2 = ();
     my $start_itemization = 0;
+    my $append_itemization = 0;
     for (my $i = 0; $i < scalar(@s_text); $i++) {
 	# 箇条書きかどうか
 	if ($s_text[$i] =~ /^$ITEMIZE__HEADER/) {
@@ -411,6 +415,7 @@ sub new {
 		#     ↓
 		# S1 次のお店＿・さえずり＿・のら酒房＿・串カツ屋＿は美味しいです。（＿は全角空白に読み替えてください）
 		$buff2[-1] .= ('　' . $s_text[$i]);
+		$append_itemization = 1;
 	    } else {
 		# 以下にお店を列挙します。
 		# ・さえずり
@@ -428,13 +433,14 @@ sub new {
 		push(@buff2, $s_text[$i]);
 	    }
 	} else {
-	    if ($start_itemization > 0) {
+	    if ($start_itemization > 0 && $append_itemization > 0) {
 		# は美味しいです。を連結
 		if (scalar(@buff2) < 1) {
 		    $buff2[0] = $s_text[$i];
 		} else {
 		    $buff2[-1] .= ('　' . $s_text[$i]);
 		}
+		$append_itemization = 0;
 	    } else {
 		push(@buff2, $s_text[$i]);
 	    }
