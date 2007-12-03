@@ -248,7 +248,7 @@ sub CheckHiragana {
     my ($list) = @_;
 
     for my $str (@$list) {
-	if ($str !~ /^p{Hiragana}/) {
+	if ($str !~ /^\p{Hiragana}/) {
 	    return 0;
 	}
     }
