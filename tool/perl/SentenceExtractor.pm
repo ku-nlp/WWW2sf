@@ -1,4 +1,4 @@
-package SentenceExtractor3;
+package SentenceExtractor;
 
 # 文章 -> 文 フィルタ
 # from TextExtor.pm (Japanese), sentence-boundary.pl (English)

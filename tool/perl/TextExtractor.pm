@@ -4,7 +4,7 @@
 package TextExtractor;
 use ModifiedTokeParser;
 use HTML::Entities;
-use SentenceExtractor3;
+use SentenceExtractor;
 use HankakuZenkaku qw(ascii_h2z h2z4japanese_utf8);
 use ConvertCode qw(convert_code);
 use Encode qw(encode decode);
@@ -355,7 +355,7 @@ sub extract_text {
 		push(@buf2, $x);
 	    } else {
 		# 句読点で区切る
-		push(@buf2, SentenceExtractor3->new($x, $this->{opt}{language})->GetSentences());
+		push(@buf2, SentenceExtractor->new($x, $this->{opt}{language})->GetSentences());
 	    }
 	}
 
