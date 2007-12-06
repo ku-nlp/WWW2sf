@@ -13,6 +13,7 @@ package SentenceFormatter;
 # $Id$
 
 use utf8;
+use Emoticon;
 use strict;
 
 our @enu = ('０', '１', '２', '３', '４', '５', '６', '７', '８', '９');
@@ -22,7 +23,9 @@ our %PARENE = ('（' => '）'); # ('（' => '）', '＜' => '＞', '〈' => '〉
 sub new {
     my ($this, $opt) = @_;
 
-    $this = {opt => $opt};
+    $this = {opt => $opt, 
+	     Emoticon => new Emoticon, 
+	    };
 
     bless $this;
 }
@@ -75,6 +78,9 @@ sub FormatSentence {
 	$check_array[2] = 0;
     }
 
+    # 顔文字のチェック
+    my @emoticon_array = $this->{Emoticon}->check_emoticon(\@char_array);
+
     # '（…）'の削除，ただし，'（１）'，'（２）'の場合は残す
     my $enu_num = 1;
     my $paren_start = -1;
@@ -83,6 +89,8 @@ sub FormatSentence {
     my $paren_start_char = '';
 
     for (my $i = 0; $i < @char_array; $i++) {
+	next if $emoticon_array[$i] == 1; # 顔文字の中はスキップ
+
 	if ($char_array[$i] =~ /^($PARENB)$/) {
 	    $paren_start_char = $1;
 	    $paren_start = $i if $paren_level == 0;
