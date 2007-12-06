@@ -1,3 +1,9 @@
+2007-12-06  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* perl/Emoticon.pm, perl/Emoticon.dic: added.
+
+	* perl/SentenceFormatter.pm: 顔文字対応
+
 2007-12-03  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/SentenceFormatter.pm: Bug fix.
