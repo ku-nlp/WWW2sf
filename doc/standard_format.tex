@@ -1,5 +1,5 @@
-%#!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi
-%!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; ps2pdf -sPAPERSIZE=a4 -dNOKANJI standard_format.ps
+%!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi
+%#!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; ps2pdf -sPAPERSIZE=a4 -dNOKANJI standard_format.ps
 %!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; psnup -2 standard_format.ps > standard_format_2.ps 
 %!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; psnup -2 standard_format.ps > standard_format_2.ps ; ps2pdf -sPAPERSIZE=a4 -dNOKANJI standard_format_2.ps
 \documentclass[a4j]{jarticle}
@@ -497,6 +497,7 @@ HTMLから標準フォーマットへの変換ツールを開発した。
 
 \begin{itemize}
 %\itemsep=-1mm
+ \item \textbf{「A。(C) B。」のパターンは「A」「(C)」「B」の3つに区切る}
  \item \textbf{日付だけからなる文も一文とする}
      \begin{itemize}
       \item 「2006年10月09日。」
@@ -539,12 +540,13 @@ HTMLから標準フォーマットへの変換ツールを開発した。
 
 \subsection{括弧処理\label{kakko}}
 
-
 括弧の使われ方も、新聞と比べるとずっと多様であり、構文情報付与の際の扱い
 が問題となる。
 
 本研究では、原則として、\textbf{括弧部分を元の文から取り除き、別の文とし
-て扱う。}
+て扱う。}\footnote{
+顔文字の括弧は以下の括弧処理の対象外である。
+}
 その際、元の文のID末尾に「-01」を付与し、取り除かれて別の文となった文の
 IDには「-02」「-03」「-04」等を付与する。
 
