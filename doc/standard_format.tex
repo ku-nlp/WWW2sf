@@ -1,7 +1,7 @@
-%!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi
+%#!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi
 %!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; ps2pdf -sPAPERSIZE=a4 -dNOKANJI standard_format.ps
 %!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; psnup -2 standard_format.ps > standard_format_2.ps 
-%#!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; psnup -2 standard_format.ps > standard_format_2.ps ; ps2pdf -sPAPERSIZE=a4 -dNOKANJI standard_format_2.ps
+%!platex standard_format.tex ; dvips -o standard_format.ps standard_format.dvi ; psnup -2 standard_format.ps > standard_format_2.ps ; ps2pdf -sPAPERSIZE=a4 -dNOKANJI standard_format_2.ps
 \documentclass[a4j]{jarticle}
 \usepackage{graphicx}
 \usepackage{soberj}
@@ -10,6 +10,7 @@
 \usepackage{pstricks,pst-node}
 \usepackage{fancybox}
 \usepackage{multirow}
+\usepackage{url}
 %\setlength{\oddsidemargin}{-15mm}\setlength{\textwidth}{187mm}
 %\setlength{\topmargin}{-15mm}\setlength{\headheight}{0mm}
 %\setlength{\textheight}{250mm}\setlength{\footskip}{10mm}
@@ -432,7 +433,7 @@ EOS]]>
 我々は、標準フォーマットの制定とともに、
 HTMLから標準フォーマットへの変換ツールを開発した。
 本節では、この変換で最も問題となる、Webページからの日本語文の抽出方
-法について、その大枠を述べる。
+法について述べる。
 
 我々のツールの日本語文抽出の大枠は以下の通りである。
 
@@ -440,9 +441,10 @@ HTMLから標準フォーマットへの変換ツールを開発した。
  \item まず、日本語ページかどうか判定する。
        これには、文字コードや、日本語の助詞（「が」「を」「に」等）の有
        無などの情報を利用する。
- \item 次に、ページを文リストへ分割する。
-       これには、HTMLタグ（\texttt{<br>}や\texttt{<p>}など）と句点を利用
-       する。
+ \item 次に、ページを文リストへ分割する
+       （\S\ref{bunkugiri}、\S\ref{kakko}参照）。
+%       これには、HTMLタグ（\texttt{<br>}や\texttt{<p>}など）と句点を利用
+%       する。
  \item 最後に、文リストから日本語文だけを抽出する。
        これは、日本語ページと判定されていても、文ごとに見ると英語の場合
        もあるためである。
@@ -487,6 +489,264 @@ HTMLから標準フォーマットへの変換ツールを開発した。
 %%       この結果、14億日本語文(単語のみも含む)を得た。実際のところ、まと
 %%       もな日本語文は5〜6億文と思われる。
 %\end{enumerate}
+
+\subsection{文分割\label{bunkugiri}}
+
+ブログ記事の文区切りは、新聞記事と比べると、ずっとはっきりしない。
+現在、次のような文区切り方針を設定している。
+
+\begin{itemize}
+%\itemsep=-1mm
+ \item \textbf{日付だけからなる文も一文とする}
+     \begin{itemize}
+      \item 「2006年10月09日。」
+      \item \scalebox{.88}[1]{\url{http://nlp.kuee.kyoto-u.ac.jp/blog/KUNTT_blog/2006/10/30211804.html}}
+     \end{itemize}
+ \item \textbf{URLだけからなる行も一文とする}
+     \begin{itemize}
+      \item 「http://www.shigureden.com/」
+      \item \scalebox{.88}[1]{\url{http://nlp.kuee.kyoto-u.ac.jp/blog/KUNTT_blog/2006/10/30211804.html}}
+     \end{itemize}
+ \item \textbf{箇条書きの一行一行をそれぞれ一文とする}
+     \begin{itemize}
+      \item 「・藤井大丸\\
+	    \hspace*{2zw}セレクトショップが多いです。大学生だとUNITEDARROWSや...\\
+            \hspace*{1zw}・紀伊國屋書店\\
+            \hspace*{2zw}新京極通三条下ルらしいです。前は河原町にあったブック...」
+      \item \scalebox{.88}[1]{\url{http://nlp.kuee.kyoto-u.ac.jp/blog/KUNTT_blog/2006/10/30105756.html}}
+     \end{itemize}
+ \item \textbf{URLを含む文も一文とする}
+     \begin{itemize}
+      \item 「URL入力画面が出ますので,http://url/とでも入力すると,
+	    http//url/と出ます.」
+      \item \scalebox{.88}[1]{\url{http://nlp.kuee.kyoto-u.ac.jp/blog/KUNTT_blog/2006/10/30142420.html}}
+     \end{itemize}
+ \item \textbf{途中に文末記号があっても、明らかな一文である場合は区切らない}
+     \begin{itemize}
+      \item 「散歩？？かな。」
+      \item \scalebox{.88}[1]{\url{http://nlp.kuee.kyoto-u.ac.jp/blog/KUNTT_blog/2006/10/30140027.html}}
+     \end{itemize}
+ \item \textbf{文開始直前、あるいは文終了直後の記号も、その文に含める}
+     \begin{itemize}
+      \item 「そんな日本語ないか。笑」
+      \item \scalebox{.88}[1]{\url{http://nlp.kuee.kyoto-u.ac.jp/blog/KUNTT_blog/2006/10/30140027.html}}
+      \item 「脱力。ORZ」
+      \item \scalebox{.88}[1]{\url{http://nlp.kuee.kyoto-u.ac.jp/blog/KUNTT_blog/2006/11/16145407.html}}
+      \item 「P.S.数年前、電車の...」
+      \item \scalebox{.88}[1]{\url{http://nlp.kuee.kyoto-u.ac.jp/blog/KUNTT_blog/2006/10/30003434.html}}
+     \end{itemize}
+\end{itemize}
+
+\subsection{括弧処理\label{kakko}}
+
+
+括弧の使われ方も、新聞と比べるとずっと多様であり、構文情報付与の際の扱い
+が問題となる。
+
+本研究では、原則として、\textbf{括弧部分を元の文から取り除き、別の文とし
+て扱う。}
+その際、元の文のID末尾に「-01」を付与し、取り除かれて別の文となった文の
+IDには「-02」「-03」「-04」等を付与する。
+
+\begin{description}
+ \item[括弧処理前：] [001]「大」の字はいくつかのブロック（松明を掲げるのかな？）
+	    から構成されていました。
+ \item[括弧処理語：] [001-01]「大」の字はいくつかのブロック
+	    から構成されていました。\\
+	    \hspace*{1.5cm} [001-02]松明を掲げるのかな？
+\end{description}
+
+さらに、括弧文には次のラベルを与える。
+
+\begin{itemize}
+\itemsep=-1mm
+ \item 括弧タイプ: $\cdots$ 年齢, 読み, 日付, 金額, 場所, 所属, 同義, 文,
+     その他
+ \item 括弧位置: 元の文における文字単位の位置
+ \item 括弧始:（
+ \item 括弧終:）
+\end{itemize}
+
+
+\subsubsection{括弧タイプ「年齢」の例}
+
+\textbf{括弧処理前}
+
+\noindent
+\# S-ID:950101016-001 \\
+共産党は一日付の機関紙「赤旗」で、宮本顕治議長（８６）のインタビューを掲載した。 
+
+\textbf{括弧処理後}
+
+\noindent
+\# S-ID:950101016-001-01 \\
+共産党は一日付の機関紙「赤旗」で、宮本顕治議長のインタビューを掲載した。 \\
+\# S-ID:950101016-001-02 括弧タイプ:年齢 括弧位置:23 括弧始:（ 括弧終:） \\
+８６
+
+\subsubsection{括弧タイプ「読み」の例}
+
+\textbf{括弧処理前}
+
+\noindent
+\# S-ID:950101010-002\\
+こんな単純な発想にあやうさ、脆（もろ）さを感じる人は多いでしょうが、混迷
+の転換期を乗り切るため「日本は変わった」ことの証（あかし）であり、メッセー
+ジになるはずです。
+
+\textbf{括弧処理後}
+
+\noindent
+\# S-ID:950101010-002-01\\
+こんな単純な発想にあやうさ、脆さを感じる人は多いでしょうが、混迷の転換期
+を乗り切るため「日本は変わった」ことの証であり、メッセージになるはずです。\\
+\# S-ID:950101010-002-02 括弧タイプ:読み 括弧位置:15 括弧始:（ 括弧終:）\\
+もろ\\
+\# S-ID:950101010-002-03 括弧タイプ:読み 括弧位置:60 括弧始:（ 括弧終:）\\
+あかし
+
+\subsubsection{括弧タイプ「日付」の例}
+
+\textbf{括弧処理前}
+
+\noindent
+\# S-ID:950101020-007\\
+日本の選挙制度は一八八九（明治二十二）年、小選挙区制中心でスタートしたの
+だが、現行の制度は、この男子普選法が原型となっている。
+
+\textbf{括弧処理後}
+
+\noindent
+\# S-ID:950101020-007-01\\
+日本の選挙制度は一八八九年、小選挙区制中心でスタートしたのだが、現行の制
+度は、この男子普選法が原型となっている。\\
+\# S-ID:950101020-007-02 括弧タイプ:日付 括弧位置:12 括弧始:（ 括弧終:）\\
+明治二十二
+
+\subsubsection{括弧タイプ「金額」の例}
+
+\textbf{括弧処理前}
+
+\noindent
+\# S-ID:950101071-031\\
+昨年十月には総額六百万カナダドルを投じて、鉄筋三階建ての編集・印刷センター
+を建設した。
+
+\textbf{括弧処理後}
+
+\noindent
+\# S-ID:950101071-031-01\\
+昨年十月には総額六百万カナダドル（約四億四千百万円）を投じて、鉄筋三階建
+ての編集・印刷センターを建設した。\\
+\# S-ID:950101071-031-02 括弧タイプ:金額 括弧位置:16 括弧始:（ 括弧終:）\\
+約四億四千百万円
+
+\subsubsection{括弧タイプ「場所」の例}
+
+\textbf{括弧処理前}
+
+\noindent
+\# S-ID:950101091-004\\
+２年前の世界選手権（カナダ・ハミルトン）で、男子３、女子１の金メダルを獲
+得した開催国・日本がお家芸の座を守れるか。
+
+\textbf{括弧処理後}
+
+\noindent
+\# S-ID:950101091-004-01\\
+２年前の世界選手権で、男子３、女子１の金メダルを獲得した開催国・日本がお
+家芸の座を守れるか。
+\# S-ID:950101091-004-02 括弧タイプ:場所 括弧位置:9 括弧始:（ 括弧終:）\\
+カナダ・ハミルトン
+
+\subsubsection{括弧タイプ「所属」の例}
+
+\textbf{括弧処理前}
+
+\noindent
+\# S-ID:950101091-009\\
+女子では、４８キロ級で６１連勝中の田村亮子（帝京大）に連覇の期待がかかる。
+
+\textbf{括弧処理後}
+
+\noindent
+\# S-ID:950101091-009-01\\
+女子では、４８キロ級で６１連勝中の田村亮子に連覇の期待がかかる。\\
+\# S-ID:950101091-009-02 括弧タイプ:所属 括弧位置:21 括弧始:（ 括弧終:）
+\\
+帝京大
+
+\subsubsection{括弧タイプ「同義」の例}
+
+\textbf{括弧処理前}
+
+\noindent
+\# S-ID:950101018-001\\
+アジア・太平洋経済協力会議（ＡＰＥＣ）は、今年五月にもソウルで情報・通信
+担当閣僚を集めた「ＡＰＥＣ情報サミット」を開催する。
+
+\textbf{括弧処理後}
+
+\noindent
+\# S-ID:950101018-001-01\\
+アジア・太平洋経済協力会議は、今年五月にもソウルで情報・通信担当閣僚を集
+めた「ＡＰＥＣ情報サミット」を開催する。\\
+\# S-ID:950101018-001-02 括弧タイプ:同義 括弧位置:13 括弧始:（ 括弧終:）\\
+ＡＰＥＣ
+
+\subsubsection{括弧タイプ「文」の例}
+
+\textbf{括弧処理前}
+
+\noindent
+\# S-ID:950101067-003\\
+秋山和慶の音楽監督就任三十周年、そして第四百回定期という記念すべき機会に
+演奏された、シェーンベルクの未完のオペラ《モーゼとアロン》のサントリーホー
+ルにおける演奏会形式による（しかし作曲者の指示を守り、可能なかぎりの演出、
+装置や照明等を備えた）公演は、この作曲家が生涯の課題とした宗教的命題と芸
+術表現の問題を一気呵成（かせい）、劇的に演じきるものであり、「旧約」の成
+立の場を感動的に表現するものであった。
+
+\textbf{括弧処理後}
+
+\noindent
+\# S-ID:950101067-003-01\\
+秋山和慶の音楽監督就任三十周年、そして第四百回定期という記念すべき機会に
+演奏された、シェーンベルクの未完のオペラ《モーゼとアロン》のサントリーホー
+ルにおける演奏会形式による公演は、この作曲家が生涯の課題とした宗教的命題
+と芸術表現の問題を一気呵成、劇的に演じきるものであり、「旧約」の成立の場
+を感動的に表現するものであった。\\
+\# S-ID:950101067-003-02 括弧タイプ:文 括弧位置:86 括弧始:（ 括弧終:）\\
+しかし作曲者の指示を守り、可能なかぎりの演出、装置や照明等を備えた\\
+\# S-ID:950101067-003-03 括弧タイプ:読み 括弧位置:157 括弧始:（ 括弧終:）\\
+かせい
+
+\subsubsection{括弧タイプ「その他」の例}
+
+\textbf{括弧処理前}
+
+\noindent
+\# S-ID:950101071-029\\
+地元最大の中国語日刊新聞「星島日報」（本社・香港、四万八千部、古偉凱編集
+局長）が、その実態を語る。
+
+\textbf{括弧処理後}
+
+\noindent
+\# S-ID:950101071-029-01\\
+地元最大の中国語日刊新聞「星島日報」が、その実態を語る。\\
+\# S-ID:950101071-029-02 括弧タイプ:その他 括弧位置:18 括弧始:（ 括弧終:）\\
+本社・香港、四万八千部、古偉凱編集局長
+
+\subsubsection{例外}
+
+以下のような列挙のための数字付きの括弧は例外とし、文中に括弧を入れたまま
+とする。
+
+\# S-ID:950105011-003-01\\
+改革の柱として（１）財界・大企業本位の政治にメスを入れる（２）日米安保と
+在日米軍の横暴に取り組む――の二点を挙げた。\\
+
 
 \section{おわりに}
 
