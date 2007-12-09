@@ -22,7 +22,7 @@ sub usage {
 }
 
 our (%opt, $writer, $filter);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s');
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s', 'cndbfile=s');
 $opt{language} = 'japanese' unless $opt{language};
 $opt{blog} = 'none' unless $opt{blog};
 
