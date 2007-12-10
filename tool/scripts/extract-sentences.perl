@@ -44,11 +44,20 @@ if ($ARGV[0] and -f $ARGV[0]) {
     $timestamp = strftime("%Y-%m-%d %T", localtime($st->mtime));
 }
 
+my $flag = -1;
 while (<>) {
     if (!$buf and /^HTML (\S+)/) { # 1行目からURLを取得(read-zaodataが出力している)
 	$url = $1;
     }
-    $buf .= $_;
+
+    # ヘッダーが読み終わるまでバッファリングしない
+    if ($flag > 0) {
+	$buf .= $_;
+    } else {
+	if ($_ =~ /^\r$/) {
+	    $flag = 1;
+	}
+    }
 }
 exit 0 unless $buf;
 
@@ -130,6 +139,12 @@ if($opt{blog} eq 'mt'){
 	$buf = $before_menu . $menu_part;
     }
 }
+
+# クローラのヘッダを削除
+$buf =~ s/^(?:\d|.|\n)*?(<html)/\1/i;
+
+# クローラのフッタを削除
+$buf =~ s/^((?:.|\n)+<\/html>)(.|\n)*?(\d|\r|\n)+$/\1\n/i;
 
 # HTMLを文のリストに変換
 my $parsed = new TextExtor2(\$buf, 'utf8', \%opt);
