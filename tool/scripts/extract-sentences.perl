@@ -155,6 +155,7 @@ if ($opt{checkzyoshi}) {
     for my $i (0 .. $#{$parsed->{TEXT}}) {
 	$allbuf .= $parsed->{TEXT}[$i];
     }
+
     my $ratio = &postp_check($allbuf);
     exit if $ratio <= $Threshold_Zyoshi;
 }
@@ -176,7 +177,35 @@ sub print_page_header {
 
     if ($opt{xml}) {
 	$writer->startTag('StandardFormat', Url => $url, OriginalEncoding => $encoding, Time => $timestamp);
-	$writer->startTag('Text');
+
+	$writer->startTag('Header');
+	for my $i (0 .. $#{$parsed->{TEXT}}) {
+	    my $line = $parsed->{TEXT}[$i];
+	    if ($opt{xml}) {
+		if(defined($parsed->{PROPERTY}[$i]{title})){
+		    $line = &convert_code($line, 'euc-jp', 'utf8');
+
+		    if ($opt{checkjapanese}) {
+			my $score = sprintf("%.5f", $Filter->JapaneseCheck($line));
+			my $is_Japanese = $score > $Threshold_Filter ? '1' : '0';
+			
+			$writer->startTag('Title', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
+		    } else {
+			$writer->startTag('Title', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
+		    }
+
+		    $writer->startTag('RawString');
+		    $writer->characters($line);
+		    $writer->endTag('RawString');
+		    $writer->endTag('Title');
+
+		    last;
+		}
+	    }
+	}
+	$writer->endTag('Header');
+
+	$writer->startTag('Text', Type => 'default');
     }
     else {
 	if ($url) {
@@ -194,7 +223,10 @@ sub print_extract_sentences {
 
     for my $i (0 .. $#{$parsed->{TEXT}}) {
 	my $line = $parsed->{TEXT}[$i];
+
 	if ($opt{xml}) {
+	    next if (defined($parsed->{PROPERTY}[$i]{title}));
+
 	    $prev_offset = $parsed->{PROPERTY}[$i]{offset};
 	    $prev_length = $parsed->{PROPERTY}[$i]{length};
 
