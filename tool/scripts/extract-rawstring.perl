@@ -25,18 +25,18 @@ while (<STDIN>) {
 
 my $parser = new XML::LibXML;
 my $doc = $parser->parse_string($buf);
-&extract_rawstring($doc);
+&extract_rawstring($doc, 'Title');
+&extract_rawstring($doc, 'S');
 
 
 sub extract_rawstring {
-    my ($doc) = @_;
+    my ($doc, $tagName) = @_;
 
-    my $sid;
-    for my $sentence ($doc->getElementsByTagName('S')) { # for each S
+    for my $sentence ($doc->getElementsByTagName($tagName)) { # for each S
 	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
+	my $sid = $sentence->getAttribute('Id'); # the title string has 0 as its Id.
 	next if !$opt{all} and !$jap_sent_flag; # not Japanese
 
-	my $sid = $sentence->getAttribute('Id');
 	for my $s_child_node ($sentence->getChildNodes) {
 	    if ($s_child_node->nodeName eq 'RawString') { # one of the children of S is Text
 		for my $node ($s_child_node->getChildNodes) {
