@@ -70,6 +70,9 @@ sub FixParenthesis {
 
 	# 当該文が^$itemize_header$にマッチする場合、箇条書きと判断し、次の文とくっつける
  	if ($slist->[$i] =~ /^$itemize_header$/) {
+	    # 次の文がなければnext
+	    next unless defined $slist->[$i + 1];
+
  	    $slist->[$i] .= $slist->[$i + 1];
  	    splice(@$slist, $i + 1, $i + 1);
  	    redo;
