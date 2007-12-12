@@ -17,7 +17,7 @@ base_dir=`dirname $0`
 ScriptsDIR=$base_dir
 PERL=perl
 ParseCMD=knp
-KNParg="-dpnd -tab -postprocess"
+KNParg="-dpnd-use-ncf -tab -postprocess"
 RCarg=
 
 jmn=$1
