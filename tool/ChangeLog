@@ -1,3 +1,8 @@
+2007-12-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/parse-comp.sh:
+	名詞格フレームをデフォルトでひくように変更
+
 2007-12-10  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/SentenceExtractor.pm:
