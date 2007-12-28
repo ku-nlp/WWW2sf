@@ -13,12 +13,21 @@ use HtmlGuessEncoding;
 
 my (%opt);
 # gzip圧縮済ファイルを処理するためのオプション
-GetOptions(\%opt, 'z');
+GetOptions(\%opt, 'utf8', 'overwrite', 'z');
 
 &main();
 
+sub usage {
+    print "Usage: $0 [utf8] [overwrite] [z] htmlfile\n";
+}
+
 sub main {
     my $file = shift(@ARGV);
+    if (!$file) {
+	&usage();
+	exit;
+    }
+
     my $HtmlGuessEncoding = new HtmlGuessEncoding({language => 'japanese'});
     if ($opt{z}) {
 	open(READER, "zcat $file |");
@@ -33,14 +42,26 @@ sub main {
     close(READER);
 
     # HTML文書の文字コードを取得すると同時にutf8に変更
-    if ($HtmlGuessEncoding->ProcessEncoding(\$buff, {change_to_utf8 => 1})) {
+    if ($HtmlGuessEncoding->ProcessEncoding(\$buff, {change_to_utf8 => !$opt{utf8}})) {
 	# charset属性が指定されている場合は、その値をutf8に変更
-	if ($buff =~ /(<meta [^>]*content=[" ]*text\/html[; ]*)(charset=([^" >]+))/i) {
-	    my $fwd = $1;
-	    my $match = $2;
-	    $buff =~ s/$fwd$match/${fwd}charset=utf\-8/;
+ 	if ($buff =~ /(<meta [^>]*content=[" ]*text\/html[; ]*)(charset=([^" >]+))/i) {
+ 	    my $fwd = $1;
+ 	    my $match = $2;
+ 	    $buff =~ s/$fwd$match/${fwd}charset=utf\-8/;
+ 	}
+
+	if ($opt{overwrite}) {
+	    if ($opt{z}) {
+		open(WRITER, "| gzip > $file");
+	    } else {
+		open(WRITER, "> $file");
+	    }
+
+	    print WRITER $buff;
+	    close(WRITER);
+	} else {
+	    print $buff;
 	}
-	print $buff;
     } else {
 	die "error\n";
     }
