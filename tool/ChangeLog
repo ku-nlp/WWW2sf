@@ -1,5 +1,10 @@
 2007-12-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
+	* scripts/to_utf8.perl:
+	utf8に変更するかどうかをオプション化．上書きオプションの追加．
+
+2007-12-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
 	* scripts/parse-comp.sh:
 	名詞格フレームをデフォルトでひくように変更
 
