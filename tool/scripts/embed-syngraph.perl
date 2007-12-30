@@ -22,7 +22,7 @@ if (!$opt{dir} || !$opt{syndbdir}) {
     exit;
 }
 
-# ²¼°Ì¸ì¿ô¤¬ $opt{hypocut}¤è¤êÂç¤­¤±¤ì¤Ð¡¢SYN¥Î¡¼¥É¤ò¤Ï¤ê¤Ä¤±¤Ê¤¤
+# ä¸‹ä½èªžæ•°ãŒ $opt{hypocut}ã‚ˆã‚Šå¤§ãã‘ã‚Œã°ã€SYNãƒŽãƒ¼ãƒ‰ã‚’ã¯ã‚Šã¤ã‘ãªã„
 $opt{hypocut} = 9 unless $opt{hypocut};
 
 my $SynGraph = new SynGraph($opt{syndbdir});
@@ -35,7 +35,7 @@ foreach my $file (sort readdir(DIR)){
     print STDERR "\rln: $cnt" if ($cnt % 13 == 0);
     $cnt++;
 
-    # SynGraph ¤Î¥ª¥×¥·¥ç¥ó
+    # SynGraph ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³
     my $regnode_option;
     $regnode_option->{relation} = ($opt{hyponymy}) ? 1 : 0;
     $regnode_option->{antonym} = ($opt{antonymy}) ? 1 : 0;
@@ -55,7 +55,7 @@ foreach my $file (sort readdir(DIR)){
     my $TAG_NAME = "Knp";
     while (<READER>) {
 	if($_ =~ /^\]\]\><\/Annotation>/){
-	    # KNP ²òÀÏ·ë²Ì½ªÎ»
+	    # KNP è§£æžçµæžœçµ‚äº†
 	    $knp_result = decode('utf8', $knp_result) unless (utf8::is_utf8($knp_result));
 	    if ($knp_result eq "EOS\n") {
 		$knp_result = undef;
@@ -65,14 +65,14 @@ foreach my $file (sort readdir(DIR)){
 		    my $result = new KNP::Result($knp_result);
 		    $result->set_id($sid++);
 		    
-		    # SynGraph²½
+		    # SynGraphåŒ–
 		    my $syn_result = $SynGraph->OutputSynFormat($result, $regnode_option);
 		    
 		    $syn_doc .= "      <Annotation Scheme=\"SynGraph\"><![CDATA[";
-		    $syn_doc .= encode('utf8', $syn_result); # SynGraph ·ë²Ì¤ÎËä¤á¹þ¤ß
+		    $syn_doc .= encode('utf8', $syn_result); # SynGraph çµæžœã®åŸ‹ã‚è¾¼ã¿
 		    $syn_doc .= "]]></Annotation>\n";
 		} catch Error with {
-		    # Knp ²òÀÏ·ë²Ì¤¬¶õ¤Î¾ì¹ç¤Ê¤É¤ÎÂÐ½è
+		    # Knp è§£æžçµæžœãŒç©ºã®å ´åˆãªã©ã®å¯¾å‡¦
 		    my $e = shift;
 		    print STDERR "Exception at line $e->{-line} in $e->{-file} file=$fp\n";
 		    print STDERR "knp_result=[" . encode('euc-jp', $knp_result) . "]\n";
@@ -82,14 +82,14 @@ foreach my $file (sort readdir(DIR)){
 		};
 	    }
 	} elsif ($_ =~ /.*\<Annotation Scheme=\"$TAG_NAME\"\>\<\!\[CDATA\[/){
-	    # KNP ²òÀÏ·ë²Ì³«»Ï
+	    # KNP è§£æžçµæžœé–‹å§‹
 	    $knp_flag = 1;
-	    $knp_result = "$'"; # <![CDATA[ °Ê¹ß¤ò¼èÆÀ
+	    $knp_result = "$'"; # <![CDATA[ ä»¥é™ã‚’å–å¾—
 	} elsif ($knp_flag > 0) {
-	    # KNP ²òÀÏ·ë²ÌÆâ¤Ç¤¢¤ì¤Ð $knp_result ¤Ç¥Ð¥Ã¥Õ¥¡¥ê¥ó¥°
+	    # KNP è§£æžçµæžœå†…ã§ã‚ã‚Œã° $knp_result ã§ãƒãƒƒãƒ•ã‚¡ãƒªãƒ³ã‚°
 	    $knp_result .= "$_";
 	} else {
-	    # SynGraphËä¤á¹þ¤ß¤Ë±Æ¶Á¤ò¼õ¤±¤Ê¤¤ÉôÊ¬¤Ï $syn_doc ¤Ç¥Ð¥Ã¥Õ¥¡¥ê¥ó¥°
+	    # SynGraphåŸ‹ã‚è¾¼ã¿ã«å½±éŸ¿ã‚’å—ã‘ãªã„éƒ¨åˆ†ã¯ $syn_doc ã§ãƒãƒƒãƒ•ã‚¡ãƒªãƒ³ã‚°
 	    $syn_doc .= $_;
 	}
     }
@@ -97,7 +97,7 @@ foreach my $file (sort readdir(DIR)){
 
     $fp =~ s/.gz$// if ($opt{z});
 
-    # ½ÐÎÏ
+    # å‡ºåŠ›
     open(WRITER, "> $fp.syn");
     print WRITER $syn_doc;
     close(WRITER)
