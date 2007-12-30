@@ -54,7 +54,8 @@ foreach my $file (sort readdir(DIR)){
     my $knp_flag = 0;
     my $TAG_NAME = "Knp";
     while (<READER>) {
-	if($_ =~ /^\]\]\><\/Annotation>/){
+	if ($_ =~ /^\]\]\><\/Annotation>(.+)$/) {
+	    my $end_tag = $1; # </S> or </Title>
 	    # KNP 解析結果終了
 	    $knp_result = decode('utf8', $knp_result) unless (utf8::is_utf8($knp_result));
 	    if ($knp_result eq "EOS\n") {
@@ -70,7 +71,7 @@ foreach my $file (sort readdir(DIR)){
 		    
 		    $syn_doc .= "      <Annotation Scheme=\"SynGraph\"><![CDATA[";
 		    $syn_doc .= encode('utf8', $syn_result); # SynGraph 結果の埋め込み
-		    $syn_doc .= "]]></Annotation>\n";
+		    $syn_doc .= "]]></Annotation>$end_tag\n";
 		} catch Error with {
 		    # Knp 解析結果が空の場合などの対処
 		    my $e = shift;
@@ -81,7 +82,7 @@ foreach my $file (sort readdir(DIR)){
 		    $knp_flag = 0;
 		};
 	    }
-	} elsif ($_ =~ /.*\<Annotation Scheme=\"$TAG_NAME\"\>\<\!\[CDATA\[/){
+	} elsif ($_ =~ /.*\<Annotation Scheme=\"$TAG_NAME\"\>\<\!\[CDATA\[/) {
 	    # KNP 解析結果開始
 	    $knp_flag = 1;
 	    $knp_result = "$'"; # <![CDATA[ 以降を取得
