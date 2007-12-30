@@ -2,6 +2,7 @@
 
 	* scripts/embed-syngraph.perl:
 	文字コードの変更（euc-jp -> utf8）
+	</S>, </Title>が出力されないバグを修正
 
 2007-12-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
