@@ -14,6 +14,12 @@ use utf8;
 use Unicode::Normalize;
 use Unicode::Japanese;
 use CharacterRange;
+use Data::Dumper;
+{
+    package Data::Dumper;
+    sub qquote { return shift; }
+}
+$Data::Dumper::Useperl = 1;
 
 $VERSION = sprintf("%d.%d", q$Revision$ =~ /(\d+)\.(\d+)/);
 
@@ -105,9 +111,8 @@ sub new {
     bless $this;
 }
 
-sub extract_text {
-    my ($this, $text, $encoding) = @_;
-
+sub detag {
+    my ($this, $raw_html, $opt) = @_;
     my $title = '';        # <TITLE>
     my $title_offset;      # titleのoffset(バイト単位)
     my $title_length;      # titleのバイト長
@@ -140,7 +145,7 @@ sub extract_text {
 
     # HTML::TokeParserでparseする
     # HTML::TokeParserを、offsetとlengthを返させるように修正したModifiedTokeParserを使う
-    my $parser = ModifiedTokeParser->new($text) or die $!;
+    my $parser = ModifiedTokeParser->new($raw_html) or die $!;
 
     # トークンを処理する
     while (my $token = $parser->get_token) {
@@ -177,11 +182,13 @@ sub extract_text {
 	    } elsif ($tag eq 'meta') {
 		my $name = $token->[2]->{name};
 		if ($name =~ /^keyword/i) {
-		    $keywords = NFKC($token->[2]->{content});
+#		    $keywords = NFKC($token->[2]->{content});
+		    $keywords = $token->[2]->{content};
 		    $keywords_offset = $offset;
 		    $keywords_length = $length;
 		} elsif ($name =~ /^description/i) {
-		    $description = NFKC($token->[2]->{content});
+#		    $description = NFKC($token->[2]->{content});
+		    $description = $token->[2]->{content};
 		    $description_offset = $offset;
 		    $description_length = $length;
 		}
@@ -252,7 +259,10 @@ sub extract_text {
 
 	# テキスト
         } elsif ($type eq 'T') {
-            my $text = NFKC($token->[1]);
+	    $count++ if ($opt->{always_countup});
+
+#           my $text = NFKC($token->[1]);
+            my $text = $token->[1];
 
 	    if ($mode{title}) {
 		$title = $text;
@@ -306,20 +316,29 @@ sub extract_text {
 	$property[2]->{length} = $description_length;
     }
 
+    return (\@text, \@property);
+}
+
+
+sub extract_text {
+    my($this, $raw_html) = @_;  # 対象となるHTMLファイルを引数として渡す
+
+    my ($text, $property) = $this->detag($raw_html);
+
     my @s_text;
     my @s_property;
     my $s_count = 0;
     my $s_num = 1;
     my $num_before = 0;
 
-    for (my $i = 0; $i < scalar(@text); $i++) {
-	next unless $text[$i];
-	next if $text[$i] =~ /^(?:　|\s)*$/;   # 空白は無視する
+    for (my $i = 0; $i < scalar(@$text); $i++) {
+	next unless $text->[$i];
+	next if $text->[$i] =~ /^(?:　|\s)*$/;   # 空白は無視する
 
 	### テキストへの前処理
 
 	# HTML 中の特殊文字をデコードする
-	my $buf = $text[$i];
+	my $buf = $text->[$i];
 	$buf =~ s/&nbsp;/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
 #	$buf = decode_entities($buf);
 
@@ -335,8 +354,7 @@ sub extract_text {
 	my @buf;
 	for my $str (split(/\n{2,}/, $buf)) { # 2個以上の改行で文を切る
 	    if ($this->{opt}{language} eq 'japanese') {
-		my $tmp = &ProcessJapanese($str, $property[$i]);
-		print $tmp . "\n";
+		my $tmp = &ProcessJapanese($str, $property->[$i]);
 		push(@buf, $tmp);
 	    }
 	    elsif ($this->{opt}{language} eq 'english') {
@@ -350,7 +368,7 @@ sub extract_text {
 
 	my @buf2;
 	foreach my $x (@buf) {
-	    if (defined($property[$i]->{title})) {
+	    if (defined($property->[$i]->{title})) {
 		# タイトルに関しては句読点区切りをしない
 		push(@buf2, $x);
 	    } else {
@@ -359,7 +377,7 @@ sub extract_text {
 	    }
 	}
 
-	if ($property[$i]->{num} == $num_before) {
+	if ($property->[$i]->{num} == $num_before) {
 	    $s_num--;
 	}
 
@@ -373,9 +391,9 @@ sub extract_text {
 		$y =~ s/(?:　)+$//;
 
 		$s_text[$s_count] = $y;
- 		for my $key (keys %{$property[$i]}) {
+ 		for my $key (keys %{$property->[$i]}) {
 		    if ($key ne 'num') {
-		        $s_property[$s_count]->{$key} = $property[$i]->{$key};
+		        $s_property[$s_count]->{$key} = $property->[$i]->{$key};
 		    }
 		}
 		$s_property[$s_count]->{num} = $s_num;
@@ -387,7 +405,7 @@ sub extract_text {
         if ($x == 0) {
             $s_num++;
         }
-	$num_before = $property[$i]->{num};
+	$num_before = $property->[$i]->{num};
     }
 
     my @buff2 = ();
@@ -452,21 +470,28 @@ sub extract_text {
 	    print "$i " . join(',', @p) . " $s_text[$i]\n";
 	}
     } elsif ($this->{opt}{debug} == 2) {
-	for (my $i = 0; $i <= $#text; $i++) {
+	for (my $i = 0; $i < scalar(@$text); $i++) {
 	    my @p;
-	    for my $key (sort keys %{$property[$i]}) {
-		if ($property[$i]->{$key}) {
-		    push @p, $key . '=' . $property[$i]->{$key};
+	    for my $key (sort keys %{$property->[$i]}) {
+		if ($property->[$i]->{$key}) {
+		    push @p, $key . '=' . $property->[$i]->{$key};
 		} else {
 		    push @p, $key;
 		}
 	    }
-	    print "$i " . join(',', @p) . " $text[$i]\n";
+	    print "$i " . join(',', @p) . " $text->[$i]\n";
 	}
     }
 
-    $this->{TEXT} = \@s_text;
-    $this->{PROPERTY} = \@s_property;
+#     $this->{TEXT} = \@s_text;
+#     $this->{PROPERTY} = \@s_property;
+
+    my $ret = {
+	TEXT => \@s_text,
+	PROPERTY => \@s_property
+	};
+
+    return $ret;
 }
 
 sub ProcessJapanese {
