@@ -457,7 +457,10 @@ sub extract_text {
 	    } else {
 		push(@buff2, $s_text[$i]);
 	    }
-	    $start_itemization = ($s_text[$i] =~ /$CHARS_OF_BEGINNING_OF_ITEMIZATION$/) ? 1 : 0;
+	    $start_itemization = ($s_text[$i] =~ /$CHARS_OF_BEGINNING_OF_ITEMIZATION$/ &&
+				  !defined $s_property[$i]->{title} &&
+				  !defined $s_property[$i]->{description} &&
+				  !defined $s_property[$i]->{keywords}) ? 1 : 0;
 	}
     }
 
