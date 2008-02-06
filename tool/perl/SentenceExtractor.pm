@@ -10,6 +10,12 @@ use vars qw($open_kakko $close_kakko $period $dot @honorifics);
 use utf8;
 use CharacterRange;
 use Encode;
+use Data::Dumper;
+{
+    package Data::Dumper;
+    sub qquote { return shift; }
+}
+$Data::Dumper::Useperl = 1;
 
 $open_kakko  = qr/（|〔|［|｛|＜|≪|「|『|【|\(|\[|\{/;
 $close_kakko = qr/）|〕|］|｝|＞|≫|」|』|】|\)|\]|\}/;
@@ -74,7 +80,7 @@ sub FixParenthesis {
 	    next unless defined $slist->[$i + 1];
 
  	    $slist->[$i] .= $slist->[$i + 1];
- 	    splice(@$slist, $i + 1, $i + 1);
+ 	    splice(@$slist, $i + 1, 1);
  	    redo;
  	}
     }
