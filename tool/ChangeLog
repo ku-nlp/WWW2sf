@@ -1,5 +1,15 @@
 2007-02-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
+	* perl/TextExtractor.pm
+	HTMLエンティティを変更するようにした．
+	title, description, keywords内は箇条書きとして見なさないように変更．
+	クローラのヘッダを削除したときのために、オフセットのオフセットを考慮するように変更．
+	文区切りとして見なすタグを追加．(<select>, <option>)
+	<br>タグを文区切りではなく単なる改行として見なすように変更．
+	0単体が削除されるバグを修正．
+
+2007-02-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
 	* scripts/set-offset-and-length.perl
 	コードの整理（アライメントをとる部分を関数化するなど）
 
