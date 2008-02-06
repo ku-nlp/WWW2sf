@@ -27,7 +27,7 @@ $VERSION = sprintf("%d.%d", q$Revision$ =~ /(\d+)\.(\d+)/);
 %DELIMITER_TAGS = (
 		   address => 1,
 		   blockquote => 1,
-		   br => 1,
+#		   br => 1,
 		   caption => 1,
 		   center => 1,
 		   dd => 1,
@@ -161,6 +161,10 @@ sub detag {
                 $count++;
 		$num++;
             }
+	    # <br>は単なる改行と見なす
+	    elsif ($tag eq 'br') {
+		$text[$count] .= "\n";
+	    }
 
 	    if ($tag eq 'title') {
 		$mode{title} = 1;
