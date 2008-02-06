@@ -332,7 +332,7 @@ sub extract_text {
     my $num_before = 0;
 
     for (my $i = 0; $i < scalar(@$text); $i++) {
-	next unless $text->[$i];
+	next if (!defined $text->[$i] || $text->[$i] eq '');
 	next if $text->[$i] =~ /^(?:　|\s)*$/;   # 空白は無視する
 
 	### テキストへの前処理
