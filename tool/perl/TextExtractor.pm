@@ -339,14 +339,14 @@ sub extract_text {
 
     for (my $i = 0; $i < scalar(@$text); $i++) {
 	next if (!defined $text->[$i] || $text->[$i] eq '');
-	next if $text->[$i] =~ /^(?:　|\s)*$/;   # 空白は無視する
+	next if ($text->[$i] =~ /^(?:　|\s)*$/);   # 空白は無視する
 
 	### テキストへの前処理
 
 	# HTML 中の特殊文字をデコードする
 	my $buf = $text->[$i];
 	$buf =~ s/&nbsp;/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
-#	$buf = decode_entities($buf);
+	$buf = decode_entities($buf);
 
 	# \n(\x0a) 以外のコントロールコードは削除する
 	$buf =~ tr/\x00-\x09\x0b-\x1f\x7f-\x9f//d;
