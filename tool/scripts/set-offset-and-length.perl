@@ -13,6 +13,8 @@ use Encode;
 use Getopt::Long;
 use XML::LibXML;
 use TextExtractor;
+use HTML::Entities;
+use Unicode::Japanese;
 use Data::Dumper;
 {
     package Data::Dumper;
@@ -32,6 +34,8 @@ my (%opt);
 GetOptions(\%opt, 'html=s', 'xml=s', 'html_encoding=s', 'max_length_of_html_entity=s', 'verbose', 'z');
 my $MAX_LENGTH_OF_HTML_ENTITY = ($opt{max_length_of_html_entity}) ? $opt{max_length_of_html_entity} : 10;
 $opt{html_encoding} = 'utf8' unless ($opt{html_encoding});
+$opt{max_num_of_discardable_chars_for_rawstring} = 5;
+$opt{max_num_of_discardable_chars_for_html} = 10;
 
 
 &main();
@@ -51,26 +55,40 @@ sub main {
     close(READER);
 
     if ($opt{z}) {
-	open(READER, "zcat  $opt{html} |");
+	open(READER, "zcat $opt{html} |");
     } else {
 	open(READER, $opt{html});
     }
 #   binmode(READER, ':utf8'); # オフセットが文字数になるのでフラグは立てない
 
+    my $flag = -1;
     my $htmldat;
+    my $ignored_chars;
     while (<READER>) {
-	$htmldat .= $_;
+	if ($_ =~ /<html/i && $flag < 0) {
+	    $htmldat = "$&$'";
+	    $ignored_chars .= "$`";
+	    $flag = 1;
+	    next;
+	}
+	if ($flag > 0) {
+	    $htmldat .= $_;
+	} else {
+	    $ignored_chars .= $_;
+	}
     }
     close(READER);
 
 
 
     # HTML文書からテキストを取得
-    my $ext = new TextExtractor({language => 'japanese'});
+    my $ext = new TextExtractor({language => 'japanese', offset => length($ignored_chars)});
     my ($text, $property) = $ext->detag(\$htmldat, {always_countup => 1});
 
     for (my $i = 0; $i < scalar(@$text); $i++) {
 	$text->[$i] = decode('utf8', $text->[$i]);
+	$text->[$i] =~ s/&nbsp;/ /g;
+	$text->[$i] = decode_entities($text->[$i]);
     }
 
     # 標準フォーマットから文情報を取得
@@ -83,14 +101,20 @@ sub main {
     # HTML文書、標準フォーマット間 のアライメントをとる
     foreach my $s (@$sentences) {
 	my $rawstring = &get_rawstring($s);
-	my ($offset, $length) = &get_offset_and_length($rawstring, $text, $property);
+	my ($offset, $length, $is_successful) = &get_offset_and_length($rawstring, $text, $property);
 	$s->setAttribute('Offset', $offset);
 	$s->setAttribute('Length', $length);
+
+	unless ($is_successful) {
+	    print STDERR $opt{xml} . "\n";
+#	    &seek_common_char();
+	}
     }
 
     print $doc->toString;
 }
 
+# オフセットと長さを求める関数
 sub get_offset_and_length {
     my ($rawstring, $text, $property) = @_;
 
@@ -99,9 +123,13 @@ sub get_offset_and_length {
 
     print "[" . $text->[0] . "]\n" if ($opt{verbose});
 
-    my $offset = -1;
+    my $i = 0; # @chars_rの添字
     my $j = 0; # @chars_hの添字
-    for (my $i = 0; $i < scalar(@chars_r); $i++) {
+
+    my $offset = -1;
+    my $miss = -1;
+    while ($i < scalar(@chars_r)) {
+
 	# @chars_hを読みきった時の処理 length(@chars_r) > length(@chars_h)
 	if ($j >= scalar(@chars_h)) {
 	    # 使い切った分を削除
@@ -114,79 +142,114 @@ sub get_offset_and_length {
 	    $j = 0;
 	}
 
-	my $ch_r = $chars_r[$i];
-	my $ch_h = $chars_h[$j];
+	($i, $j, $offset, $miss) = &alignment(\@chars_r, \@chars_h, $i, $j, $offset, $property);
 
-	if ($opt{ignore_html_entity}) {
-	    # HTMLエンティティの処理
-	    if ($ch_h eq '&') {
-		my $flag = -1;
-		for (my $k = 1; $k < scalar(@chars_h) && $k < $MAX_LENGTH_OF_HTML_ENTITY; $k++) {
-		    # エンティティであれば標準フォーマット側を強制的に一文字飛ばし、エンティティの長さの分かえインクリメント
-		    if ($chars_h[$j + $k] eq ';') {
-			$j += ($k + 1);
-
-			$flag = 1; # 多重ループ脱出用
-			last;
-		    }
-		}
-		next if ($flag > 0);
-	    }
-	}
-
-	# 制御コードを空白に変換
-	$ch_h = '　' if ($ch_h =~ /[\x00-\x1f\x7f-\x9f]/);
-	# 半角文字を全角に変換
-	$ch_h = Unicode::Japanese->new($ch_h)->h2z->getu();
-
-	print "r:[$ch_r] cmp h:[$ch_h] off=$offset\n" if ($opt{verbose});
-
-	if ($ch_r eq $ch_h) {
-	    if ($offset < 0) {
-		$offset = $property->[0]{offset};
-	    }
-	    $j++;
-	}
-	elsif ($ch_h eq '') {
-	    $i--;
-	    $j++;
-	}
-	# HTML側の空白はスキップ
-	elsif ($ch_h eq '　') {
-	    $i--;
-	    $j++;
-	}
-	# `ー'は汎化
-	elsif ($ch_r eq 'ー' && $ch_h =~ /(?:ー|―|−|─|━|‐)/) {
-	    $j++;
-	}
-	# 標準フォーマット側で文字化けを起こしてる時はスキップ
-	elsif ($ch_r eq '?') {
-	    $j++;
-	}
-	# マッチしない
-	else {
-	    $i--;
-	}
+	last if ($miss > 0);
     }
 
-    # アライメントに使用した分を除去
-    my @removed = splice(@chars_h, 0, $j);
-    my $removed_string = join('', @removed);
-    my $length = length(encode($opt{html_encoding}, $removed_string));
-    if ($property->[0]{offset} - $offset > 0) {
-	$length += ($property->[0]{offset} - $offset);
+    # アライメント失敗
+    if ($miss > 0) {
+	return (-1, -1, 0);
+    } else {
+	# アライメントに使用した分を除去
+	my @removed = splice(@chars_h, 0, $j);
+	my $removed_string = join('', @removed);
+	my $length = length(encode($opt{html_encoding}, $removed_string));
+	if ($property->[0]{offset} - $offset > 0) {
+	    $length += ($property->[0]{offset} - $offset);
+	}
+
+	# 未使用部分を文字列に戻す
+	my $substring_unused = join('', @chars_h);
+	$text->[0] = $substring_unused;
+
+	# 使用した分だけオフセットをずらす
+	$property->[0]{offset} += $length;
+
+	return ($offset, $length, 1);
     }
-
-    # 未使用部分を文字列に戻す
-    my $substring_unused = join('', @chars_h);
-    $text->[0] = $substring_unused;
-
-    # 使用した分だけオフセットをずらす
-    $property->[0]{offset} += $length;
-
-    return ($offset, $length);
 }
+
+
+# アライメントをとる関数
+sub alignment {
+    my ($chars_r, $chars_h, $r, $h, $offset, $property) = @_;
+
+    my $ch_r = $chars_r->[$r];
+    my $ch_h = &normalized($chars_h->[$h]);
+
+    print "r:[$ch_r] cmp h:[$ch_h] off=$offset\n" if ($opt{verbose});
+
+    # マッチ
+    if ($ch_r eq $ch_h) {
+	if ($offset < 0) {
+	    $offset = $property->[0]{offset};
+	}
+	$r++;
+	$h++;
+    }
+    # HTML側が空文字の時はスキップ
+    elsif ($ch_h eq '') {
+	$h++;
+    }
+    # HTML側が空白の時はスキップ
+    elsif ($ch_h eq '　') {
+	$h++;
+    }
+    # 標準フォーマット側で文字化けを起こしてる時はスキップ
+    elsif ($ch_r eq '?') {
+	$r++;
+	$h++;
+    }
+    # 標準フォーマット側で箇条書き処理により挿入された空白はスキップ
+    elsif ($ch_r eq '　') {
+	$r++;
+    }
+    # マッチ失敗
+    # 適当に一文字ずつずらして、共通する文字を求める
+    else {
+	my $flag = -1;
+	for (my $i = 0 ; $i  < $opt{max_num_of_discardable_chars_for_rawstring}; $i++) {
+	    my $next_char_r = $chars_r->[$i + $r + 1];
+	    for (my $j = 0; $j < $opt{max_num_of_discardable_chars_for_html}; $j++) {
+		my $next_char_h = &normalized($chars_h->[$j + $h + 1]);
+
+		print "r:[$next_char_r] cmp h:[$next_char_h] off=$offset miss\n" if ($opt{verbose});
+
+		# ズレの吸収
+		if ($next_char_r eq $next_char_h) {
+		    $r += ($i + 2);
+		    $h += ($j + 2);
+		    $flag = 1;
+		    last;
+		}
+	    }
+	    last if ($flag > 0);
+
+	    return (-1, -1, $offset, 1) if ($flag < 0);
+	}
+    }
+
+    return ($r, $h, $offset, -1);
+}
+
+
+# HTML文書側の文字に対して標準フォーマット生成時の変換処理を適用
+sub normalized {
+    my ($ch) = @_;
+
+    # 制御コードを空白に変換
+    $ch = '　' if ($ch =~ /[\x00-\x1f\x7f-\x9f]/);
+
+    # 半角文字を全角に変換
+    $ch = Unicode::Japanese->new($ch)->h2z->getu();
+
+    # `ー'は汎化
+    $ch =~ s/(?:ー|―|−|─|━|‐)/ー/;
+
+    return $ch;
+}
+
 
 sub get_sentence_nodes {
     my ($doc) = @_;
