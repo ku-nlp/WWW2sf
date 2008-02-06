@@ -152,7 +152,7 @@ sub detag {
     # トークンを処理する
     while (my $token = $parser->get_token) {
         my $type = $token->[0];
-	my $offset = $token->[3];
+	my $offset = $token->[3] + $this->{opt}{offset};
 	my $length = $token->[4];
 
 	# 開始タグ
