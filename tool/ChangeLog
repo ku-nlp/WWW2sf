@@ -1,5 +1,10 @@
 2007-02-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
+	* scripts/set-offset-and-length.perl
+	コードの整理（アライメントをとる部分を関数化するなど）
+
+2007-02-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
 	* perl/TextExtractor.pm
 	extract_textメソッドをタグを除く処理と文抽出処理にわけた．
 
