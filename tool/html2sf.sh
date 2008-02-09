@@ -55,16 +55,22 @@ sentencesfile="$base_f.sentences"
 rawfile="$base_f.$$.raw"
 jmnfile="$base_f.$$.jmn"
 knpfile="$base_f.$$.knp"
+xmlfile0="$base_f.$$.xml0"
 xmlfile1="$base_f.$$.xml1"
 
 clean_tmpfiles() {
-    rm -f $sentencesfile $rawfile $xmlfile1 $jmnfile
+    rm -f $sentencesfile $rawfile $xmlfile0 $xmlfile1 $jmnfile
 }
 
 trap 'clean_tmpfiles; exit 1' 1 2 3 15
 base_dir=`dirname $0`
 
-perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $f > $xmlfile1
+# 簡素な標準フォーマットを生成
+perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $f > $xmlfile0
+
+# OffsetとLengthを埋め込み
+perl -I $base_dir/perl $base_dir/scripts/set-offset-and-length.perl -html $f -xml $xmlfile0 > $xmlfile1
+
 
 # 助詞のチェックで日本語ページとは判定されなかったもの
 if [ ! -s $xmlfile1 ]; then
