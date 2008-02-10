@@ -5,6 +5,7 @@ package HtmlGuessEncoding;
 # $Id$
 
 use ConvertCode qw(convert_code);
+use Encode qw(decode);
 use Encode::Guess;
 use strict;
 use utf8;
@@ -78,7 +79,15 @@ sub ProcessEncoding {
 	else {
 	    if ($encoding ne 'utf8') {
 		# utf-8で扱う
-		$$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8') if $option->{change_to_utf8};
+		if ($option->{change_to_utf8}) {
+		    $$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8');
+		}
+		elsif ($option->{change_to_utf8_with_flag}) {
+		    $$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8');
+		    $$buf_ref = decode('utf8', $$buf_ref);
+		}
+	    } else {
+		$$buf_ref = decode('utf8', $$buf_ref) if ($option->{change_to_utf8_with_flag});
 	    }
 	}
     }
