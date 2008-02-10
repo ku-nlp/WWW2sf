@@ -45,13 +45,15 @@ if ($ARGV[0] and -f $ARGV[0]) {
 }
 
 my $flag = -1;
+my $crawler_html = 0;
 while (<>) {
     if (!$buf and /^HTML (\S+)/) { # 1行目からURLを取得(read-zaodataが出力している)
 	$url = $1;
+	$crawler_html = 1;
     }
 
     # ヘッダーが読み終わるまでバッファリングしない
-    if ($flag > 0) {
+    if (!$crawler_html || $flag > 0) {
 	$buf .= $_;
     } else {
 	if ($_ =~ /^\r$/) {
@@ -141,10 +143,10 @@ if($opt{blog} eq 'mt'){
 }
 
 # クローラのヘッダを削除
-$buf =~ s/^(?:\d|.|\n)*?(<html)/\1/i;
+$buf =~ s/^(?:\d|.|\n)*?(<html)/\1/i if $crawler_html;
 
 # クローラのフッタを削除
-$buf =~ s/^((?:.|\n)+<\/html>)(.|\n)*?(\d|\r|\n)+$/\1\n/i;
+$buf =~ s/^((?:.|\n)+<\/html>)(.|\n)*?(\d|\r|\n)+$/\1\n/i if $crawler_html;
 
 # HTMLを文のリストに変換
 my $parsed = new TextExtor2(\$buf, 'utf8', \%opt);
