@@ -1,3 +1,8 @@
+2008-02-10  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl:
+	クローラーの出力するHTMLしか動作しなかったのを修正
+
 2008-02-09  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
 
 	* html2sf.sh
