@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# html¤òÊ¸¥ê¥¹¥È¤ËÊÑ´¹
+# htmlã‚’æ–‡ãƒªã‚¹ãƒˆã«å¤‰æ›
 
 # $Id$
 
@@ -26,9 +26,9 @@ our (%opt, $writer, $filter);
 $opt{language} = 'japanese' unless $opt{language};
 $opt{blog} = 'none' unless $opt{blog};
 
-# --checkencoding: encoding¤ò¥Á¥§¥Ã¥¯¤·¤Æ¡¢ÆüËÜ¸ì¤Ç¤Ï¤Ê¤¤¥¨¥ó¥³¡¼¥Ç¥£¥ó¥°¤Ê¤é²¿¤â½ĞÎÏ¤»¤º½ªÎ»¤¹¤ë
-# --checkjapanese: ÆüËÜ¸ì(¤Ò¤é¤¬¤Ê¡¢¥«¥¿¥«¥Ê¡¢´Á»ú)´ŞÍ­Î¨¤ò¥Á¥§¥Ã¥¯¤¹¤ë
-# --checkzyoshi:   ½õ»ì´ŞÍ­Î¨¤ò¥Á¥§¥Ã¥¯¤¹¤ë
+# --checkencoding: encodingã‚’ãƒã‚§ãƒƒã‚¯ã—ã¦ã€æ—¥æœ¬èªã§ã¯ãªã„ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ãªã‚‰ä½•ã‚‚å‡ºåŠ›ã›ãšçµ‚äº†ã™ã‚‹
+# --checkjapanese: æ—¥æœ¬èª(ã²ã‚‰ãŒãªã€ã‚«ã‚¿ã‚«ãƒŠã€æ¼¢å­—)å«æœ‰ç‡ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
+# --checkzyoshi:   åŠ©è©å«æœ‰ç‡ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 
 my ($buf, $timestamp, $url);
 
@@ -38,7 +38,7 @@ my $Filter = new SentenceFilter if $opt{checkjapanese};
 our $Threshold_Filter = 0.6;
 our $Threshold_Zyoshi = $opt{zyoshi_threshold} ? $opt{zyoshi_threshold} : 0.005;
 
-# ¥Õ¥¡¥¤¥ëÌ¾¤¬Í¿¤¨¤é¤ì¤Æ¤¤¤ì¤Ğ¥¿¥¤¥à¥¹¥¿¥ó¥×¤ò¼èÆÀ
+# ãƒ•ã‚¡ã‚¤ãƒ«åãŒä¸ãˆã‚‰ã‚Œã¦ã„ã‚Œã°ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’å–å¾—
 if ($ARGV[0] and -f $ARGV[0]) {
     my $st = stat($ARGV[0]);
     $timestamp = strftime("%Y-%m-%d %T", localtime($st->mtime));
@@ -47,12 +47,12 @@ if ($ARGV[0] and -f $ARGV[0]) {
 my $flag = -1;
 my $crawler_html = 0;
 while (<>) {
-    if (!$buf and /^HTML (\S+)/) { # 1¹ÔÌÜ¤«¤éURL¤ò¼èÆÀ(read-zaodata¤¬½ĞÎÏ¤·¤Æ¤¤¤ë)
+    if (!$buf and /^HTML (\S+)/) { # 1è¡Œç›®ã‹ã‚‰URLã‚’å–å¾—(read-zaodataãŒå‡ºåŠ›ã—ã¦ã„ã‚‹)
 	$url = $1;
 	$crawler_html = 1;
     }
 
-    # ¥Ø¥Ã¥À¡¼¤¬ÆÉ¤ß½ª¤ï¤ë¤Ş¤Ç¥Ğ¥Ã¥Õ¥¡¥ê¥ó¥°¤·¤Ê¤¤
+    # ãƒ˜ãƒƒãƒ€ãƒ¼ãŒèª­ã¿çµ‚ã‚ã‚‹ã¾ã§ãƒãƒƒãƒ•ã‚¡ãƒªãƒ³ã‚°ã—ãªã„
     if (!$crawler_html || $flag > 0) {
 	$buf .= $_;
     } else {
@@ -66,14 +66,14 @@ exit 0 unless $buf;
 my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {change_to_utf8 => 1});
 exit if $opt{checkencoding} and !$encoding;
 
-# ¥È¥é¥Ã¥¯¥Ğ¥Ã¥¯¡¢¥³¥á¥ó¥È¡¢¥á¥Ë¥å¡¼ÉôÊ¬¤òºï½ü¡ÊMovable TypeÍÑ¡Ë
+# ãƒˆãƒ©ãƒƒã‚¯ãƒãƒƒã‚¯ã€ã‚³ãƒ¡ãƒ³ãƒˆã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼éƒ¨åˆ†ã‚’å‰Šé™¤ï¼ˆMovable Typeç”¨ï¼‰
 if($opt{blog} eq 'mt'){
-    # <head>ºï½ü
+    # <head>å‰Šé™¤
     if ($buf =~ m!^((?:.|\n|\r)+)<head>(?:.|\n|\r)+?</head>((?:.|\n|\r)+)$!) {
 	$buf = $1 . $2;
     }
 
-    # banner-inner, content-nav, entry-footer¤òºï½ü
+    # banner-inner, content-nav, entry-footerã‚’å‰Šé™¤
     if ($buf =~ m!^((?:.|\n|\r)+)<div id="banner-inner" class="pkg">(?:.|\n|\r)+?</div>((?:.|\n|\r)+)$!) {
 	$buf = $1 . $2;
     }
@@ -142,16 +142,16 @@ if($opt{blog} eq 'mt'){
     }
 }
 
-# ¥¯¥í¡¼¥é¤Î¥Ø¥Ã¥À¤òºï½ü
+# ã‚¯ãƒ­ãƒ¼ãƒ©ã®ãƒ˜ãƒƒãƒ€ã‚’å‰Šé™¤
 $buf =~ s/^(?:\d|.|\n)*?(<html)/\1/i if $crawler_html;
 
-# ¥¯¥í¡¼¥é¤Î¥Õ¥Ã¥¿¤òºï½ü
+# ã‚¯ãƒ­ãƒ¼ãƒ©ã®ãƒ•ãƒƒã‚¿ã‚’å‰Šé™¤
 $buf =~ s/^((?:.|\n)+<\/html>)(.|\n)*?(\d|\r|\n)+$/\1\n/i if $crawler_html;
 
-# HTML¤òÊ¸¤Î¥ê¥¹¥È¤ËÊÑ´¹
+# HTMLã‚’æ–‡ã®ãƒªã‚¹ãƒˆã«å¤‰æ›
 my $parsed = new TextExtor2(\$buf, 'utf8', \%opt);
 
-# ½õ»ì´ŞÍ­Î¨¤ò¥Á¥§¥Ã¥¯
+# åŠ©è©å«æœ‰ç‡ã‚’ãƒã‚§ãƒƒã‚¯
 if ($opt{checkzyoshi}) {
     my $allbuf;
     for my $i (0 .. $#{$parsed->{TEXT}}) {
@@ -162,14 +162,14 @@ if ($opt{checkzyoshi}) {
     exit if $ratio <= $Threshold_Zyoshi;
 }
 
-# XML½ĞÎÏ¤Î½àÈ÷
+# XMLå‡ºåŠ›ã®æº–å‚™
 if ($opt{xml}) {
     require XML::Writer;
     $writer = new XML::Writer(OUTPUT => *STDOUT, DATA_MODE => 'true', DATA_INDENT => 2);
     $writer->xmlDecl('utf-8');
 }
 
-# Ê¸¤ËÊ¬³ä¤·¤Æ½ĞÎÏ
+# æ–‡ã«åˆ†å‰²ã—ã¦å‡ºåŠ›
 &print_page_header($opt{url} ? $opt{url} : $url, $encoding, $timestamp);
 &print_extract_sentences($buf);
 &print_page_footer();
@@ -274,7 +274,7 @@ sub postp_check {
     while ($buf =~ /([^\x80-\xfe]|[\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/g) {
 	my $chr = $1;
 	next if $chr eq "\n";
-	if ($chr =~ /^¤¬|¤ò|¤Ë|¤Ï|¤Î|¤Ç$/) {
+	if ($chr =~ /^ãŒ|ã‚’|ã«|ã¯|ã®|ã§$/) {
 	    $pp_count++;
 	}
 	$count++;
