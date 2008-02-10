@@ -5,7 +5,9 @@
 # $Id$
 
 use strict;
-use TextExtor2;
+# use TextExtor2;
+use TextExtractor;
+use Encode qw(encode decode);
 use Encode::Guess;
 use XML::Writer;
 use File::stat;
@@ -14,6 +16,15 @@ use HtmlGuessEncoding;
 use SentenceFilter;
 use ConvertCode qw(convert_code);
 use Getopt::Long;
+use utf8;
+use Data::Dumper;
+{
+    package Data::Dumper;
+    sub qquote { return shift; }
+}
+$Data::Dumper::Useperl = 1;
+
+binmode(STDOUT, ':utf8');
 
 sub usage {
     $0 =~ /([^\/]+)$/;
@@ -63,7 +74,7 @@ while (<>) {
 }
 exit 0 unless $buf;
 
-my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {change_to_utf8 => 1});
+my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {change_to_utf8_with_flag => 1});
 exit if $opt{checkencoding} and !$encoding;
 
 # トラックバック、コメント、メニュー部分を削除（Movable Type用）
@@ -149,7 +160,10 @@ $buf =~ s/^(?:\d|.|\n)*?(<html)/\1/i if $crawler_html;
 $buf =~ s/^((?:.|\n)+<\/html>)(.|\n)*?(\d|\r|\n)+$/\1\n/i if $crawler_html;
 
 # HTMLを文のリストに変換
-my $parsed = new TextExtor2(\$buf, 'utf8', \%opt);
+my $ext = new TextExtractor({language => 'japanese'});
+my $parsed = $ext->extract_text(\$buf);
+
+# my $parsed = new TextExtractor(\$buf, 'utf8', \%opt);
 
 # 助詞含有率をチェック
 if ($opt{checkzyoshi}) {
@@ -185,17 +199,14 @@ sub print_page_header {
 	    my $line = $parsed->{TEXT}[$i];
 	    if ($opt{xml}) {
 		if(defined($parsed->{PROPERTY}[$i]{title})){
-		    $line = &convert_code($line, 'euc-jp', 'utf8');
-
 		    if ($opt{checkjapanese}) {
 			my $score = sprintf("%.5f", $Filter->JapaneseCheck($line));
 			my $is_Japanese = $score > $Threshold_Filter ? '1' : '0';
-			
-			$writer->startTag('Title', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
-		    } else {
-			$writer->startTag('Title', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
-		    }
 
+#			$writer->startTag('Title', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
+		    }
+#		    $writer->startTag('Title', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
+		    $writer->startTag('Title');
 		    $writer->startTag('RawString');
 		    $writer->characters($line);
 		    $writer->endTag('RawString');
@@ -232,17 +243,15 @@ sub print_extract_sentences {
 	    $prev_offset = $parsed->{PROPERTY}[$i]{offset};
 	    $prev_length = $parsed->{PROPERTY}[$i]{length};
 
- 	    $line = &convert_code($line, 'euc-jp', 'utf8');
-
 	    if ($opt{checkjapanese}) {
 		my $score = sprintf("%.5f", $Filter->JapaneseCheck($line));
 		my $is_Japanese = $score > $Threshold_Filter ? '1' : '0';
 
-		$writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
+#		$writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
 	    }
-	    else {
-		$writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
-	    }
+
+#	    $writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
+	    $writer->startTag('S');
 	    $writer->startTag('RawString');
 	    $writer->characters($line);
 	    $writer->endTag('RawString');
@@ -269,10 +278,7 @@ sub postp_check {
     my ($buf) = @_;
     my ($pp_count, $count);
 
-#    $buf = &convert_code($buf, 'utf8', 'euc-jp');
-
-    while ($buf =~ /([^\x80-\xfe]|[\x80-\x8e\x90-\xfe][\x80-\xfe]|\x8f[\x80-\xfe][\x80-\xfe])/g) {
-	my $chr = $1;
+    foreach my $chr (split(//, $buf)) {
 	next if $chr eq "\n";
 	if ($chr =~ /^が|を|に|は|の|で$/) {
 	    $pp_count++;
