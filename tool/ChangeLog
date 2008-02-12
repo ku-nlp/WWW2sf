@@ -1,3 +1,8 @@
+2008-02-12  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl
+	XML::LibXMLのバージョンが古い場合に文字化けが発生するバグに対処．
+
 2008-02-12  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/SentenceFormatter.pm:
