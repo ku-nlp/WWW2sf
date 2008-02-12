@@ -111,7 +111,8 @@ sub main {
 	}
     }
 
-    print $doc->toString;
+    my $string = $doc->toString();
+    print utf8::is_utf8($string) ? $string : decode($doc->actualEncoding(), $string);
 }
 
 # オフセットと長さを求める関数
