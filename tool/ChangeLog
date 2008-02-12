@@ -1,3 +1,11 @@
+2008-02-12  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* perl/SentenceFormatter.pm:
+	「＝」を括弧と同様に扱わないように変更
+
+	* html2text.sh:
+	extract-sentences.perlの出力文字コードがutf8になったことに対する対応
+
 2008-02-11  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
