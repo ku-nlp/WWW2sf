@@ -9,6 +9,7 @@ package SentenceFormatter;
 # --divide_paren: 括弧を原文から取り除き、別の文として分割する
 #                 原文のIDに"-01"を付加し、括弧文のIDは"-02", "-03",.. となる
 #                 (括弧がなくても、原文のIDに"-01"が付加される)
+# --newspaper: 「＝」も括弧と同様に扱う
 
 # $Id$
 
@@ -118,49 +119,51 @@ sub FormatSentence {
 
     # '＝…＝'の削除，ただし間に'、'がくればRESET
 
-    $paren_start = -1;
-    $paren_level = 0;
-    $paren_str = '';
-    for (my $i = 0; $i < @char_array; $i++) {
-	if ($check_array[$i] == 0) {
-	    ; # '（…）'の中はスキップ
-	}
-	elsif ($char_array[$i] eq '＝') {
-	    if ($paren_level == 0) {
-		$paren_start = $i;
-		$paren_level++;
+    if ($this->{opt}{newspaper}) {
+	$paren_start = -1;
+	$paren_level = 0;
+	$paren_str = '';
+	for (my $i = 0; $i < @char_array; $i++) {
+	    if ($check_array[$i] == 0) {
+		;			# '（…）'の中はスキップ
 	    }
-	    elsif ($paren_level == 1) {
-		for (my $j = $paren_start; $j <= $i; $j++) {
+	    elsif ($char_array[$i] eq '＝') {
+		if ($paren_level == 0) {
+		    $paren_start = $i;
+		    $paren_level++;
+		}
+		elsif ($paren_level == 1) {
+		    for (my $j = $paren_start; $j <= $i; $j++) {
+			$check_array[$j] = 0;
+		    }
+		    $paren_start = -1;
+		    $paren_level = 0;
+		    $paren_str = '';
+		}
+	    }
+	    elsif ($char_array[$i] eq '、') {
+		if ($paren_level == 1) {
+
+		    # "＝…"となっていても，"、"がくればRESET
+		    # 例 "「中高年の星」＝米長と、若き天才＝羽生"
+		    # print STDERR "＝…，…＝RESET:$paren_str:$sentence\n";
+
+		    $paren_start = -1;
+		    $paren_level = 0;
+		    $paren_str = '';
+		}
+	    }
+	    else {
+		$paren_str .= $char_array[$i] if $paren_level == 1;
+	    }
+	}
+
+	# '＝…(文末)'で，文末に'。'がないか，'…'が'写真。'であれば除削
+	if ($paren_level == 1) {
+	    if ($paren_str =~ /^写真/ || $paren_str !~ /。$/) {
+		for (my $j = $paren_start; $j < @char_array; $j++) {
 		    $check_array[$j] = 0;
 		}
-		$paren_start = -1;
-		$paren_level = 0;
-		$paren_str = '';
-	    }
-	}
-	elsif ($char_array[$i] eq '、') {
-	    if ($paren_level == 1) {
-
-		# "＝…"となっていても，"、"がくればRESET
-		# 例 "「中高年の星」＝米長と、若き天才＝羽生"
-		# print STDERR "＝…，…＝RESET:$paren_str:$sentence\n";
-
-		$paren_start = -1;
-		$paren_level = 0;
-                $paren_str = '';
-            }
-        }
-        else {
-            $paren_str .= $char_array[$i] if $paren_level == 1;
-        }
-    }
-
-    # '＝…(文末)'で，文末に'。'がないか，'…'が'写真。'であれば除削
-    if ($paren_level == 1) {
-	if ($paren_str =~ /^写真/ || $paren_str !~ /。$/) {
-	    for (my $j = $paren_start; $j < @char_array; $j++) {
-		$check_array[$j] = 0;
 	    }
 	}
     }
