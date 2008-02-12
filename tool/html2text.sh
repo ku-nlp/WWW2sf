@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 input.html"
+    echo "$0 [-b] [-B] [-f] [-p] [-P] [-s] input.html"
     exit 1
 }
 
@@ -43,7 +43,7 @@ tmpfile=$base_f.$$
 tmpfile2=${base_f}_2.$$
 trap 'rm -f $tmpfile; exit 1' 1 2 3 15
 
-perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args $f > $tmpfile
+perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args $f | piconv -f utf8 -t euc-jp > $tmpfile
 
 if [ -n "$extract_std_args" ]; then
     perl -I $base_dir/perl $base_dir/scripts/sentence-filter.perl $tmpfile > $tmpfile2
