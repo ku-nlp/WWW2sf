@@ -14,6 +14,7 @@ use utf8;
 use Unicode::Normalize;
 use Unicode::Japanese;
 use CharacterRange;
+use Annotator;
 use Data::Dumper;
 {
     package Data::Dumper;
@@ -110,6 +111,7 @@ sub new {
 	delete($DELIMITER_TAGS{p});
     }
 
+    $this->{annotator} = new Annotator();
     bless $this;
 }
 
@@ -277,7 +279,20 @@ sub detag {
 	    } elsif ($mode{script} or $mode{style}) {
 		# nothing to do
 	    } else {
-		$text[$count] .= $text;
+		# 顔文字、（笑）等の位置を取得する
+		my @chars = split(//, $text);
+		my @ret = $this->{annotator}->markup(\@chars);
+		for (my $p = 0; $p < scalar(@chars); $p++) {
+		    if ($ret[$p] != 0) {
+			while ($ret[$p] > 0) {
+			    $text[$count] .= $chars[$p];
+			    $p++;
+			}
+			$count++;
+		    }
+ 		    $text[$count] .= $chars[$p];
+		}
+
 		$property[$count]->{num} = $num;
 		if (defined($property[$count]->{offset})) {
 		    $property[$count]->{length} = $offset - $property[$count]->{offset} + $length; # 後で考える
