@@ -1,3 +1,9 @@
+2008-02-18  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-syngraph.perl:
+	準内容語を除いたものもノードとして登録するように変更
+	(ネットワーク化 -> ネットワーク, 深み -> 深い)
+
 2008-02-17  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl
