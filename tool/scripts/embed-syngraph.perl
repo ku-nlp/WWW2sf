@@ -67,7 +67,9 @@ foreach my $file (sort readdir(DIR)){
 		    $result->set_id($sid++);
 		    
 		    # SynGraph化
-		    my $syn_result = $SynGraph->OutputSynFormat($result, $regnode_option);
+		    # 準内容語を除いたものもノードに登録するオプション(ネットワーク化 -> ネットワーク, 深み -> 深い)
+		    my $option = { regist_exclude_semi_contentword => 1 };
+		    my $syn_result = $SynGraph->OutputSynFormat($result, $regnode_option, $option);
 		    
 		    $syn_doc .= "      <Annotation Scheme=\"SynGraph\"><![CDATA[";
 		    $syn_doc .= encode('utf8', $syn_result); # SynGraph 結果の埋め込み
