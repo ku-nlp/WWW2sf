@@ -16,7 +16,7 @@ use KNP;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'help', 'usemodule', 'all');
+GetOptions(\%opt, 'jmn', 'knp', 'help', 'usemodule', 'all', 'replace');
 
 my ($juman, $knp);
 $juman = new Juman if $opt{jmn};
@@ -56,7 +56,7 @@ sub read_result {
 
     my ($sid, $result);
     while (<F>) {
-	if (/S-ID:(\d+)/) {
+	if (/S-ID:(\d+)?/) {
 	    $sid = $1;
 	}
 	elsif (/^EOS$/) {
@@ -76,8 +76,13 @@ sub read_result {
 		    $newchild->setAttribute('Scheme', $type);
 		    my $cdata = $doc->createCDATASection($result);
 		    $newchild->appendChild($cdata);
-		    $sentence->appendChild($newchild);
 
+		    if ($opt{replace}) {
+			my $oldchild = shift(@{$sentence->getElementsByTagName('Annotation')});
+			$sentence->replaceChild($newchild, $oldchild);
+		    } else {
+			$sentence->appendChild($newchild);
+		    }
 		    $start_sent = $i + 1;
 		    last;
 		}
