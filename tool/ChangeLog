@@ -1,3 +1,8 @@
+2008-02-24  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl:
+	複合名詞データベースの場所をTextExtractor.pmに渡すように修正
+
 2008-02-18  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-syngraph.perl:
