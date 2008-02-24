@@ -160,7 +160,9 @@ $buf =~ s/^(?:\d|.|\n)*?(<html)/\1/i if $crawler_html;
 $buf =~ s/^((?:.|\n)+<\/html>)(.|\n)*?(\d|\r|\n)+$/\1\n/i if $crawler_html;
 
 # HTMLを文のリストに変換
-my $ext = new TextExtractor({language => 'japanese'});
+my $textextractor_option = {language => 'japanese'};
+$textextractor_option->{cndbfile} = $opt{cndbfile} if $opt{cndbfile};
+my $ext = new TextExtractor($textextractor_option);
 my $parsed = $ext->extract_text(\$buf);
 
 # my $parsed = new TextExtractor(\$buf, 'utf8', \%opt);
