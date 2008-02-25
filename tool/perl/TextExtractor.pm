@@ -279,19 +279,7 @@ sub detag {
 	    } elsif ($mode{script} or $mode{style}) {
 		# nothing to do
 	    } else {
-		# 顔文字、（笑）等の位置を取得する
-		my @chars = split(//, $text);
-		my @ret = $this->{annotator}->markup(\@chars);
-		for (my $p = 0; $p < scalar(@chars); $p++) {
-		    if ($ret[$p] != 0) {
-			while ($ret[$p] > 0) {
-			    $text[$count] .= $chars[$p];
-			    $p++;
-			}
-			$count++;
-		    }
- 		    $text[$count] .= $chars[$p];
-		}
+		$text[$count] .= $text;
 
 		$property[$count]->{num} = $num;
 		if (defined($property[$count]->{offset})) {
@@ -397,6 +385,9 @@ sub extract_text {
 		push(@buf2, SentenceExtractor->new($x, $this->{opt}{language})->GetSentences());
 	    }
 	}
+
+	# 顔文字、（笑）等で文を区切る
+	@buf2 = $this->SplitByEmoticon(\@buf2);
 
 	if ($property->[$i]->{num} == $num_before) {
 	    $s_num--;
@@ -553,6 +544,33 @@ sub ProcessJapanese {
 
     return $buf;
 }
+
+# 顔文字、（笑）等で文を区切る
+sub SplitByEmoticon {
+    my ($this, $buf) = @_;
+
+    my @retbuf;
+    foreach my $x (@{$buf}) {
+	my @chars = split(//, $x);
+	my @ret = $this->{annotator}->markup(\@chars);
+
+	my $str;
+	for (my $p = 0; $p < scalar(@chars); $p++) {
+	    if ($ret[$p] != 0) {
+		while ($ret[$p] > 0) {
+		    $str .= $chars[$p];
+		    $p++;
+		}
+		push @retbuf, $str;
+		$str = ''
+		}
+	    $str .= $chars[$p];
+	}
+	push @retbuf, $str;
+    }
+    return @retbuf;
+}
+
 
 sub z2h{
     my $string = shift;
