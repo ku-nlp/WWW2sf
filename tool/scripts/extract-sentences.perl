@@ -25,6 +25,7 @@ use Data::Dumper;
 $Data::Dumper::Useperl = 1;
 
 binmode(STDOUT, ':utf8');
+binmode(STDERR, ':utf8');
 
 sub usage {
     $0 =~ /([^\/]+)$/;
@@ -175,7 +176,10 @@ if ($opt{checkzyoshi}) {
     }
 
     my $ratio = &postp_check($allbuf);
-    exit if $ratio <= $Threshold_Zyoshi;
+    if ($ratio <= $Threshold_Zyoshi) {
+	print STDERR "$ratio is less than the threshold($Threshold_Zyoshi)\n";
+	exit;
+    }
 }
 
 # XML出力の準備
