@@ -8,7 +8,7 @@ use SentenceExtractor;
 use HankakuZenkaku qw(ascii_h2z h2z4japanese_utf8);
 use ConvertCode qw(convert_code);
 use Encode qw(encode decode);
-use vars qw($VERSION %DELIMITER_TAGS %PREMODE_TAGS %HEADING_TAGS %LIST_TAGS);
+use vars qw($VERSION %DELIMITER_TAGS %PREMODE_TAGS %HEADING_TAGS %LIST_TAGS $CONNECT_A_TH);
 use strict;
 use utf8;
 use Unicode::Normalize;
@@ -101,6 +101,8 @@ my $CHARS_OF_BEGINNING_OF_ITEMIZATION = qr/、|，|：/;
 
 my $NUMBER = qr/\xa3(?:[\xa0-\xb9])/;
 
+my $CONNECT_A_TH = 1000; # aタグを連結するときの複合名詞（最長）の頻度の閾値
+
 sub new {
     my ($this, $opt) = @_;  # 対象となるHTMLファイルを引数として渡す
 
@@ -111,8 +113,22 @@ sub new {
 	delete($DELIMITER_TAGS{p});
     }
 
+    # 複合名詞データベース
+    if ($this->{opt}{cndbfile}) {
+	require CDB_File;
+	my $cndb = tie %{$this->{CN2DF}}, 'CDB_File', $this->{opt}{cndbfile} or die;
+    }
+
     $this->{annotator} = new Annotator();
     bless $this;
+}
+
+sub DESTROY {
+    my ($this) = @_;
+
+    if ($this->{opt}{cndbfile}) {
+	untie %{$this->{CN2DF}};
+    }
 }
 
 sub detag {
@@ -143,9 +159,13 @@ sub detag {
     $mode{script} = 0;     # スクリプト
     $mode{form} = 0;       # フォーム
     $mode{style} = 0;      # スタイルシート
+    $mode{link} = 0;       # <a>
 
     my @text;              # テキスト
     my @property;          # テキストの属性(連想配列へのリファレンス)
+
+    my $link_buf;          # <a>タグの中身すべて
+    my $link_buf2;         # <a>タグの途中を保持
 
     # HTML::TokeParserでparseする
     # HTML::TokeParserを、offsetとlengthを返させるように修正したModifiedTokeParserを使う
@@ -162,11 +182,23 @@ sub detag {
             my $tag = $token->[1];
 
             if (defined $DELIMITER_TAGS{$tag}) {
+		# link_bufがある場合、直前に連結
+		if ($link_buf) {
+		    $text[$count] .= $link_buf;
+		    $link_buf = '';
+		}
+
                 $count++;
 		$num++;
             }
 	    # <br>は単なる改行と見なす
 	    elsif ($tag eq 'br') {
+		# link_bufがある場合、直前に連結
+		if ($link_buf) {
+		    $text[$count] .= $link_buf;
+		    $link_buf = '';
+		}
+
 		$text[$count] .= "\n";
 	    }
 
@@ -225,12 +257,21 @@ sub detag {
 		$mode{form} = 1;
 	    } elsif ($tag eq 'style') {
 		$mode{style} = 1;
+	    } elsif ($tag eq 'a') {
+		$mode{link} = 1;
 	    }
+
 	# 終了タグ
         } elsif ($type eq 'E') {
             my $tag = $token->[1];
 
             if (defined $DELIMITER_TAGS{$tag}) {
+		# link_bufがある場合、直前に連結
+		if ($link_buf) {
+		    $text[$count] .= $link_buf;
+		    $link_buf = '';
+		}
+
                 $count++;
 		$num++;
             }
@@ -263,6 +304,9 @@ sub detag {
 		$mode{form} = 0;
 	    } elsif ($tag eq 'style') {
 		$mode{style} = 0;
+	    } elsif ($tag eq 'a') {
+		$this->Process_a_Tag(\$link_buf, \$link_buf2, \@text, \$count);
+		$mode{link} = 0;
 	    }
 
 	# テキスト
@@ -279,7 +323,23 @@ sub detag {
 	    } elsif ($mode{script} or $mode{style}) {
 		# nothing to do
 	    } else {
-		$text[$count] .= $text;
+		# 複合名詞データベースが指定されている場合
+		if ($this->{opt}{cndbfile}) {
+		    # <a>タグの中
+		    if ($mode{link}) {
+			$link_buf2 .= $text;
+		    }
+		    else {
+			if ($link_buf) {
+			    $text[$count] .= $link_buf;
+			    $link_buf = '';
+			}
+			$text[$count] .= $text;
+		    }
+		}
+		else {
+		    $text[$count] .= $text;
+		}
 
 		$property[$count]->{num} = $num;
 		if (defined($property[$count]->{offset})) {
@@ -571,6 +631,35 @@ sub SplitByEmoticon {
     return @retbuf;
 }
 
+# <a>タグを処理する
+sub Process_a_Tag {
+    my ($this, $link_buf, $link_buf2, $ar_text, $count) = @_;
+
+    # 直前も<a>タグの場合、連結した文字列で複合名詞データベースをひく
+    # 複合名詞であれば、連結し、そうでなければ、別の文にする
+    if ($$link_buf) {
+	my $cn_candidate = $$link_buf . $$link_buf2;
+
+	my $df = $this->{CN2DF}{$cn_candidate};
+	my $df_longest = $this->{CN2DF}{"$cn_candidate@"};
+	# 最長で出現する頻度が閾値以上
+	if (defined $df_longest && $df_longest >= $CONNECT_A_TH) {
+	    print STDERR '★CN ', $$link_buf . ':' . $$link_buf2, " $df $df_longest\n" if $this->{opt}{verbose};
+
+	    $ar_text->[$$count] .= $$link_buf . $$link_buf2;
+	}
+	else {
+	    print STDERR 'Not CN', " $$link_buf:$$link_buf2 ", $cn_candidate, "\n" if $this->{opt}{verbose};
+	    $ar_text->[$$count++] .= $$link_buf;
+	    $$link_buf = $$link_buf2;
+	}
+    }
+    # 直前が<a>タグでない場合、bufに入れておく
+    else {
+	$$link_buf = $$link_buf2;
+    }
+    $$link_buf2 = '';
+}
 
 sub z2h{
     my $string = shift;
