@@ -1,3 +1,18 @@
+2008-03-02  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl: verboseオプション追加
+
+	* perl/TextExtractor.pm:
+	複合名詞データベースをひいて、<a>タグの中のテキストを連結するかどうかを判定
+
+	* scripts/extract-sentences.perl:
+	助詞含有率が閾値以下の場合に、メッセージを出してexitするように変更
+
+2008-02-25  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm:
+	顔文字による文区切りを、句点による文区切りの直後に移動
+
 2008-02-24  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
