@@ -3,7 +3,6 @@
 # $Id$
 
 # HTML文書の文字コードをutf8に変更するプログラム
-# (metaタグにてcharset属性が指定されている場合は、値をutf8に変更する)
 
 use strict;
 use utf8;
