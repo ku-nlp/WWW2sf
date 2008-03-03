@@ -77,17 +77,24 @@ sub ProcessEncoding {
 	    return undef;
 	}
 	else {
-	    if ($encoding ne 'utf8') {
-		# utf-8で扱う
-		if ($option->{change_to_utf8}) {
-		    $$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8');
+	    # $encodingが何であってもutf8コードのbufをdecodeする
+	    # 例: $encodingがshift-jisであっても、to_utf8.perlでutf8に変換されている場合
+	    if ($option->{force_change_to_utf8_with_flag}) {
+		$$buf_ref = decode('utf8', $$buf_ref);
+	    }
+	    else {
+		if ($encoding ne 'utf8') {
+		    # utf-8で扱う
+		    if ($option->{change_to_utf8}) {
+			$$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8');
+		    }
+		    elsif ($option->{change_to_utf8_with_flag}) {
+			$$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8');
+			$$buf_ref = decode('utf8', $$buf_ref);
+		    }
+		} else {
+		    $$buf_ref = decode('utf8', $$buf_ref) if ($option->{change_to_utf8_with_flag});
 		}
-		elsif ($option->{change_to_utf8_with_flag}) {
-		    $$buf_ref = &convert_code($$buf_ref, $encoding, 'utf8');
-		    $$buf_ref = decode('utf8', $$buf_ref);
-		}
-	    } else {
-		$$buf_ref = decode('utf8', $$buf_ref) if ($option->{change_to_utf8_with_flag});
 	    }
 	}
     }
