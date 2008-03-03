@@ -43,13 +43,6 @@ sub main {
 
     # HTML文書の文字コードを取得すると同時にutf8に変更
     if ($HtmlGuessEncoding->ProcessEncoding(\$buff, {change_to_utf8 => !$opt{utf8}})) {
-	# charset属性が指定されている場合は、その値をutf8に変更
- 	if ($buff =~ /(<meta [^>]*content=[" ]*text\/html[; ]*)(charset=([^" >]+))/i) {
- 	    my $fwd = $1;
- 	    my $match = $2;
- 	    $buff =~ s/$fwd$match/${fwd}charset=utf\-8/;
- 	}
-
 	if ($opt{overwrite}) {
 	    if ($opt{z}) {
 		open(WRITER, "| gzip > $file");
