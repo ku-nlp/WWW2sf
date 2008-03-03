@@ -75,7 +75,7 @@ while (<>) {
 }
 exit 0 unless $buf;
 
-my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {change_to_utf8_with_flag => 1});
+my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {force_change_to_utf8_with_flag => 1});
 exit if $opt{checkencoding} and !$encoding;
 
 # トラックバック、コメント、メニュー部分を削除（Movable Type用）
