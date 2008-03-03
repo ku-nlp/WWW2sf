@@ -14,13 +14,16 @@ extract_args=
 formatwww_args=
 addknp_args=
 rawstring_args=
+save_utf8file=0
 
-while getopts abfjkpPhBs OPT
+while getopts abfjkpPhBsc:u OPT
 do  
     case $OPT in
 	a)  rawstring_args="--all"
 	    ;;
 	b)  extract_args="--ignore_br $extract_args"
+	    ;;
+	c)  extract_args="--cndbfile $OPTARG $extract_args"
 	    ;;
 	B)  extract_args="--blog mt $extract_args"
 	    ;;
@@ -39,6 +42,8 @@ do
             ;;
         s)  formatwww_args="--save_all $formatwww_args"
             ;;
+        u)  save_utf8file=1
+            ;;
         h)  usage
             ;;
     esac
@@ -51,6 +56,7 @@ fi
 
 f=$1
 base_f=`expr $f : "\(.*\)\.[^\.]*$"`
+utf8file="$base_f.$$.utf8.xml"
 sentencesfile="$base_f.sentences"
 rawfile="$base_f.$$.raw"
 jmnfile="$base_f.$$.jmn"
@@ -60,16 +66,22 @@ xmlfile1="$base_f.$$.xml1"
 
 clean_tmpfiles() {
     rm -f $sentencesfile $rawfile $xmlfile0 $xmlfile1 $jmnfile
+    if [ ! $save_utf8file -eq 1 ]; then
+	rm -f $utf8file
+    fi
 }
 
 trap 'clean_tmpfiles; exit 1' 1 2 3 15
 base_dir=`dirname $0`
 
+# utf8に変換
+perl -I $base_dir/perl $base_dir/scripts/to_utf8.perl $f > $utf8file
+
 # 簡素な標準フォーマットを生成
-perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $f > $xmlfile0
+perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $utf8file > $xmlfile0
 
 # OffsetとLengthを埋め込み
-perl -I $base_dir/perl $base_dir/scripts/set-offset-and-length.perl -html $f -xml $xmlfile0 > $xmlfile1
+perl -I $base_dir/perl $base_dir/scripts/set-offset-and-length.perl -html $utf8file -xml $xmlfile0 > $xmlfile1
 
 
 # 助詞のチェックで日本語ページとは判定されなかったもの
