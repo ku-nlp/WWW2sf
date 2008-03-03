@@ -1,3 +1,18 @@
+2008-03-03  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* www2sf.sh: 複合名詞データベースを指定するオプションを追加
+
+	* html2sf.sh: 先頭でutf8に変換するように変更
+	複合名詞データベースを指定するオプションを追加
+
+	* scripts/extract-sentences.perl:
+	関数ProcessEncodingのオプションをforce_change_to_utf8_with_flagに変更
+
+	* perl/HtmlGuessEncoding.pm:
+	force_change_to_utf8_with_flagオプションを追加
+
+	* scripts/to_utf8.perl: charsetをutf8に書き換えないように変更
+
 2008-03-02  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl: verboseオプション追加
