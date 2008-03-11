@@ -642,16 +642,22 @@ sub Process_a_Tag {
     if ($$link_buf) {
 	my $cn_candidate = $$link_buf . $$link_buf2;
 
-	my $df = $this->{CN2DF}{$cn_candidate};
 	my $df_longest = $this->{CN2DF}{"$cn_candidate@"};
-	# 最長で出現する頻度が閾値以上
-	if (defined $df_longest && $df_longest >= $CONNECT_A_TH) {
-	    print STDERR '★CN ', $$link_buf . ':' . $$link_buf2, " $df $df_longest\n" if $this->{opt}{verbose};
 
-	    $ar_text->[$$count] .= $$link_buf . $$link_buf2;
+	# 最長で出現する頻度が閾値以上
+	# どちらもひらがな一文字は除く(<a>あ</a><a>い</a>)
+	if ($$link_buf && $link_buf2 && 
+	    $$link_buf !~ /^\p{Hiragana}$/ && $$link_buf2 !~ /^\p{Hiragana}$/ && 
+	    defined $df_longest && $df_longest >= $CONNECT_A_TH) {
+	    print STDERR '★CN ', $$link_buf . ':' . $$link_buf2, " $df_longest\n" if $this->{opt}{verbose};
+
+	    # 今の$$link_buf2と、次の<a>タグが複合名詞関係にあるかどうかもチェックするので、
+	    # ここでは、$$link_bufだけを$ar_text[$$count]に入れて、$$link_buf2は$$link_bufに保持する
+	    $ar_text->[$$count] .= $$link_buf;
+	    $$link_buf = $$link_buf2;
 	}
 	else {
-	    print STDERR 'Not CN', " $$link_buf:$$link_buf2 ", $cn_candidate, "\n" if $this->{opt}{verbose};
+	    print STDERR 'Not CN', " $$link_buf:$$link_buf2 ", $cn_candidate, " $df_longest\n" if $this->{opt}{verbose};
 	    $ar_text->[$$count++] .= $$link_buf;
 	    $$link_buf = $$link_buf2;
 	}
