@@ -1,3 +1,15 @@
+2008-03-11  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* www2sf.sh: utf8ファイルを残すオプション(-u)を追加
+
+	* perl/TextExtractor.pm:
+	複合名詞をチェックする時に、ひらがな一文字の連結は複合名詞とみなさないように変更
+
+2008-03-11  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm:
+	複合名詞をチェックする時に、ひらがな一文字の連結は複合名詞とみなさないように変更
+
 2008-03-03  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* www2sf.sh: 複合名詞データベースを指定するオプションを追加
