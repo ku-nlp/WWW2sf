@@ -311,6 +311,8 @@ sub detag {
 
 	# テキスト
         } elsif ($type eq 'T') {
+	    # インラインタグで囲まれたテキストのオフセットを取得したいので
+	    # 全てのテキストを@textの別要素とする
 	    $count++ if ($opt->{always_countup});
 
 #           my $text = NFKC($token->[1]);
