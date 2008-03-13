@@ -82,11 +82,20 @@ sub main {
     }
     close(READER);
 
+    # クローラのヘッダはアライメントの対象としない
+    if ($crawler_html) {
+	if ($htmldat =~ /^((\d|.|\n)*)?(<html(.|\n|\r)+)$/i) {
+	    $ignored_chars .= $1;
+	    $htmldat = $3;
+	}
+    }
+
     # HTML文書からテキストを取得
     my $ext = new TextExtractor({language => 'japanese', offset => length($ignored_chars)});
     my ($text, $property) = $ext->detag(\$htmldat, {always_countup => 1});
 
     for (my $i = 0; $i < scalar(@$text); $i++) {
+	$text->[$i] = decode('utf8', $text->[$i]);
 	$text->[$i] =~ s/&nbsp;/ /g;
 	$text->[$i] = decode_entities($text->[$i]);
     }
