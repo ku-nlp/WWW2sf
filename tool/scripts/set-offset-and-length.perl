@@ -64,29 +64,29 @@ sub main {
     my $flag = -1;
     my $htmldat;
     my $ignored_chars;
+    my $crawler_html;
     while (<READER>) {
-	if ($_ =~ /<html/i && $flag < 0) {
-	    $htmldat = "$&$'";
-	    $ignored_chars .= "$`";
-	    $flag = 1;
-	    next;
+	if (!$htmldat and /^HTML (\S+)/) { # 1行目からURLを取得(read-zaodataが出力している)
+	    $crawler_html = 1;
 	}
-	if ($flag > 0) {
+
+	# ヘッダーが読み終わるまでバッファリングしない
+	if (!$crawler_html || $flag > 0) {
 	    $htmldat .= $_;
 	} else {
 	    $ignored_chars .= $_;
+	    if ($_ =~ /^\r$/) {
+		$flag = 1;
+	    }
 	}
     }
     close(READER);
-
-
 
     # HTML文書からテキストを取得
     my $ext = new TextExtractor({language => 'japanese', offset => length($ignored_chars)});
     my ($text, $property) = $ext->detag(\$htmldat, {always_countup => 1});
 
     for (my $i = 0; $i < scalar(@$text); $i++) {
-	$text->[$i] = decode('utf8', $text->[$i]);
 	$text->[$i] =~ s/&nbsp;/ /g;
 	$text->[$i] = decode_entities($text->[$i]);
     }
@@ -97,7 +97,6 @@ sub main {
     my $sentences = &get_sentence_nodes($doc);
 
 
-
     # HTML文書、標準フォーマット間 のアライメントをとる
     foreach my $s (@$sentences) {
 	my $rawstring = &get_rawstring($s);
@@ -106,7 +105,7 @@ sub main {
 	$s->setAttribute('Length', $length);
 
 	unless ($is_successful) {
-	    print STDERR $opt{xml} . "\n";
+	    print STDERR "Fail to set offset alignment: " . $opt{xml} . "\n";
 #	    &seek_common_char();
 	}
     }
