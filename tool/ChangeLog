@@ -1,3 +1,8 @@
+2008-03-13  Keiji Shinzato  <skeiji@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl
+	クローラの出力するヘッダー情報の取得に\rを利用するように変更．
+
 2008-03-11  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* www2sf.sh: utf8ファイルを残すオプション(-u)を追加
