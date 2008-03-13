@@ -55,7 +55,8 @@ sub main {
 	    print $buff;
 	}
     } else {
-	die "error\n";
+	print STDERR "Cannot guess character encoding.\n";
+	exit 1;
     }
 }
 
