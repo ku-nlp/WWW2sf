@@ -76,6 +76,11 @@ base_dir=`dirname $0`
 
 # utf8に変換
 perl -I $base_dir/perl $base_dir/scripts/to_utf8.perl $f > $utf8file
+# 文字コードが推定できないなどの理由でutf8化されたページが得られない場合は終了
+if [ $? -ne 0 ]; then
+    rm -f $utf8file
+    exit
+fi
 
 # 簡素な標準フォーマットを生成
 perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $utf8file > $xmlfile0
