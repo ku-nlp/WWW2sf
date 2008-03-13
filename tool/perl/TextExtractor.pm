@@ -449,7 +449,7 @@ sub extract_text {
 	}
 
 	# 顔文字、（笑）等で文を区切る
-	@buf2 = $this->SplitByEmoticon(\@buf2);
+	@buf2 = $this->SplitByEmoticon(\@buf2) unless (defined($property->[$i]->{title}));
 
 	if ($property->[$i]->{num} == $num_before) {
 	    $s_num--;
