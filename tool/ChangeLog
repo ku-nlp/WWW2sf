@@ -2,6 +2,8 @@
 
 	* scripts/set-offset-and-length.perl
 	クローラの出力するヘッダー情報の取得に\rを利用するように変更．
+	* html2sf.sh: 先頭でutf8に変換するように変更
+	文字コードが推定できないなどの理由でutf8化されたウェブページが得られない場合は終了するようにした．
 
 2008-03-11  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
