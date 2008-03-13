@@ -115,7 +115,7 @@ sub main {
 
 	unless ($is_successful) {
 	    print STDERR "Fail to set offset alignment: " . $opt{xml} . "\n";
-#	    &seek_common_char();
+	    # &seek_common_char();
 	}
     }
 
@@ -185,7 +185,9 @@ sub alignment {
     my ($chars_r, $chars_h, $r, $h, $offset, $property) = @_;
 
     my $ch_r = $chars_r->[$r];
-    my $ch_h = &normalized($chars_h->[$h]);
+    my $prev_ch_h = ($h > 0) ? $chars_h->[$h - 1] : undef;
+    my $next_ch_h = $chars_h->[$h + 1];
+    my $ch_h = &normalized($chars_h->[$h], $prev_ch_h);
 
     print "r:[$ch_r] cmp h:[$ch_h] off=$offset\n" if ($opt{verbose});
 
@@ -214,6 +216,12 @@ sub alignment {
     elsif ($ch_r eq '　') {
 	$r++;
     }
+    # ウェブ文書側の次の文字が半角の濁音、半濁音であれば現在の文字は半角カタカナと見なしスキップ
+    # $ch_r = デ, $ch_h ﾃ, $next_ch_h ﾞ
+    elsif ($next_ch_h eq 'ﾟ' || $next_ch_h eq 'ﾞ') {
+	$r++;
+	$h += 2;
+    }
     # マッチ失敗
     # 適当に一文字ずつずらして、共通する文字を求める
     else {
@@ -221,7 +229,7 @@ sub alignment {
 	for (my $i = 0 ; $i  < $opt{max_num_of_discardable_chars_for_rawstring}; $i++) {
 	    my $next_char_r = $chars_r->[$i + $r + 1];
 	    for (my $j = 0; $j < $opt{max_num_of_discardable_chars_for_html}; $j++) {
-		my $next_char_h = &normalized($chars_h->[$j + $h + 1]);
+		my $next_char_h = &normalized($chars_h->[$j + $h + 1], $chars_h->[$j + $h]);
 
 		print "r:[$next_char_r] cmp h:[$next_char_h] off=$offset miss\n" if ($opt{verbose});
 
@@ -245,7 +253,7 @@ sub alignment {
 
 # HTML文書側の文字に対して標準フォーマット生成時の変換処理を適用
 sub normalized {
-    my ($ch) = @_;
+    my ($ch, $prev_ch) = @_;
 
     # 制御コードを空白に変換
     $ch = '　' if ($ch =~ /[\x00-\x1f\x7f-\x9f]/);
@@ -254,7 +262,7 @@ sub normalized {
     $ch = Unicode::Japanese->new($ch)->h2z->getu();
 
     # `ー'は汎化
-    $ch =~ s/(?:ー|―|−|─|━|‐)/ー/;
+    $ch =~ s/(?:ー|―|−|─|━|‐)/ー/ if ($prev_ch =~ /^\p{Katakana}$/);
 
     return $ch;
 }
