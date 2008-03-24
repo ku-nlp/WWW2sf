@@ -65,23 +65,23 @@ sub FixParenthesis {
 	}
 
 	# 1つ前の文と当該文に”が奇数個含まれている場合は、前の文に該当文をくっつける
-	my $num_of_zenaku_quote_prev = scalar(split('”', $slist->[$i - 1])) - 1;
-	my $num_of_zenaku_quote_curr = scalar(split('”', $slist->[$i])) - 1;
-	if ($num_of_zenaku_quote_prev > 0 && $num_of_zenaku_quote_curr > 0) {
-	    if ($num_of_zenaku_quote_prev % 2 == 1 && $num_of_zenaku_quote_curr % 2 == 1) {
-		$slist->[$i - 1] .= $slist->[$i];
-		splice(@$slist, $i, $i);
+	if ($i > 0) {
+	    my $num_of_zenaku_quote_prev = scalar(split('”', $slist->[$i - 1])) - 1;
+	    my $num_of_zenaku_quote_curr = scalar(split('”', $slist->[$i])) - 1;
+	    if ($num_of_zenaku_quote_prev > 0 && $num_of_zenaku_quote_curr > 0) {
+		if ($num_of_zenaku_quote_prev % 2 == 1 && $num_of_zenaku_quote_curr % 2 == 1) {
+		    $slist->[$i - 1] .= $slist->[$i];
+		    splice(@$slist, $i, 1);
+		}
 	    }
 	}
 
 	# 当該文が^$itemize_header$にマッチする場合、箇条書きと判断し、次の文とくっつける
- 	if ($slist->[$i] =~ /^$itemize_header$/) {
-	    # 次の文がなければnext
-	    next unless defined $slist->[$i + 1];
-
- 	    $slist->[$i] .= $slist->[$i + 1];
- 	    splice(@$slist, $i + 1, 1);
- 	    redo;
+	if (defined $slist->[$i + 1]) {
+	    if ($slist->[$i] =~ /^$itemize_header$/) {
+		$slist->[$i] .= $slist->[$i + 1];
+		splice(@$slist, $i + 1, 1);
+	    }
  	}
     }
 }
@@ -181,8 +181,21 @@ sub SplitJapanese {
 	push(@buf2, $y);
     }
 
+    if ($this->{opt}{debug}) {
+	print Dumper(\@buf2) . "\n";
+	    print "-----\n";
+    }
     &FixParenthesis(\@buf2);
+    if ($this->{opt}{debug}) {
+	print Dumper(\@buf2) . "\n";
+	    print "-----\n";
+    }
     @buf = &concatSentences(\@buf2);
+    if ($this->{opt}{debug}) {
+	print Dumper(\@buf2) . "\n";
+	    print "-----\n";
+    }
+
     pop(@buf) unless $buf[-1];
     return @buf;
 }
