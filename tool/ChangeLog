@@ -4,6 +4,12 @@
 	utf8化されたウェブページの拡張子をxmlからhtmlへ変更．
 	* scripts/rename-did.sh
 	ウェブページ、utf8化されたウェブページについてもIDを振りなおすように修正．
+	* perl/TextExtractor.pm
+	metaタグ内のkeywords, descriptionから抽出された文を区別するように変更．
+	* scripts/extract-sentences.perl
+	metaタグ内のkeywords, descriptionから抽出された文を区別して標準フォーマットに埋め込むように変更．
+	* scripts/set-offset-and-length.perl
+	Keywords, Description関係の変更に対応．
 
 2008-03-13  Keiji Shinzato  <skeiji@nlp.kuee.kyoto-u.ac.jp>
 
