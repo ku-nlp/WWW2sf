@@ -1,3 +1,10 @@
+2008-03-24  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* html2sf.sh:
+	utf8化されたウェブページの拡張子をxmlからhtmlへ変更．
+	* scripts/rename-did.sh
+	ウェブページ、utf8化されたウェブページについてもIDを振りなおすように修正．
+
 2008-03-13  Keiji Shinzato  <skeiji@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl
