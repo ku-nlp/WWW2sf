@@ -155,10 +155,10 @@ if($opt{blog} eq 'mt'){
 }
 
 # クローラのヘッダを削除
-$buf =~ s/^(?:\d|.|\n)*?(<html)/\1/i if $crawler_html;
+$buf =~ s/^(?:\d|.|\n|\r)*?(<html)/\1/i if $crawler_html;
 
 # クローラのフッタを削除
-$buf =~ s/^((?:.|\n)+<\/html>)(.|\n)*?(\d|\r|\n)+$/\1\n/i if $crawler_html;
+$buf =~ s/(<\/html>)(([^>]|\n)*?)?(\d|\r|\n)+$/\1\n/i if ($crawler_html);
 
 # HTMLを文のリストに変換
 my $textextractor_option = {language => 'japanese'};
@@ -205,26 +205,34 @@ sub print_page_header {
 	for my $i (0 .. $#{$parsed->{TEXT}}) {
 	    my $line = $parsed->{TEXT}[$i];
 	    if ($opt{xml}) {
-		if(defined($parsed->{PROPERTY}[$i]{title})){
-		    if ($opt{checkjapanese}) {
-			my $score = sprintf("%.5f", $Filter->JapaneseCheck($line));
-			my $is_Japanese = $score > $Threshold_Filter ? '1' : '0';
-
-#			$writer->startTag('Title', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
-		    }
-#		    $writer->startTag('Title', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
-		    $writer->startTag('Title');
-		    $writer->startTag('RawString');
-		    $writer->characters($line);
-		    $writer->endTag('RawString');
-		    $writer->endTag('Title');
-
-		    last;
+		my $tagname;
+		if (defined($parsed->{PROPERTY}[$i]{title})) {
+		    $tagname = 'Title';
 		}
+		elsif (defined($parsed->{PROPERTY}[$i]{keywords})) {
+		    $tagname = 'Keywords';
+		}
+		elsif (defined($parsed->{PROPERTY}[$i]{description})) {
+		    $tagname = 'Description';
+		} else {
+		    next;
+		}
+
+		if ($opt{checkjapanese}) {
+		    my $score = sprintf("%.5f", $Filter->JapaneseCheck($line));
+		    my $is_Japanese = $score > $Threshold_Filter ? '1' : '0';
+		}
+
+		$writer->startTag($tagname);
+		$writer->startTag('RawString');
+		$writer->characters($line);
+		$writer->endTag('RawString');
+		$writer->endTag($tagname);
+
+		last if ($i > 2); # title, keywords, description は3番目までに全て入っている
 	    }
 	}
 	$writer->endTag('Header');
-
 	$writer->startTag('Text', Type => 'default');
     }
     else {
@@ -245,7 +253,9 @@ sub print_extract_sentences {
 	my $line = $parsed->{TEXT}[$i];
 
 	if ($opt{xml}) {
-	    next if (defined($parsed->{PROPERTY}[$i]{title}));
+	    next if (defined $parsed->{PROPERTY}[$i]{title} ||
+		     defined $parsed->{PROPERTY}[$i]{keywords} ||
+		     defined $parsed->{PROPERTY}[$i]{description});
 
 	    $prev_offset = $parsed->{PROPERTY}[$i]{offset};
 	    $prev_length = $parsed->{PROPERTY}[$i]{length};
@@ -254,7 +264,7 @@ sub print_extract_sentences {
 		my $score = sprintf("%.5f", $Filter->JapaneseCheck($line));
 		my $is_Japanese = $score > $Threshold_Filter ? '1' : '0';
 
-#		$writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
+		# $writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
 	    }
 
 #	    $writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
