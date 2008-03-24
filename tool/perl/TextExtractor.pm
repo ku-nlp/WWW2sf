@@ -131,6 +131,18 @@ sub DESTROY {
     }
 }
 
+sub is_unseparate_property {
+    my ($property) = @_;
+
+    if (defined $property->{title} ||
+	defined $property->{keywords} ||
+	defined $property->{description}) {
+	return 1;
+    } else {
+	return 0;
+    }
+}
+
 sub detag {
     my ($this, $raw_html, $opt) = @_;
     my $title = '';        # <TITLE>
@@ -178,7 +190,7 @@ sub detag {
 	my $length = $token->[4];
 
 	# 開始タグ
-        if ($type eq 'S') {
+	if ($type eq 'S') {
             my $tag = $token->[1];
 
             if (defined $DELIMITER_TAGS{$tag}) {
@@ -260,9 +272,9 @@ sub detag {
 	    } elsif ($tag eq 'a') {
 		$mode{link} = 1;
 	    }
-
+        }
 	# 終了タグ
-        } elsif ($type eq 'E') {
+	elsif ($type eq 'E') {
             my $tag = $token->[1];
 
             if (defined $DELIMITER_TAGS{$tag}) {
@@ -309,7 +321,7 @@ sub detag {
 		$mode{link} = 0;
 	    }
 
-	# テキスト
+	    # テキスト
         } elsif ($type eq 'T') {
 	    # インラインタグで囲まれたテキストのオフセットを取得したいので
 	    # 全てのテキストを@textの別要素とする
@@ -410,6 +422,7 @@ sub extract_text {
 
 	# HTML 中の特殊文字をデコードする
 	my $buf = $text->[$i];
+	$text->[$i] = decode('utf8', $text->[$i]) unless (utf8::is_utf8($text->[$i]));
 	$buf =~ s/&nbsp;/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
 	$buf = decode_entities($buf);
 
@@ -439,8 +452,8 @@ sub extract_text {
 
 	my @buf2;
 	foreach my $x (@buf) {
-	    if (defined($property->[$i]->{title})) {
-		# タイトルに関しては句読点区切りをしない
+	    if (&is_unseparate_property($property->[$i])) {
+		# <title>, <meta keywords=>, <meta description=> に関しては句読点区切りをしない
 		push(@buf2, $x);
 	    } else {
 		# 句読点で区切る
@@ -449,7 +462,7 @@ sub extract_text {
 	}
 
 	# 顔文字、（笑）等で文を区切る
-	@buf2 = $this->SplitByEmoticon(\@buf2) unless (defined($property->[$i]->{title}));
+	@buf2 = $this->SplitByEmoticon(\@buf2) unless (&is_unseparate_property($property->[$i]));
 
 	if ($property->[$i]->{num} == $num_before) {
 	    $s_num--;
@@ -526,7 +539,7 @@ sub extract_text {
 		push(@buff2, $s_text[$i]);
 	    }
 	    $start_itemization = ($s_text[$i] =~ /$CHARS_OF_BEGINNING_OF_ITEMIZATION$/ &&
-				  !defined $s_property[$i]->{title} &&
+				  !&is_unseparate_property($s_property[$i]) &&
 				  !defined $s_property[$i]->{description} &&
 				  !defined $s_property[$i]->{keywords}) ? 1 : 0;
 	}
