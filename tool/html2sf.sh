@@ -56,7 +56,7 @@ fi
 
 f=$1
 base_f=`expr $f : "\(.*\)\.[^\.]*$"`
-utf8file="$base_f.$$.utf8.xml"
+utf8file="$base_f.$$.utf8.html"
 sentencesfile="$base_f.sentences"
 rawfile="$base_f.$$.raw"
 jmnfile="$base_f.$$.jmn"
