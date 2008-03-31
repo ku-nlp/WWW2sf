@@ -97,20 +97,19 @@ fi
 
 cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
 
-# 文の抽出
-cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
-
-# Juman/Knp
 if [ $jmn -eq 1 -o $knp -eq 1 ]; then
+    # 文の抽出
+    cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
+
+    # Juman/Knp
     cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
-fi
-if [ $knp -eq 1 ]; then
-    $base_dir/scripts/parse-comp.sh $jmnfile > /dev/null
-    mv -f $knpfile $jmnfile
-fi
 
-# merge
-if [ $jmn -eq 1 -o $knp -eq 1 ]; then
+    if [ $knp -eq 1 ]; then
+	$base_dir/scripts/parse-comp.sh $jmnfile > /dev/null
+	mv -f $knpfile $jmnfile
+    fi
+
+    # merge
     cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl $addknp_args $jmnfile
 else
     cat $rawfile
