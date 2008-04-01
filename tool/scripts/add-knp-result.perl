@@ -16,11 +16,30 @@ use KNP;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'help', 'usemodule', 'all', 'replace');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i');
 
-my ($juman, $knp);
+my ($regnode_option, $syngraph_option);
+if ($opt{syngraph}) {
+    require SynGraph;
+
+    if (!$opt{syndbdir}) {
+	print STDERR "Please specify 'syndbdir'!\n";
+	exit;
+    }
+
+    # option
+    $regnode_option->{relation} = ($opt{hyponymy}) ? 1 : 0;
+    $regnode_option->{antonym} = ($opt{antonymy}) ? 1 : 0;
+    $regnode_option->{hypocut_attachnode} = $opt{hypocut} if $opt{hypocut};
+    
+    # 準内容語を除いたものもノードに登録するオプション(ネットワーク化 -> ネットワーク, 深み -> 深い)
+    $syngraph_option = { regist_exclude_semi_contentword => 1 };
+}
+
+my ($juman, $knp, $syngraph);
 $juman = new Juman if $opt{jmn};
-$knp = new KNP if $opt{knp};
+$knp = new KNP if $opt{knp} || $opt{syngraph};
+$syngraph = new SynGraph($opt{syndbdir}) if $opt{syngraph};
 
 my ($buf);
 while (<STDIN>) {
@@ -66,7 +85,10 @@ sub read_result {
 		my $xml_sid = $sentence->getAttribute('Id');
 		if ($sid eq $xml_sid) {
 		    my $type;
-		    if ($opt{jmn}) {
+		    if ($opt{syngraph}) {
+			$type = 'SynGraph';
+		    }
+		    elsif ($opt{jmn}) {
 			$type = 'Juman';
 		    }
 		    elsif ($opt{knp}) {
@@ -115,8 +137,12 @@ sub add_knp_result {
 			if ($opt{jmn}) {
 			    &append_node($sentence, $text, 'Juman');
 			}
+			# SynGraph
+			elsif ($opt{syngraph}) {
+			    &append_node($sentence, $text, 'SynGraph');
+			}
 			# knp
-			if ($opt{knp}) {
+			elsif ($opt{knp}) {
 			    &append_node($sentence, $text, 'Knp');
 			}
 		    }
@@ -141,9 +167,16 @@ sub append_node {
 	# 暫定的
 	$result_string .= "EOS\n";
     }
-    elsif ($type eq 'Knp') {
+    elsif ($type eq 'Knp' || $type eq 'SynGraph') {
 	my $result = $knp->parse($text);
-	$result_string = $result->all;
+
+	if ($type eq 'SynGraph') {
+	    $result_string = $syngraph->OutputSynFormat($result, $regnode_option, $syngraph_option);
+	}
+	# knp
+	else {
+	    $result_string = $result->all;
+	}
     }
 
     my $cdata = $doc->createCDATASection($result_string);
