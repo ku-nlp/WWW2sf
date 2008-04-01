@@ -1,3 +1,11 @@
+2008-04-01  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl: SynGraphの解析結果をうめこめるように修正
+
+2008-03-31  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* html2sf.sh: コードを整理して、無駄を少し省いた
+
 2008-03-24  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2sf.sh:
