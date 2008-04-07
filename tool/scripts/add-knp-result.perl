@@ -173,6 +173,8 @@ sub append_node {
     elsif ($type eq 'Knp' || $type eq 'SynGraph') {
 	my $result = $knp->parse($text);
 
+	return unless $result;
+
 	if ($type eq 'SynGraph') {
 	    $result_string = $syngraph->OutputSynFormat($result, $regnode_option, $syngraph_option);
 	}
