@@ -10,13 +10,14 @@
 use XML::LibXML;
 use Encode qw(decode);
 use encoding 'utf8';
+binmode STDERR, ':encoding(utf8)';
 use Getopt::Long;
 use Juman;
 use KNP;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'debug');
 
 my ($regnode_option, $syngraph_option);
 if ($opt{syngraph}) {
@@ -133,6 +134,8 @@ sub add_knp_result {
 		    next if $text eq '';
 
 		    if ($opt{usemodule}) {
+			print STDERR "$text\n" if $opt{debug};
+
 			# jmn
 			if ($opt{jmn}) {
 			    &append_node($sentence, $text, 'Juman');
