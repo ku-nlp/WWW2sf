@@ -43,7 +43,7 @@ if ($opt{syngraph}) {
 
 my ($juman, $knp, $syngraph);
 $juman = new Juman if $opt{jmn};
-$knp = new KNP if $opt{knp} || $opt{syngraph};
+$knp = new KNP (-Option => '-tab -dpnd') if $opt{knp} || $opt{syngraph};
 $syngraph = new SynGraph($opt{syndbdir}) if $opt{syngraph};
 
 my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
