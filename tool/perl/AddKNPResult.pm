@@ -38,6 +38,11 @@ sub AddKnpResult {
 
 		    next if $text eq '';
 
+		    if (defined $this->{opt}{sentence_length_max} && length($text) > $this->{opt}{sentence_length_max}) {
+			print STDERR "Too Long Sentence: $text\n";
+			next;
+		    }
+
 		    if ($this->{opt}{usemodule}) {
 			print STDERR "$text\n" if $this->{opt}{debug};
 

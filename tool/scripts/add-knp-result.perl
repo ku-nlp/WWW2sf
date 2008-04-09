@@ -18,7 +18,7 @@ use strict;
 use AddKNPResult;
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'debug');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', 'debug');
 
 my ($regnode_option, $syngraph_option);
 if ($opt{syngraph}) {
