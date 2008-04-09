@@ -1,3 +1,17 @@
+2008-04-09  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl, perl/AddKNPResult.pm:
+	解析する文の最大文字数を指定できるように
+
+	* scripts/add-knp-result.perl: KNPのoptionを'-tab -dpnd'に変更
+
+	* scripts/add-knp-result.perl: 主要部分をAddKNPResult.pmに移動
+
+2008-04-07  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl:
+	$resultが得られない場合は次の文にいくように変更
+
 2008-04-01  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl: SynGraphの解析結果をうめこめるように修正
