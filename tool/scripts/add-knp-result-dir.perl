@@ -12,9 +12,10 @@ use Juman;
 use KNP;
 use strict;
 use AddKNPResult;
+use Error qw(:try);
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'debug');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmndir=s', 'knpdir=s', 'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
     print STDERR "Please specify '-indir and -outdir'!\n";
@@ -22,6 +23,9 @@ if (!$opt{indir} || !$opt{outdir}) {
 }
 
 $opt{usemodule} = 1;
+
+$opt{jmndir} = '/share09/home/skeiji/local/080413/bin/' unless ($opt{jmndir});
+$opt{knpdir} = '/share09/home/skeiji/local/080413/bin/' unless ($opt{knpdir});
 
 if (! -d $opt{outdir}) {
     mkdir $opt{outdir};
@@ -49,8 +53,12 @@ if ($opt{syngraph}) {
 }
 
 my ($juman, $knp, $syngraph);
-$juman = new Juman if $opt{jmn};
-$knp = new KNP (-Option => '-tab -dpnd') if $opt{knp} || $opt{syngraph};
+$juman = new Juman (-Command => "$opt{jmndir}/juman",
+		    -Option => '-i \#') if $opt{jmn};
+$knp = new KNP (-Command => "$opt{knpdir}/knp",
+		-JumanCommand => "$opt{jmndir}/juman",
+		-JumanOption => '-i \#',
+		-Option => '-tab -dpnd') if $opt{knp} || $opt{syngraph};
 $syngraph = new SynGraph($opt{syndbdir}) if $opt{syngraph};
 
 my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
@@ -64,13 +72,25 @@ for my $file (glob ("$opt{indir}/*")) {
     while (<F>) {
 	$buf .= $_;
     }
+    $buf =~ s/\&/\&amp;/g;
 
     close F;
 
     my $parser = new XML::LibXML;
-    my $doc = $parser->parse_string($buf);
+    my $doc;
+    try {
+	$doc = $parser->parse_string($buf);
+    } catch Error with {
+	    my $err = shift;
+	    print STDERR "Exception at line ",$err->{-line}," in ",$err->{-file}," at $file.\n";
+    };
+    next unless ($doc);
 
     $addknpresult->AddKnpResult($doc, 'Title');
+    $addknpresult->AddKnpResult($doc, 'OutLink');
+    $addknpresult->AddKnpResult($doc, 'InLink');
+    $addknpresult->AddKnpResult($doc, 'Keywords');
+    $addknpresult->AddKnpResult($doc, 'Description');
     $addknpresult->AddKnpResult($doc, 'S');
 
     my $string = $doc->toString();
