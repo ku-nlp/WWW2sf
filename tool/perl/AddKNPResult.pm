@@ -6,6 +6,7 @@ package AddKNPResult;
 
 use utf8;
 use strict;
+use Error qw(:try);
 
 sub new {
     my ($this, $juman, $knp, $syngraph, $opt) = @_;
@@ -81,17 +82,25 @@ sub AppendNode {
 	$result_string .= "EOS\n";
     }
     elsif ($type eq 'Knp' || $type eq 'SynGraph') {
-	my $result = $this->{knp}->parse($text);
+	my $result;
+	try {
+	    $text = "# VERSION:\n$text";
+	    $result = $this->{knp}->parse_mlist($this->{knp}->juman($text));
 
-	return unless $result;
+	    return unless $result;
 
-	if ($type eq 'SynGraph') {
-	    $result_string = $this->{syngraph}->OutputSynFormat($result, $this->{opt}{regnode_option}, $this->{opt}{syngraph_option});
-	}
-	# knp
-	else {
-	    $result_string = $result->all;
-	}
+	    if ($type eq 'SynGraph') {
+		$result_string = $this->{syngraph}->OutputSynFormat($result, $this->{opt}{regnode_option}, $this->{opt}{syngraph_option});
+	    }
+	    # knp
+	    else {
+		$result_string = $result->all;
+	    }
+	} catch Error with {
+	    my $err = shift;
+	    print STDERR "Exception at line ",$err->{-line}," in ",$err->{-file},"\n";
+	    return;
+	};
     }
 
     my $cdata = $doc->createCDATASection($result_string);
