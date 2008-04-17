@@ -17,6 +17,7 @@ use Data::Dumper;
 }
 $Data::Dumper::Useperl = 1;
 
+$comma = qr/，/;
 $open_kakko  = qr/（|〔|［|｛|＜|≪|「|『|【|\(|\[|\{/;
 $close_kakko = qr/）|〕|］|｝|＞|≫|」|』|】|\)|\]|\}/;
 
@@ -117,7 +118,8 @@ sub SplitJapanese {
 	if (($ignore_level || $level == 0) && 
 	    # dotの前後にアルファベットや数字がある場合は切らない(URLなど)
 	    (($char =~ /^$dot$/o && 
-	      !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^\p{alphabet_or_number}$/o && # 右側にアルファベットがあるかどうか
+	      !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^(?:\p{alphabet_or_number}|$comma)$/o && # 右側にアルファベットがあるかどうか
+		# カンマも考慮にいれるように変更 (by Y.Kato) 「Co., Ltd.」で切れないように
 		($i == 0 || $chars[$i - 1] =~ /^\p{alphabet_or_number}$/o))) || # 右側にアルファベットがあるかどうか
 	     $char =~ /^$period$/o)) {
 
