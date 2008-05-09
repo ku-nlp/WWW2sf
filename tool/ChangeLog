@@ -1,3 +1,8 @@
+2008-05-09  Keiji Shinzato  <skeiji@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl:
+	HTML文書中のノーブレークスペース(x00A0)はスキップするように変更
+
 2008-04-09  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl, perl/AddKNPResult.pm:
