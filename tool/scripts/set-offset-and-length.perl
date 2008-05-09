@@ -27,6 +27,7 @@ $Data::Dumper::Useperl = 1;
 # 入出力のエンコードを設定
 binmode(STDIN,  ':encoding(utf8)');
 binmode(STDOUT, ':encoding(utf8)');
+binmode(STDERR, ':encoding(utf8)');
 
 
 
@@ -115,7 +116,7 @@ sub main {
 	$s->setAttribute('Length', $length);
 
 	unless ($is_successful) {
-	    print STDERR "Fail to set offset alignment: " . $opt{xml} . "\n";
+	    # print STDERR "Fail to set offset alignment: " . $opt{xml} . "\n";
 	    # &seek_common_char();
 	}
     }
@@ -190,7 +191,7 @@ sub alignment {
     my $next_ch_h = $chars_h->[$h + 1];
     my $ch_h = &normalized($chars_h->[$h], $prev_ch_h);
 
-    print "r:[$ch_r] cmp h:[$ch_h] off=$offset\n" if ($opt{verbose});
+    print "r:[$ch_r] cmp h:[$ch_h] off=$offset ord=" . ord($ch_h) . "\n" if ($opt{verbose});
 
     # マッチ
     if ($ch_r eq $ch_h) {
@@ -201,7 +202,7 @@ sub alignment {
 	$h++;
     }
     # HTML側が空文字の時はスキップ
-    elsif ($ch_h eq '') {
+    elsif ($ch_h eq '' || $ch_h == "\x{00A0}") {
 	$h++;
     }
     # HTML側が空白の時はスキップ
