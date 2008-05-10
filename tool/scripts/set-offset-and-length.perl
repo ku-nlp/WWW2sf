@@ -191,7 +191,7 @@ sub alignment {
     my $next_ch_h = $chars_h->[$h + 1];
     my $ch_h = &normalized($chars_h->[$h], $prev_ch_h);
 
-    print "r:[$ch_r] cmp h:[$ch_h] off=$offset ord=" . ord($ch_h) . "\n" if ($opt{verbose});
+    print "r:[$ch_r] cmp h:[$ch_h] next_h:[$next_ch_h] off=$offset ord=" . ord($ch_h) . "\n" if ($opt{verbose});
 
     # マッチ
     if ($ch_r eq $ch_h) {
@@ -202,7 +202,7 @@ sub alignment {
 	$h++;
     }
     # HTML側が空文字の時はスキップ
-    elsif ($ch_h eq '' || $ch_h == "\x{00A0}") {
+    elsif ($ch_h eq '' || $ch_h eq "\x{00A0}") {
 	$h++;
     }
     # HTML側が空白の時はスキップ
