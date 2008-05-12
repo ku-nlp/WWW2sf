@@ -15,7 +15,7 @@ use AddKNPResult;
 use Error qw(:try);
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmndir=s', 'knpdir=s', 'debug');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
     print STDERR "Please specify '-indir and -outdir'!\n";
@@ -24,8 +24,10 @@ if (!$opt{indir} || !$opt{outdir}) {
 
 $opt{usemodule} = 1;
 
-$opt{jmndir} = '/share09/home/skeiji/local/080413/bin/' unless ($opt{jmndir});
-$opt{knpdir} = '/share09/home/skeiji/local/080413/bin/' unless ($opt{knpdir});
+$opt{jmncmd} = '/share09/home/skeiji/local/080512/bin/juman' unless ($opt{jmncmd});
+$opt{jmnrc} = '/share09/home/skeiji/local/080512/etc/jumanrc' unless ($opt{jmnrc});
+$opt{knpcmd} = '/share09/home/skeiji/local/080512/bin/knp' unless ($opt{knpcmd});
+$opt{knprc} = '/share09/home/skeiji/local/080512/etc/knprc' unless ($opt{knprc});
 
 if (! -d $opt{outdir}) {
     mkdir $opt{outdir};
@@ -53,12 +55,15 @@ if ($opt{syngraph}) {
 }
 
 my ($juman, $knp, $syngraph);
-$juman = new Juman (-Command => "$opt{jmndir}/juman",
+$juman = new Juman (-Command => $opt{jmncmd},
+		    -Rcfile => $opt{jmnrc},
 		    -Option => '-i \#') if $opt{jmn};
-$knp = new KNP (-Command => "$opt{knpdir}/knp",
-		-JumanCommand => "$opt{jmndir}/juman",
+$knp = new KNP (-Command => $opt{knpcmd},
+		-Rcfile => $opt{knprc},
+		-JumanCommand => $opt{jmncmd},
+		-JumanRcfile => $opt{jmnrc},
 		-JumanOption => '-i \#',
-		-Option => '-tab -dpnd') if $opt{knp} || $opt{syngraph};
+		-Option => '-tab -dpnd -postprocess') if $opt{knp} || $opt{syngraph};
 $syngraph = new SynGraph($opt{syndbdir}) if $opt{syngraph};
 
 my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
