@@ -93,7 +93,6 @@ sub main {
 
     # HTML文書からテキストを取得
     my $ext = new TextExtractor({language => 'japanese', offset => length($ignored_chars)});
-    $htmldat = decode('utf8', $htmldat) unless (utf8::is_utf8($htmldat));
     my ($text, $property) = $ext->detag(\$htmldat, {always_countup => 1});
 
     for (my $i = 0; $i < scalar(@$text); $i++) {
