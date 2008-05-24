@@ -5,7 +5,8 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j] [-k] h0001 x0001"
+    # echo "$0 [-j] [-k] h0001 x0001"
+    cat `dirname $0`"/"usage
     exit 1
 }
 
