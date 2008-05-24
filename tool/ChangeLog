@@ -1,11 +1,21 @@
-2008-05-12  Keiji Shinzato  <skeiji@nlp.kuee.kyoto-u.ac.jp>
+q2008-05-24  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl:
+	HTMLエンティティを含む文でlengthがズレないようにした.
+
+2008-05-23  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl:
+	bug fixed (HTML文書をパースする際にUTF8フラグを立てないように変更)
+
+2008-05-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result-dir.perl:
 	juman/knpのコマンドを直接指定するようにした.
 	jumanrc/knprcをオプションでとるようにした. 
 	KNPのオプションに-postprocessを追加.
 
-2008-05-09  Keiji Shinzato  <skeiji@nlp.kuee.kyoto-u.ac.jp>
+2008-05-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
 	HTML文書中のノーブレークスペース(x00A0)はスキップするように変更
@@ -45,7 +55,7 @@
 	* scripts/set-offset-and-length.perl
 	Keywords, Description関係の変更に対応．
 
-2008-03-13  Keiji Shinzato  <skeiji@nlp.kuee.kyoto-u.ac.jp>
+2008-03-13  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl
 	クローラの出力するヘッダー情報の取得に\rを利用するように変更．
@@ -105,12 +115,12 @@
 	準内容語を除いたものもノードとして登録するように変更
 	(ネットワーク化 -> ネットワーク, 深み -> 深い)
 
-2008-02-17  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
+2008-02-17  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl
 	解析結果を埋め込み直すオプション-replaceを追加．
 
-2008-02-12  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
+2008-02-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl
 	XML::LibXMLのバージョンが古い場合に文字化けが発生するバグに対処．
@@ -123,7 +133,7 @@
 	* html2text.sh:
 	extract-sentences.perlの出力文字コードがutf8になったことに対する対応
 
-2008-02-11  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
+2008-02-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
 	文字コードをutf8に変更．
@@ -137,7 +147,7 @@
 	* scripts/extract-sentences.perl:
 	クローラーの出力するHTMLしか動作しなかったのを修正
 
-2008-02-09  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
+2008-02-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2sf.sh
 	オフセットのアライメントをとる処理を追加．
