@@ -97,8 +97,35 @@ sub main {
 
     for (my $i = 0; $i < scalar(@$text); $i++) {
 	$text->[$i] = decode('utf8', $text->[$i]) unless (utf8::is_utf8($text->[$i]));
-	$text->[$i] =~ s/&nbsp;/ /g;
-	$text->[$i] = decode_entities($text->[$i]);
+	$text->[$i] =~ s/&nbsp;/      /g;
+
+	# HTMLエンティティを変換し、差分の文字数を半角空白でつめる
+	# &lt; -> '<___'
+	my $buf;
+	while ($text->[$i] =~ /(&.+?;)/g) {
+	    $buf .= "$`";
+	    $text->[$i] = "$'";
+
+	    my $entity = $1;
+	    my $length = length($entity);
+	    my $decodedEntity = decode_entities($entity);
+
+	    # 置換後のエンティティの置換前の文字列の差分を計算
+	    my $decodedEntityByte = length(encode('utf8', $decodedEntity));
+	    my $diff = $length - $decodedEntityByte;
+
+	    $buf .= $decodedEntity;
+	    # print STDERR "$entity $decodedEntity $diff\n";
+	    # 差分の文だけ半角空白をつける
+	    for (my $j = 0; $j < $diff; $j++) {
+		$buf .= ' ';
+	    }
+	}
+
+	$buf .= $text->[$i];
+	$text->[$i] = $buf;
+	# print "[ " . $text->[$i] . "]\n";
+	# $text->[$i] = decode_entities($text->[$i]);
     }
 
     # 標準フォーマットから文情報を取得
