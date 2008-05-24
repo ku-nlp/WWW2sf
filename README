@@ -5,3 +5,17 @@ Webページ用標準フォーマット関連
 doc/		仕様書
 samples/	標準フォーマットのサンプル
 tool/		HTMLからの変換ツール
+
+
+======
+使い方
+======
+
+  WWW2sf/tool/www2sf.sh -u -c somewhere/cns.cdb hdir xdir
+
+
+  * あらかじめ以下のコマンドで複合名詞DBをダウンロードしておいて下さい.
+
+    wget http://reed.kuee.kyoto-u.ac.jp/~skeiji/data/cns.cdb somewhere
+
+  * オプションについてはWWW2sf/tool/www2sf.sh -h を御覧下さい. 
