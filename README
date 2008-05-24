@@ -14,7 +14,7 @@ tool/		HTMLからの変換ツール
   WWW2sf/tool/www2sf.sh -u -c somewhere/cns.cdb hdir xdir
 
 
-  * あらかじめ以下のコマンドで複合名詞DBをダウンロードしておいて下さい.
+  * あらかじめ以下のコマンドで複合名詞DB(747MB)をダウンロードしておいて下さい.
 
     wget http://reed.kuee.kyoto-u.ac.jp/~skeiji/data/cns.cdb somewhere
 
