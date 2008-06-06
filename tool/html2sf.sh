@@ -15,8 +15,9 @@ formatwww_args=
 addknp_args=
 rawstring_args=
 save_utf8file=0
+use_module=0
 
-while getopts abfjkpPhBsc:u OPT
+while getopts abfjkpPhBsc:um OPT
 do  
     case $OPT in
 	a)  rawstring_args="--all"
@@ -43,6 +44,8 @@ do
         s)  formatwww_args="--save_all $formatwww_args"
             ;;
         u)  save_utf8file=1
+            ;;
+        m)  use_module=1
             ;;
         h)  usage
             ;;
@@ -98,19 +101,28 @@ fi
 cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
 
 if [ $jmn -eq 1 -o $knp -eq 1 ]; then
-    # 文の抽出
-    cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
 
-    # Juman/Knp
-    cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
+    if [ $use_module -eq 1 ]; then
+	if [ $jmn -eq 1 ]; then
+	    cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl -j -usemodule
+	elif [ $knp -eq 1 ]; then
+	    cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl -k -usemodule
+	fi
+    else
+	# 文の抽出
+	cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
 
-    if [ $knp -eq 1 ]; then
-	$base_dir/scripts/parse-comp.sh $jmnfile > /dev/null
-	mv -f $knpfile $jmnfile
+	# Juman/Knp
+	cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
+
+	if [ $knp -eq 1 ]; then
+	    $base_dir/scripts/parse-comp.sh $jmnfile > /dev/null
+	    mv -f $knpfile $jmnfile
+	fi
+
+	# merge
+	cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl $addknp_args $jmnfile
     fi
-
-    # merge
-    cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl $addknp_args $jmnfile
 else
     cat $rawfile
 fi
