@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# $Id:
+# $Id$
 
 use XML::LibXML;
 use Encode qw(decode);
@@ -15,7 +15,7 @@ use AddKNPResult;
 use Error qw(:try);
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'debug');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'syndb_on_memory', 'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
     print STDERR "Please specify '-indir and -outdir'!\n";
@@ -64,7 +64,10 @@ $knp = new KNP (-Command => $opt{knpcmd},
 		-JumanRcfile => $opt{jmnrc},
 		-JumanOption => '-i \#',
 		-Option => '-tab -dpnd -postprocess') if $opt{knp} || $opt{syngraph};
-$syngraph = new SynGraph($opt{syndbdir}) if $opt{syngraph};
+
+my $syngraph_option;
+$syngraph_option->{db_on_memory} = 1 if $opt{syndb_on_memory};
+$syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngraph};
 
 my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
 
