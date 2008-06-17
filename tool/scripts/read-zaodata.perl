@@ -45,6 +45,8 @@ for my $f (@ARGV) {
     my $write_filename = $opt{split} ? "$head-$fnum.html" : "$head.html";
     open(DATA, "> $write_filename") or die "$write_filename: $!\n" unless $opt{splithtml};
 
+    my $append_write_flag = 0; # DATAへの書き込み途中を示す
+
     my ($dirname, $xnum);
     # 最初のディレクトリの作成
     if ($opt{splithtml}) {
@@ -76,8 +78,8 @@ for my $f (@ARGV) {
 	      if ($output =~ /\nContent-Type:\s*$RequireContentType/) {
 		  if ($opt{splithtml}) {
 		      unless ($opt{'ignore-check-japanese'}) {
-			  # 日本語判定
-			  if ($opt{language} eq 'japanese') {
+			  # 言語指定時は言語判定
+			  if ($opt{language}) {
 			      unless ($HtmlGuessEncoding->ProcessEncoding(\$output)) {
 				  next;
 			      }
@@ -154,22 +156,21 @@ for my $f (@ARGV) {
 	      if ($status == Z_OK || 
 		  $status == Z_STREAM_END) {
 		  if ($output =~ /\nContent-Type:\s*$RequireContentType/) {
+		      # 言語指定時は言語判定
+		      if ($opt{language}) {
+			  unless ($HtmlGuessEncoding->ProcessEncoding(\$output)) {
+			      next;
+			  }
+		      }
+
+		      # 助詞含有率をチェック
+		      if ($opt{checkzyoshi}) {
+			  if (&postp_check($output) <= $Threshold_for_zyoshi) {
+			      next;
+			  }
+		      }
+
 		      if ($opt{splithtml}) {
-
-			  # 日本語判定
-			  if ($opt{language} eq 'japanese') {
-			      unless ($HtmlGuessEncoding->ProcessEncoding(\$output)) {
-				  next;
-			      }
-			  }
-
-			  # 助詞含有率をチェック
-			  if ($opt{checkzyoshi}) {
-			      if (&postp_check($output) <= $Threshold_for_zyoshi) {
-				  next;
-			      }
-			  }
-
 			  # $filenum_in_dirファイル出力されたら新しいディレクトリの作成
 #			  if ($fnum % $filenum_in_dir == 1) {
 #			      $dirname = $head . "/" . int ($fnum / $filenum_in_dir);
@@ -185,6 +186,7 @@ for my $f (@ARGV) {
 			  exit if $fnum eq '10000';
 		      }
 
+		      print DATA "\n" if $append_write_flag;
 		      print DATA "HTML $host:$port$urlpath $size\n";
 		      print DATA $output;
 		      $filesize += length($output);
@@ -193,9 +195,13 @@ for my $f (@ARGV) {
 			  $fnum++;
 			  close(DATA);
 			  open(DATA, "> $head-$fnum.html") or die "$head-$fnum.html: $!\n";
+			  $append_write_flag = 0;
 		      }
 		      elsif ($opt{splithtml}) {
 			  close DATA;
+		      }
+		      else {
+			  $append_write_flag = 1;
 		      }
 		  }
 	      }
