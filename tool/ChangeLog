@@ -1,4 +1,9 @@
-q2008-05-24  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+2008-06-17  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/read-zaodata.perl:
+	Append a newline before HTML tag when --splithtml is not used.
+
+2008-05-24  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
 	HTMLエンティティを含む文でlengthがズレないようにした.
