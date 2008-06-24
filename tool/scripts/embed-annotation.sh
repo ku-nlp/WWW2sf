@@ -17,7 +17,8 @@ syngraph_pm=$HOME/cvs/SynGraph/perl
 syndb_path=$HOME/cvs/SynGraph/syndb/x86_64
 
 tool=
-while getopts jks OPT
+recycle=0
+while getopts jksR OPT
 do
     case $OPT in
 	j)  tool="-jmn"
@@ -25,6 +26,8 @@ do
 	k)  tool="-knp"
 	    ;;
 	s)  tool="-syngraph"
+	    ;;
+	R)  recycle=1
 	    ;;
     esac
 done
@@ -56,29 +59,64 @@ trap 'clean_tmpfiles; exit 1' 1 2 3 9 15
 filepath=$1
 
 
-mkdir $workspace 2> /dev/null
+if [ $recycle -eq 1 ]
+then
+    id=`basename $filepath | cut -f 2 -d 's' | cut -f 1 -d '.'`
+    sfdir=s$id
+    outdir=t$id
+    recycle_opt="-recycle_knp"
 
-id=`basename $filepath | cut -f 2 -d 'x' | cut -f 1 -d '.'`
-xdir=x$id
-outdir=s$id
+else
+    id=`basename $filepath | cut -f 2 -d 'x' | cut -f 1 -d '.'`
+    sfdir=x$id
+    outdir=s$id
+    recycle_opt=
+fi
 logfile=$id.log
 
+command="perl -I $perlhome -I $syngraph_pm  $scripthome/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -hyponymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory"
+
+
+
+mkdir $workspace 2> /dev/null
+mkdir $workspace/finish 2> /dev/null
 cd $workspace
+
+
+
 echo scp $filepath ./
 scp $filepath ./
 
-echo tar xzf x$id.tgz
-tar xzf x$id.tgz
-rm -r x$id.tgz
+echo tar xzf $sfdir.tgz
+tar xzf $sfdir.tgz
+rm -r $sfdir.tgz
 
 mkdir $outdir 2> /dev/null
 
-echo perl -I $perlhome -I $syngraph_pm $scripthome/add-knp-result-dir.perl $tool -syndbdir $syndb_path -antonymy -r -indir $xdir -outdir $outdir -sentence_length_max 130 -all
-perl -I $perlhome -I $syngraph_pm $scripthome/add-knp-result-dir.perl $tool -syndbdir $syndb_path -antonymy -r -indir $xdir -outdir $outdir -sentence_length_max 130 -all
+
+
+echo $command
+$command
+
+
+
+rm -r $sfdir
+
+if [ $recycle -eq 1 ]
+then
+    mv $outdir $sfdir
+    outdir=$sfdir
+fi
+
+echo "cd $outdir ; for f in `ls` ; do gzip $f ; done ; cd .."
+cd $outdir ; for f in `ls` ; do gzip $f ; done ; cd ..
+
 
 echo tar czf $outdir.tgz $outdir
 tar czf $outdir.tgz $outdir
 
 echo rm -r $outdir
 rm -r $outdir
-rm -r $xdir
+
+
+mv $outdir.tgz $workspace/finish/
