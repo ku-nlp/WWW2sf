@@ -14,8 +14,10 @@ use strict;
 use AddKNPResult;
 use Error qw(:try);
 
+
+
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'syndb_on_memory', 'debug');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'syndb_on_memory', 'recycle_knp', 'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
     print STDERR "Please specify '-indir and -outdir'!\n";
@@ -28,6 +30,7 @@ $opt{jmncmd} = '/share09/home/skeiji/local/080512/bin/juman' unless ($opt{jmncmd
 $opt{jmnrc} = '/share09/home/skeiji/local/080512/etc/jumanrc' unless ($opt{jmnrc});
 $opt{knpcmd} = '/share09/home/skeiji/local/080512/bin/knp' unless ($opt{knpcmd});
 $opt{knprc} = '/share09/home/skeiji/local/080512/etc/knprc' unless ($opt{knprc});
+
 
 if (! -d $opt{outdir}) {
     mkdir $opt{outdir};
@@ -74,7 +77,7 @@ my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
 for my $file (glob ("$opt{indir}/*")) {
     open F, '<:encoding(utf8)', $file or die;
 
-    print STDERR $file, "\n";
+    print STDERR $file, "\n" if ($opt{debug});
 
     my ($buf);
     while (<F>) {
@@ -107,6 +110,8 @@ for my $file (glob ("$opt{indir}/*")) {
     unless (utf8::is_utf8($string)) {
 	$string = decode($doc->actualEncoding(), $string);
     }
+    $string =~ s/&amp;/&/g;
+
 
     my $outfilename = $opt{outdir} . '/' . basename($file);
     open F, '>:encoding(utf8)', $outfilename or die;

@@ -32,33 +32,74 @@ sub AddKnpResult {
 	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
 	next if !$this->{opt}{all} and !$jap_sent_flag; # not Japanese
 
+	my $rawstring;
 	for my $s_child_node ($sentence->getChildNodes) {
-	    if ($s_child_node->nodeName eq 'RawString') { # one of the children of S is Text
-		for my $node ($s_child_node->getChildNodes) {
-		    my $text = $node->string_value;
+	    if (!$this->{opt}{recycle_knp}) {
+		if ($s_child_node->nodeName eq 'RawString') { # one of the children of S is Text
+		    for my $node ($s_child_node->getChildNodes) {
+			my $text = $node->string_value;
 
-		    next if $text eq '';
+			next if $text eq '';
 
-		    if (defined $this->{opt}{sentence_length_max} && length($text) > $this->{opt}{sentence_length_max}) {
-			print STDERR "Too Long Sentence: $text\n";
-			next;
+			if (defined $this->{opt}{sentence_length_max} && length($text) > $this->{opt}{sentence_length_max}) {
+			    print STDERR "Too Long Sentence: $text\n";
+			    next;
+			}
+
+			if ($this->{opt}{usemodule}) {
+			    print STDERR "$text\n" if $this->{opt}{debug};
+
+			    # jmn
+			    if ($this->{opt}{jmn}) {
+				$this->AppendNode($doc, $sentence, $text, 'Juman');
+			    }
+			    # SynGraph
+			    elsif ($this->{opt}{syngraph}) {
+				$this->AppendNode($doc, $sentence, $text, 'SynGraph');
+			    }
+			    # knp
+			    elsif ($this->{opt}{knp}) {
+				$this->AppendNode($doc, $sentence, $text, 'Knp');
+			    }
+			}
 		    }
+		}
+	    }
+	    else {
+		if ($s_child_node->nodeName eq 'Annotation') {
 
-		    if ($this->{opt}{usemodule}) {
-			print STDERR "$text\n" if $this->{opt}{debug};
+		    # 埋め込まれている解析結果の種類を取得
+		    my $type = $s_child_node->getAttribute('Scheme');
 
-			# jmn
-			if ($this->{opt}{jmn}) {
-			    $this->AppendNode($doc, $sentence, $text, 'Juman');
+		    if ($type eq 'Knp' || $type eq 'SynGraph') {
+			# 解析結果の取得
+			my @nodes = $s_child_node->getChildNodes();
+			next if (scalar(@nodes) < 1);
+
+			my $annotation = $nodes[0]->string_value;
+			# 現在のAnnotation要素を削除する
+			$sentence->removeChild($s_child_node);
+
+			if ($this->{opt}{syngraph}) {
+			    my @buf;
+			    foreach my $line (split(/\n/, $annotation)) {
+				next if ($line =~ /^!/);
+				# SynGraphのバージョンを消す
+				$line =~ s/ *SynGraph:\d+.\d+-\d+// if ($line =~ /^#/);
+				push(@buf, $line);
+			    }
+
+			    my $knp_result = new KNP::Result(join("\n", @buf));
+			    $this->AppendNode($doc, $sentence, $knp_result, 'SynGraph');
 			}
-			# SynGraph
-			elsif ($this->{opt}{syngraph}) {
-			    $this->AppendNode($doc, $sentence, $text, 'SynGraph');
+			else {
+			    print "パラメータの指定が不正です (-recycle_knpオプションを指定時は-syngraphのみ有効です)\n";
+			    exit 1;
 			}
-			# knp
-			elsif ($this->{opt}{knp}) {
-			    $this->AppendNode($doc, $sentence, $text, 'Knp');
-			}
+		    }
+		    else {
+			print "パラメータの指定が不正です (KNPの解析結果が埋め込まれていない標準フォーマットを対象に-recycle_knpオプションを指定した解析はできません)\n";
+			exit 1;
 		    }
 		}
 	    }
@@ -84,8 +125,12 @@ sub AppendNode {
     elsif ($type eq 'Knp' || $type eq 'SynGraph') {
 	my $result;
 	try {
-	    $text = "# VERSION:\n$text";
-	    $result = $this->{knp}->parse_mlist($this->{knp}->juman($text));
+	    if ((ref $text) =~ /KNP::Result/) {
+		$result = $text;
+	    } else {
+		$text = "# VERSION:\n$text";
+		$result = $this->{knp}->parse_mlist($this->{knp}->juman($text));
+	    }
 
 	    return unless $result;
 
