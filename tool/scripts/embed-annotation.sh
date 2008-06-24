@@ -2,7 +2,7 @@
 
 # $Id$
 
-# usage: embed-annotation.sh [-j|-k|-s] host:/anywhere/x000.tgz
+# usage: embed-annotation.sh [-j|-k|-s] [-R] host:/anywhere/x000.tgz
 
 
 # 素の標準フォーマットにJUMAN/KNP/SYNGRAPHの解析結果を埋め込むスクリプト
@@ -94,6 +94,10 @@ rm -r $sfdir.tgz
 mkdir $outdir 2> /dev/null
 
 
+
+# スワップしないように仕様するメモリサイズを制限する(max 2GB)
+ulimit -m 2097152
+ulimit -v 2097152
 
 echo $command
 $command
