@@ -31,9 +31,33 @@ done
 shift `expr $OPTIND - 1`
 
 
-mkdir $workspace 2> /dev/null
+
+clean_tmpfiles() {
+    if [ -e $outdir ]; then
+	rm -fr $outdir
+    fi
+
+    if [ -e $outdir.tgz ]; then
+	rm -fr $outdir.tgz
+    fi
+
+    if [ -e $sfdir ]; then
+	rm -fr $sfdir
+    fi
+
+    if [ -e $sfdir.tgz ]; then
+	rm -fr $sfdir.tgz
+    fi
+}
+
+trap 'clean_tmpfiles; exit 1' 1 2 3 9 15
+
 
 filepath=$1
+
+
+mkdir $workspace 2> /dev/null
+
 id=`basename $filepath | cut -f 2 -d 'x' | cut -f 1 -d '.'`
 xdir=x$id
 outdir=s$id
@@ -49,8 +73,8 @@ rm -r x$id.tgz
 
 mkdir $outdir 2> /dev/null
 
-echo perl -I $perlhome -I $syngraph_pm  $scripthome/add-knp-result-dir.perl $tool -syndbdir $syndb_path -antonymy -r -indir $xdir -outdir $outdir -sentence_length_max 130 -all
-perl -I $perlhome -I $syngraph_pm  $scripthome/add-knp-result-dir.perl $tool -syndbdir $syndb_path -antonymy -r -indir $xdir -outdir $outdir -sentence_length_max 130 -all
+echo perl -I $perlhome -I $syngraph_pm $scripthome/add-knp-result-dir.perl $tool -syndbdir $syndb_path -antonymy -r -indir $xdir -outdir $outdir -sentence_length_max 130 -all
+perl -I $perlhome -I $syngraph_pm $scripthome/add-knp-result-dir.perl $tool -syndbdir $syndb_path -antonymy -r -indir $xdir -outdir $outdir -sentence_length_max 130 -all
 
 echo tar czf $outdir.tgz $outdir
 tar czf $outdir.tgz $outdir
