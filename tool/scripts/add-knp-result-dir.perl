@@ -75,7 +75,12 @@ $syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngra
 my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
 
 for my $file (glob ("$opt{indir}/*")) {
-    open F, '<:encoding(utf8)', $file or die;
+    if ($file =~ /\.gz$/) {
+	open F, "zcat $file |" or die;
+    } else {
+	open F, $file or die;
+    }
+    binmode(F, ':utf8');
 
     print STDERR $file, "\n" if ($opt{debug});
 
@@ -114,6 +119,7 @@ for my $file (glob ("$opt{indir}/*")) {
 
 
     my $outfilename = $opt{outdir} . '/' . basename($file);
+    $outfilename =~ s/\.gz$//;
     open F, '>:encoding(utf8)', $outfilename or die;
     print F $string;
     close F;
