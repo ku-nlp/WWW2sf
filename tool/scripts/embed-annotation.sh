@@ -8,6 +8,9 @@
 # 素の標準フォーマットにJUMAN/KNP/SYNGRAPHの解析結果を埋め込むスクリプト
 
 
+source $HOME/.bashrc
+
+
 # ★以下の環境変数を変更すること★
 
 workspace=/tmp
@@ -96,8 +99,8 @@ mkdir $outdir 2> /dev/null
 
 
 # スワップしないように仕様するメモリサイズを制限する(max 2GB)
-ulimit -m 2097152
-ulimit -v 2097152
+ulimit -m 2147483648
+ulimit -v 2147483648
 
 echo $command
 $command
@@ -112,8 +115,9 @@ then
     outdir=$sfdir
 fi
 
-echo "cd $outdir ; for f in `ls` ; do gzip $f ; done ; cd .."
-cd $outdir ; for f in `ls` ; do gzip $f ; done ; cd ..
+
+echo "cd $outdir ; for f in ls ; do gzip -f $f ; done ; cd .."
+cd $outdir ; for f in `ls | grep -v gz` ; do gzip -f $f ; done ; cd ..
 
 
 echo tar czf $outdir.tgz $outdir
