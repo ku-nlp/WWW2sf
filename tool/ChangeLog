@@ -1,3 +1,28 @@
+2008-06-25  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result-dir.perl:
+	入力がgzip圧縮されたファイルの場合、自動的にzcatして読み込むようにした.
+
+	* scripts/embed-annotation.sh:
+	生成された標準フォーマットデータをgzipで圧縮する際、-fオプションを追加.
+	使用できるメモリの上限値の修正.
+
+2008-06-24  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-annotation.sh:
+	使用できるメモリの上限を2GBに設定した.
+
+	* scripts/embed-annotation.sh:
+	SYNGRAPH解析だけをやり直すオプション(-R)を追加.
+	作成された標準フォーマットデータを$workspace/finish以下に保存するようにした.
+	標準フォーマットデータをgzipで圧縮してからtgzするようにした.
+
+	* scripts/embed-annotation.sh:
+	途中で停止した際、作業中のファイルを削除するようにした.
+
+	* perl/AddKNPResult.pm, scripts/add-knp-result-dir.perl:
+	標準フォーマット内のKNP解析結果を利用してSYNGRAPH解析を行うオプション(-recycle_knp)を追加.
+
 2008-06-17  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/read-zaodata.perl:
