@@ -19,6 +19,7 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
     - XML::LibXML
     - KNP
     - ShiftJIS::CP932::MapUTF
+    - Error
 
 
 ฝ่อý
