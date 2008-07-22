@@ -609,6 +609,17 @@ sub ProcessJapanese {
     # カタカナの後についているハイフンを「ー」に正規化
     $buf =~ s!(\p{Katakana})((?:ー|―|−|─|━|‐)+)!sprintf("%s%s", $1, 'ー' x (length($2)))!ge;
 
+    # euc-jpにないコードを変換
+    $buf =~ s/－/−/g; # FULLWIDTH HYPHEN-MINUS (U+ff0d) -> MINUS SIGN (U+2212)
+    $buf =~ s/～/〜/g; # FULLWIDTH TILDE (U+ff5e) -> WAVE DASH (U+301c)
+    $buf =~ s/∥/‖/g; # PARALLEL TO (U+2225) -> DOUBLE VERTICAL LINE (U+2016)
+    $buf =~ s/￠/¢/g;  # FULLWIDTH CENT SIGN (U+ffe0) -> CENT SIGN (U+00a2)
+    $buf =~ s/￡/£/g;  # FULLWIDTH POUND SIGN (U+ffe1) -> POUND SIGN (U+00a3)
+    $buf =~ s/￢/¬/g;  # FULLWIDTH NOT SIGN (U+ffe2) -> NOT SIGN (U+00ac)
+    $buf =~ s/—/―/g; # EM DASH (U+2014) -> HORIZONTAL BAR (U+2015)
+    $buf =~ s/¥/￥/g;  # YEN SIGN (U+00a5) -> FULLWIDTH YEN SIGN (U+ffe5)
+    # ※ これ以外の特殊な文字は解析時に「〓」に変換 (Juman.pm)
+
     # Unicode変換のバグ
 
     # 数字￣数字 → 数字〜数字
