@@ -58,6 +58,10 @@ my $doc = $parser->parse_string($buf);
 
 if ($opt{usemodule}) {
     $addknpresult->AddKnpResult($doc, 'Title');
+    $addknpresult->AddKnpResult($doc, 'OutLink');
+    $addknpresult->AddKnpResult($doc, 'InLink');
+    $addknpresult->AddKnpResult($doc, 'Keywords');
+    $addknpresult->AddKnpResult($doc, 'Description');
     $addknpresult->AddKnpResult($doc, 'S');
 }
 # 解析結果を読み込む
