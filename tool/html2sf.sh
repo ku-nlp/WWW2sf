@@ -3,25 +3,39 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k] [-b] [-p] [-f] input.html"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] input.html"
     exit 1
 }
 
-jmn=0
-knp=0
+# -j: JUMANの解析結果を埋め込む
+# -k: KNPの解析結果を埋め込む
+# -s: SynGraphの解析結果を埋め込む
+# -b: <br>と<p>を無視 (extract-sentences.perl --ignore_br)
+# -B: Movable Type用オプション (extract-sentences.perl --blog mt)
+# -f: 日本語チェックをしない (extract-sentences.perl)
+# -c cns.cdb: アンカーテキストの連続を複合名詞単位で区切る (extract-sentences.perl --cndbfile cns.cdb)
+# -p: 括弧を文内に含める (format-www-xml.perl --inclue_paren)
+# -P: 括弧を文として分ける (format-www-xml.perl --divide_paren)
+# -w: 全体削除しない (format-www-xml.perl --save_all)
+# -M: 解析結果を埋め込むために、AddKNPResult.pmを用いない
+# -u: utf8に変換したHTML文書を保存する
+
+# Change this for SynGraph annotation
+syndb_path=$HOME/cvs/SynGraph/syndb/x86_64
+
 extract_std_args="--checkzyoshi --checkjapanese --checkencoding"
 extract_args=
 formatwww_args=
-addknp_args=
-rawstring_args=
+addknp_args="--sentence_length_max 130 --all"
+rawstring_args="--all"
+syngraph_args="--syndbdir $syndb_path --antonymy --syndb_on_memory"
 save_utf8file=0
-use_module=0
+use_module=1
+annotation=
 
-while getopts abfjkpPhBsc:um OPT
+while getopts bfjkspPhBwc:umM OPT
 do  
     case $OPT in
-	a)  rawstring_args="--all"
-	    ;;
 	b)  extract_args="--ignore_br $extract_args"
 	    ;;
 	c)  extract_args="--cndbfile $OPTARG $extract_args"
@@ -29,23 +43,27 @@ do
 	B)  extract_args="--blog mt $extract_args"
 	    ;;
 	f)  extract_std_args=""
-	    rawstring_args="--all"
 	    ;;
-	j)  addknp_args="--jmn"
-	    jmn=1
+	j)  addknp_args="--jmn $addknp_args"
+	    annotation=jmn
 	    ;;
-	k)  addknp_args="--knp"
-	    knp=1
+	k)  addknp_args="--knp $addknp_args"
+	    annotation=knp
+	    ;;
+	s)  addknp_args="--syngraph $syngraph_args $addknp_args"
+	    annotation=syngraph
 	    ;;
         p)  formatwww_args="--include_paren $formatwww_args"
             ;;
         P)  formatwww_args="--divide_paren $formatwww_args"
             ;;
-        s)  formatwww_args="--save_all $formatwww_args"
+        w)  formatwww_args="--save_all $formatwww_args"
             ;;
         u)  save_utf8file=1
             ;;
         m)  use_module=1
+            ;;
+        M)  use_module=0
             ;;
         h)  usage
             ;;
@@ -100,14 +118,10 @@ fi
 
 cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
 
-if [ $jmn -eq 1 -o $knp -eq 1 ]; then
+if [ -n "$annotation" ]; then
 
     if [ $use_module -eq 1 ]; then
-	if [ $jmn -eq 1 ]; then
-	    cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl -j -usemodule
-	elif [ $knp -eq 1 ]; then
-	    cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl -k -usemodule
-	fi
+	cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl $addknp_args --usemodule
     else
 	# 文の抽出
 	cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
