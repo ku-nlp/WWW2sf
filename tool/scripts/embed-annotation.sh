@@ -77,7 +77,7 @@ else
 fi
 logfile=$id.log
 
-command="perl -I $perlhome -I $syngraph_pm  $scripthome/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -hyponymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory"
+command="perl -I $perlhome -I $syngraph_pm  $scripthome/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory"
 
 
 
