@@ -1,13 +1,15 @@
 USAGE:
-  WWW2sf/tool/www2sf.sh [-j|-k] [-u] [-c somewhere/cns.cdb] [-S] hdir xdir
+  WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u] [-c somewhere/cns.cdb] [-S] hdir xdir
 
 OPTION:
   -j    ... jumanの解析結果を埋め込む.
 
   -k    ... knpの解析結果を埋め込む.
 
+  -s    ... SynGraphの解析結果を埋め込む.
+
   -u    ... utf8に変換したHTML文書を出力する.
-            utf8化されたHTML文書はXXX.YYY.utf8.htmlとう形式でhdir以下に出力される.
+            utf8化されたHTML文書はXXX.YYY.utf8.htmlという形式でhdir以下に出力される.
             (XXXは文書ID, YYYはプロセス番号)
 
   -c    ... アンカーテキストの連続を複合名詞単位で区切る.
@@ -15,8 +17,7 @@ OPTION:
   -S    ... 標準フォーマットに変換するHTML文書のファイルサイズの上限を指定.
             (デフォルトでは5MB以上のファイルは変換されない)
 
-  -hdir ... HTML文書が収められたディレクトリ.
+  hdir  ... HTML文書が収められたディレクトリ.
             (utf8化されていないもの, gzipされていないもの)
 
-  -xdir ... 標準フォーマットが出力されるディレクトリ.
-
+  xdir  ... 標準フォーマットが出力されるディレクトリ.
