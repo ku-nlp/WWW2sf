@@ -68,7 +68,6 @@ $knp = new KNP (-Command => $opt{knpcmd},
 		-JumanOption => '-i \#',
 		-Option => '-tab -dpnd -postprocess') if $opt{knp} || $opt{syngraph};
 
-my $syngraph_option;
 $syngraph_option->{db_on_memory} = 1 if $opt{syndb_on_memory};
 $syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngraph};
 
