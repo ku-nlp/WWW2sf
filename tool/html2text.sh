@@ -3,15 +3,22 @@
 # $Id$
 
 usage() {
-    echo "$0 [-b] [-B] [-f] [-p] [-P] [-s] input.html"
+    echo "$0 [-b] [-B] [-f] [-p|-P] [-w] input.html"
     exit 1
 }
+
+# -b: <br>と<p>を無視 (extract-sentences.perl --ignore_br)
+# -B: Movable Type用オプション (extract-sentences.perl --blog mt)
+# -f: 日本語チェックをしない (extract-sentences.perl)
+# -p: 括弧を文内に含める (format-www.perl --inclue_paren)
+# -P: 括弧を文として分ける (format-www.perl --divide_paren)
+# -w: 全体削除しない (format-www.perl --save_all)
 
 extract_std_args="--checkzyoshi --checkjapanese --checkencoding"
 extract_args=
 formatwww_args=
 
-while getopts bfpPhBs OPT
+while getopts bfpPhBsw OPT
 do  
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -24,7 +31,10 @@ do
             ;;
         P)  formatwww_args="--divide_paren $formatwww_args"
             ;;
-        s)  formatwww_args="--save_all $formatwww_args"
+        s)  echo "please use -w option instead of -s."
+	    usage
+            ;;
+        w)  formatwww_args="--save_all $formatwww_args"
             ;;
         h)  usage
             ;;
