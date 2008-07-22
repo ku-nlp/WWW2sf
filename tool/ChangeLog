@@ -1,3 +1,24 @@
+2008-07-22  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/add-knp-result.perl:
+	Added the application of AddKnpResult to OutLink, InLink, Keywords and Description.
+	Added --syndb_on_memory option.
+
+	* perl/TextExtractor.pm:
+	Transform utf8-unique codes to similar ones.
+
+	* html2text.sh:
+	Changed -s to -w.
+
+	* scripts/add-knp-result-dir.perl:
+	Fixed a bug of syngraph_option.
+
+	* html2sf.sh:
+	Made -m (usemodule) default.
+
+	* www2sf.sh:
+	Added -s (syngraph) option.
+
 2008-06-25  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result-dir.perl:
