@@ -5,7 +5,6 @@
 # $Id$
 
 usage() {
-    # echo "$0 [-j] [-k] h0001 x0001"
     cat `dirname $0`"/"usage
     exit 1
 }
@@ -17,12 +16,14 @@ fsize_threshold=5242880
 
 base_dir=`dirname $0`
 
-while getopts jkhS:c:u OPT
+while getopts jkshS:c:u OPT
 do  
     case $OPT in
 	j)  html2sf_extra_args="-j"
 	    ;;
 	k)  html2sf_extra_args="-k"
+	    ;;
+	s)  html2sf_extra_args="-s"
 	    ;;
 	S)  fsize_threshold=$OPTARG
 	    ;;
@@ -50,7 +51,7 @@ do
     # ファイルサイズが$fsize_threshold以下なら
     if [ $fsize -lt $fsize_threshold ]; then
 	echo $f
-	$base_dir/html2sf.sh $html2sf_extra_args -a -p -f $f > $xdir/$base_f.xml
+	$base_dir/html2sf.sh $html2sf_extra_args -p -f $f > $xdir/$base_f.xml
 	
 	# 出力が0の場合、削除
 	if [ ! -s $xdir/$base_f.xml ]; then
