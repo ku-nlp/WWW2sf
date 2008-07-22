@@ -18,7 +18,7 @@ use strict;
 use AddKNPResult;
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', 'debug');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', 'syndb_on_memory', 'debug');
 
 my ($regnode_option, $syngraph_option);
 if ($opt{syngraph}) {
@@ -39,12 +39,14 @@ if ($opt{syngraph}) {
 
     $opt{regnode_option} = $regnode_option;
     $opt{syngraph_option} = $syngraph_option;
+
+    $syngraph_option->{db_on_memory} = 1 if $opt{syndb_on_memory};
 }
 
 my ($juman, $knp, $syngraph);
 $juman = new Juman if $opt{jmn};
 $knp = new KNP (-Option => '-tab -dpnd') if $opt{knp} || $opt{syngraph};
-$syngraph = new SynGraph($opt{syndbdir}) if $opt{syngraph};
+$syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngraph};
 
 my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
 
