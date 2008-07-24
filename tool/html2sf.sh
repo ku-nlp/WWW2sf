@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] input.html"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] input.html > output.xml"
     exit 1
 }
 
@@ -21,7 +21,8 @@ usage() {
 # -u: utf8に変換したHTML文書を保存する
 
 # Change this for SynGraph annotation
-syndb_path=$HOME/cvs/SynGraph/syndb/x86_64
+syngraph_home=$HOME/cvs/SynGraph
+syndb_path=$syngraph_home/syndb/`uname -m`
 
 extract_std_args="--checkzyoshi --checkjapanese --checkencoding"
 extract_args=
@@ -121,7 +122,7 @@ cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $fo
 if [ -n "$annotation" ]; then
 
     if [ $use_module -eq 1 ]; then
-	cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl $addknp_args --usemodule
+	cat $rawfile | perl -I $base_dir/perl -I $syngraph_home/perl $base_dir/scripts/add-knp-result.perl $addknp_args --usemodule
     else
 	# 文の抽出
 	cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
