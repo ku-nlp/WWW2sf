@@ -18,7 +18,7 @@ use strict;
 use AddKNPResult;
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', 'syndb_on_memory', 'debug');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'syndb_on_memory', 'debug');
 
 my ($regnode_option, $syngraph_option);
 if ($opt{syngraph}) {
@@ -44,8 +44,15 @@ if ($opt{syngraph}) {
 }
 
 my ($juman, $knp, $syngraph);
-$juman = new Juman if $opt{jmn};
-$knp = new KNP (-Option => '-tab -dpnd') if $opt{knp} || $opt{syngraph};
+$juman = new Juman (-Command => $opt{jmncmd},
+		    -Rcfile => $opt{jmnrc},
+		    -Option => '-i \#') if $opt{jmn};
+$knp = new KNP (-Command => $opt{knpcmd},
+		-Rcfile => $opt{knprc},
+		-JumanCommand => $opt{jmncmd},
+		-JumanRcfile => $opt{jmnrc},
+		-JumanOption => '-i \#',
+		-Option => '-tab -dpnd -postprocess') if $opt{knp} || $opt{syngraph};
 $syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngraph};
 
 my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
