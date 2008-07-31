@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] input.html > output.xml"
     exit 1
 }
 
@@ -19,6 +19,7 @@ usage() {
 # -w: 全体削除しない (format-www-xml.perl --save_all)
 # -M: 解析結果を埋め込むために、AddKNPResult.pmを用いない
 # -u: utf8に変換したHTML文書を保存する
+# -U: 入力がすでにutf8に変換済みの場合
 
 # Change this for SynGraph annotation
 syngraph_home=$HOME/cvs/SynGraph
@@ -33,8 +34,9 @@ syngraph_args="--syndbdir $syndb_path --antonymy --syndb_on_memory"
 save_utf8file=0
 use_module=1
 annotation=
+input_utf8html=0
 
-while getopts bfjkspPhBwc:umM OPT
+while getopts bfjkspPhBwc:umMU OPT
 do  
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -66,6 +68,8 @@ do
             ;;
         M)  use_module=0
             ;;
+        U)  input_utf8html=1
+            ;;
         h)  usage
             ;;
     esac
@@ -96,10 +100,16 @@ clean_tmpfiles() {
 trap 'clean_tmpfiles; exit 1' 1 2 3 15
 base_dir=`dirname $0`
 
-# utf8に変換
-perl -I $base_dir/perl $base_dir/scripts/to_utf8.perl $f > $utf8file
+# utf8に変換(crawlデータは変換済みのため、強制的に utf8 と判断させる)
+if [ $input_utf8html -eq 1 ]
+then
+    perl -CIOE -I $base_dir/perl $base_dir/scripts/to_utf8.perl -force $f > $utf8file
+else
+    perl -I $base_dir/perl $base_dir/scripts/to_utf8.perl $f > $utf8file
+fi
 # 文字コードが推定できないなどの理由でutf8化されたページが得られない場合は終了
 if [ $? -ne 0 ]; then
+    echo "$f - UTF-8 変換で失敗しました" 1>&2
     rm -f $utf8file
     exit
 fi
@@ -113,6 +123,9 @@ perl -I $base_dir/perl $base_dir/scripts/set-offset-and-length.perl -html $utf8f
 
 # 助詞のチェックで日本語ページとは判定されなかったもの
 if [ ! -s $xmlfile1 ]; then
+    echo "$f - 日本語ページではありません" 1>&2
+    rm -f $utf8file
+    rm -f $xmlfile0
     rm -f $xmlfile1
     exit
 fi
@@ -130,7 +143,7 @@ if [ -n "$annotation" ]; then
 	# Juman/Knp
 	cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
 
-	if [ $knp -eq 1 ]; then
+	if [ $annotation = "knp" ]; then
 	    $base_dir/scripts/parse-comp.sh $jmnfile > /dev/null
 	    mv -f $knpfile $jmnfile
 	fi

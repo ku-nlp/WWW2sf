@@ -16,7 +16,7 @@ fsize_threshold=5242880
 
 base_dir=`dirname $0`
 
-while getopts jkshS:c:u OPT
+while getopts jkshS:c:uU OPT
 do  
     case $OPT in
 	j)  html2sf_extra_args="-j"
@@ -30,6 +30,8 @@ do
 	c)  html2sf_extra_args="-c $OPTARG $html2sf_extra_args"
 	    ;;
 	u)  html2sf_extra_args="-u $html2sf_extra_args"
+	    ;;
+	U)  html2sf_extra_args="-U $html2sf_extra_args"
 	    ;;
         h)  usage
             ;;
