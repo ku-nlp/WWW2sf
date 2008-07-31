@@ -1,3 +1,14 @@
+2008-07-31  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* html2sf.sh, www2sf.sh:
+	Added -U option (it is used when input is already utf8).
+
+	* scripts/to_utf8.perl:
+	Added -force option.
+
+	* scripts/extract-sentences.perl, scripts/set-offset-and-length.perl:
+	Modified the delimiter of HTTP header and body (thanks to Tadashi MORII <tadashi_morii@img-j.co.jp>).
+
 2008-07-24  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* html2sf.sh:
