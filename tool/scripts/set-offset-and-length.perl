@@ -76,7 +76,7 @@ sub main {
 	    $htmldat .= $_;
 	} else {
 	    $ignored_chars .= $_;
-	    if ($_ =~ /^\r$/) {
+	    if ($_ =~ /^(\x0D\x0A|\x0D|\x0A)$/) {
 		$flag = 1;
 	    }
 	}
