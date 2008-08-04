@@ -217,7 +217,7 @@ sub alignment {
     my $next_ch_h = $chars_h->[$h + 1];
     my $ch_h = &normalized($chars_h->[$h], $prev_ch_h);
 
-    print "r:[$ch_r] cmp h:[$ch_h] next_h:[$next_ch_h] off=$offset ord=" . ord($ch_h) . "\n" if ($opt{verbose});
+    print "r:[$ch_r] cmp h:[$ch_h] next_h:[$next_ch_h] off=$offset ord:r=" . ord($ch_r) . " ord:h=" . ord($ch_h) . "\n" if ($opt{verbose});
 
     # マッチ
     if ($ch_r eq $ch_h) {
@@ -291,6 +291,17 @@ sub normalized {
 
     # `ー'は汎化
     $ch =~ s/(?:ー|―|−|─|━|‐)/ー/ if ($prev_ch =~ /^\p{Katakana}$/);
+
+    # euc-jpにないコードを変換
+    $ch =~ s/－/−/g; # FULLWIDTH HYPHEN-MINUS (U+ff0d) -> MINUS SIGN (U+2212)
+    $ch =~ s/～/〜/g; # FULLWIDTH TILDE (U+ff5e) -> WAVE DASH (U+301c)
+    $ch =~ s/∥/‖/g; # PARALLEL TO (U+2225) -> DOUBLE VERTICAL LINE (U+2016)
+    $ch =~ s/￠/¢/g;  # FULLWIDTH CENT SIGN (U+ffe0) -> CENT SIGN (U+00a2)
+    $ch =~ s/￡/£/g;  # FULLWIDTH POUND SIGN (U+ffe1) -> POUND SIGN (U+00a3)
+    $ch =~ s/￢/¬/g;  # FULLWIDTH NOT SIGN (U+ffe2) -> NOT SIGN (U+00ac)
+    $ch =~ s/—/―/g; # EM DASH (U+2014) -> HORIZONTAL BAR (U+2015)
+    $ch =~ s/¥/￥/g;  # YEN SIGN (U+00a5) -> FULLWIDTH YEN SIGN (U+ffe5)
+    # ※ これ以外の特殊な文字は解析時に「〓」に変換 (Juman.pm)
 
     return $ch;
 }
