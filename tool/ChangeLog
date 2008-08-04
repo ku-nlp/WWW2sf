@@ -2,6 +2,8 @@
 
 	* scripts/set-offset-and-length.perl:
 	euc-jpにないコードの変換処理を追加.
+	* scripts/extract-sentences.perl:
+	変換ツールのバージョン、変換日時、クロール日時を<StandardFormat>タグ内に記述するようにした.
 
 2008-07-31  Daisuke Kawahara  <dk@nict.go.jp>
 

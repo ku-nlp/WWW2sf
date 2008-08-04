@@ -20,6 +20,7 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
     - KNP
     - ShiftJIS::CP932::MapUTF
     - Error
+    - HTTP::Date
 
 
 ฝ่อý
