@@ -17,6 +17,8 @@ use SentenceFilter;
 use ConvertCode qw(convert_code);
 use Getopt::Long;
 use utf8;
+use File::Basename;
+use HTTP::Date qw(parse_date);
 use Data::Dumper;
 {
     package Data::Dumper;
@@ -33,6 +35,7 @@ sub usage {
     exit 1;
 }
 
+
 our (%opt, $writer, $filter);
 &GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s', 'cndbfile=s', 'verbose');
 $opt{language} = 'japanese' unless $opt{language};
@@ -42,7 +45,36 @@ $opt{blog} = 'none' unless $opt{blog};
 # --checkjapanese: 日本語(ひらがな、カタカナ、漢字)含有率をチェックする
 # --checkzyoshi:   助詞含有率をチェックする
 
-my ($buf, $timestamp, $url);
+my ($VERSION, $CRAWL_DATE, $buf, $crawlTime, $url);
+
+# 変換スクリプトのバージョンを読み込み
+my $version_file = sprintf("%s/../data/VERSION", dirname($INC{'TextExtractor.pm'}));
+if (-e $version_file) {
+    open F, "< $version_file" or die $!;
+    $VERSION = <F>;
+    chomp $VERSION;
+    close F;
+} else {
+    print STDERR "[WARNING] data/VERSION file was not found.\n";
+}
+
+
+# Date: がない場合用にクロール日をあらかじめ記述したファイルをロード
+my $crawldate_file = sprintf("%s/../data/CRAWL_DATE", dirname($INC{'TextExtractor.pm'}));
+if (-e $crawldate_file) {
+    open F, "< $crawldate_file" or die $!;
+    $CRAWL_DATE = <F>;
+    chomp $CRAWL_DATE;
+    close F;
+} else {
+    print STDERR "[WARNING] data/CRAWL_DATE file was not found.\n";
+}
+
+
+
+############################################################
+#                      処理開始
+############################################################
 
 my $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
 my $Filter = new SentenceFilter if $opt{checkjapanese};
@@ -50,11 +82,6 @@ my $Filter = new SentenceFilter if $opt{checkjapanese};
 our $Threshold_Filter = 0.6;
 our $Threshold_Zyoshi = $opt{zyoshi_threshold} ? $opt{zyoshi_threshold} : 0.005;
 
-# ファイル名が与えられていればタイムスタンプを取得
-if ($ARGV[0] and -f $ARGV[0]) {
-    my $st = stat($ARGV[0]);
-    $timestamp = strftime("%Y-%m-%d %T", localtime($st->mtime));
-}
 
 my $flag = -1;
 my $crawler_html = 0;
@@ -68,6 +95,11 @@ while (<>) {
     if (!$crawler_html || $flag > 0) {
 	$buf .= $_;
     } else {
+	# ウェブサーバーが応答した日時を取得
+	if ($_ =~ /^Date: (.+)$/) {
+	    $crawlTime = &convertTimeFormat($1);
+	}
+
 	if ($_ =~ /^(\x0D\x0A|\x0D|\x0A)$/) {
 	    $flag = 1;
 	}
@@ -191,15 +223,23 @@ if ($opt{xml}) {
 }
 
 # 文に分割して出力
-&print_page_header($opt{url} ? $opt{url} : $url, $encoding, $timestamp);
+&print_page_header($opt{url} ? $opt{url} : $url, $encoding, $crawlTime);
 &print_extract_sentences($buf);
 &print_page_footer();
 
 sub print_page_header {
-    my ($url, $encoding, $timestamp) = @_;
+    my ($url, $encoding, $crawlTime) = @_;
+
+    my $formatTime = strftime("%Y-%m-%d %T %Z", localtime(time));
 
     if ($opt{xml}) {
-	$writer->startTag('StandardFormat', Url => $url, OriginalEncoding => $encoding, Time => $timestamp);
+	$writer->startTag('StandardFormat',
+			  Url => $url,
+			  OriginalEncoding => $encoding,
+			  CrawlTime => ($crawlTime) ? $crawlTime : $CRAWL_DATE,
+			  FormatTime => $formatTime,
+			  FormatProgVersion => $VERSION
+	    );
 
 	$writer->startTag('Header');
 	for my $i (0 .. $#{$parsed->{TEXT}}) {
@@ -304,4 +344,11 @@ sub postp_check {
     }
 
     return eval {$pp_count/$count};
+}
+
+sub convertTimeFormat {
+    my ($timestr) = @_;
+
+    my ($YYYY,$MM,$DD,$hh,$mm,$ss,$TZ) = parse_date($timestr);
+    return sprintf("%04d-%02d-%02d %02d:%02d:%02d %s", $YYYY, $MM, $DD, $hh, $mm, $ss, $TZ);
 }
