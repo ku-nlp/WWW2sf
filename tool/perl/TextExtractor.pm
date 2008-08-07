@@ -179,6 +179,9 @@ sub detag {
     my $link_buf;          # <a>タグの中身すべて
     my $link_buf2;         # <a>タグの途中を保持
 
+    # テキスト要素直前のタグ
+    my $immediately_before_tag = '';
+
     # HTML::TokeParserでparseする
     # HTML::TokeParserを、offsetとlengthを返させるように修正したModifiedTokeParserを使う
     my $parser = ModifiedTokeParser->new($raw_html) or die $!;
@@ -192,7 +195,7 @@ sub detag {
 	# 開始タグ
 	if ($type eq 'S') {
             my $tag = $token->[1];
-
+	    $immediately_before_tag = $tag;
             if (defined $DELIMITER_TAGS{$tag}) {
 		# link_bufがある場合、直前に連結
 		if ($link_buf) {
@@ -329,6 +332,12 @@ sub detag {
 
 #           my $text = NFKC($token->[1]);
             my $text = $token->[1];
+
+	    # "<BR>\n", "<P>\n" を一つの改行と思う
+	    if ($immediately_before_tag =~ /br|p/ && $this->{opt}{uniq_br_and_linebreak}) {
+		$text =~ s/^\n//;
+	    }
+	    $immediately_before_tag = '';
 
 	    if ($mode{title}) {
 		$title = $text;

@@ -37,7 +37,7 @@ sub usage {
 
 
 our (%opt, $writer, $filter);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s', 'cndbfile=s', 'verbose');
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s', 'cndbfile=s', 'uniq_br_and_linebreak', 'verbose');
 $opt{language} = 'japanese' unless $opt{language};
 $opt{blog} = 'none' unless $opt{blog};
 
@@ -194,6 +194,7 @@ $buf =~ s/(<\/html>)(([^>]|\n)*?)?(\d|\r|\n)+$/\1\n/i if ($crawler_html);
 
 # HTMLを文のリストに変換
 my $textextractor_option = {language => 'japanese'};
+$textextractor_option->{uniq_br_and_linebreak} = $opt{uniq_br_and_linebreak} if $opt{uniq_br_and_linebreak};
 $textextractor_option->{cndbfile} = $opt{cndbfile} if $opt{cndbfile};
 $textextractor_option->{verbose} = $opt{verbose} if $opt{verbose};
 my $ext = new TextExtractor($textextractor_option);
