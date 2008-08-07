@@ -1,7 +1,19 @@
+2008-08-07  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm, scripts/extract-sentences.perl:
+	<BR>\n, <P>\n を一つの改行と見なすオプションを追加. (デフォルトはオフ)
+
+	* scripts/extract-sentences-by-offset-and-length.perl:
+	ファイル名を出力するようにした.
+
+	* scripts/set-offset-and-length.perl:
+	文中にHTMLタグが含まれている際に、オフセット値を誤るバグを修正.
+
 2008-08-04  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
 	euc-jpにないコードの変換処理を追加.
+
 	* scripts/extract-sentences.perl:
 	変換ツールのバージョン、変換日時、クロール日時を<StandardFormat>タグ内に記述するようにした.
 
