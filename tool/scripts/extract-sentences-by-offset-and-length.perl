@@ -39,13 +39,13 @@ sub main {
     open($DAT, $opt{html});
     my $parser = new XML::LibXML;
     my $doc = $parser->parse_string($xmldat);
-    &extract_rawstring($doc, $htmldat, $DAT);
+    &extract_rawstring($doc, $htmldat, $DAT, $opt{xml});
 
     close($DAT);
 }
 
 sub extract_rawstring {
-    my ($doc, $texts, $READER) = @_;
+    my ($doc, $texts, $READER, $file) = @_;
 
     my $title = $doc->getElementsByTagName('Title')->[0];
     if (defined $title) {
@@ -62,7 +62,7 @@ sub extract_rawstring {
 			my $rawstring;
 			read($READER, $rawstring, $length);
 			print "=====\n";
-			print "offset:$offset length:$length\n";
+			print "file:$file offset:$offset length:$length\n";
 			print "xml  " . $text . "\n";
 			print $text . "\n";
 			print "-----\n";
