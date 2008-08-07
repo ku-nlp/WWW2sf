@@ -43,9 +43,9 @@ $opt{max_num_of_discardable_chars_for_html} = 10;
 
 sub main {
     if ($opt{z}) {
-	open(READER, "zcat  $opt{xml} |");
+	open(READER, "zcat  $opt{xml} |") or die $!;
     } else {
-	open(READER, $opt{xml});
+	open(READER, $opt{xml}) or die $!;
     }
     binmode(READER, ':utf8');
 
@@ -56,9 +56,9 @@ sub main {
     close(READER);
 
     if ($opt{z}) {
-	open(READER, "zcat $opt{html} |");
+	open(READER, "zcat $opt{html} |") or die $!;
     } else {
-	open(READER, $opt{html});
+	open(READER, $opt{html}) or die $!;
     }
 #   binmode(READER, ':utf8'); # オフセットが文字数になるのでフラグは立てない
 
@@ -158,7 +158,13 @@ sub get_offset_and_length {
     my @chars_r = split(//, $rawstring);
     my @chars_h = split(//, $text->[0]);
 
-    print "[" . $text->[0] . "]\n" if ($opt{verbose});
+    if ($opt{verbose}) {
+	print "\n";
+	print "--------------------------------------------------\n";
+	print "rawstring: [$rawstring]\n";
+	print "html_text: [" . $text->[0] . "]\n";
+	print "--------------------------------------------------\n";
+    }
 
     my $i = 0; # @chars_rの添字
     my $j = 0; # @chars_hの添字
@@ -191,7 +197,9 @@ sub get_offset_and_length {
 	# アライメントに使用した分を除去
 	my @removed = splice(@chars_h, 0, $j);
 	my $removed_string = join('', @removed);
+
 	my $length = length(encode($opt{html_encoding}, $removed_string));
+
 	if ($property->[0]{offset} - $offset > 0) {
 	    $length += ($property->[0]{offset} - $offset);
 	}
@@ -200,8 +208,15 @@ sub get_offset_and_length {
 	my $substring_unused = join('', @chars_h);
 	$text->[0] = $substring_unused;
 
+	if ($opt{verbose}) {
+	    print "----------\n";
+	    print $removed_string . " is removed. ($length bytes)\n";
+	    print "property->[0]{offset}: " . $property->[0]{offset} . " -> " . ($property->[0]{offset} + $length) . "\n";
+	    print "----------\n";
+	}
+
 	# 使用した分だけオフセットをずらす
-	$property->[0]{offset} += $length;
+	$property->[0]{offset} = $offset + $length;
 
 	return ($offset, $length, 1);
     }
