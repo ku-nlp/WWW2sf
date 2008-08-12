@@ -1,4 +1,9 @@
-2008-08-07  Keiji Shinzato  <skeiji@reed.kuee.kyoto-u.ac.jp>
+2008-08-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm:
+	-recycle_knp指定時に、SynGraphのバージョンにunstableが入っていても、バージョン情報が更新されるようにした.
+
+2008-08-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm, scripts/extract-sentences.perl:
 	<BR>\n, <P>\n を一つの改行と見なすオプションを追加. (デフォルトはオフ)
