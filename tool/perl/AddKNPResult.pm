@@ -85,7 +85,7 @@ sub AddKnpResult {
 			    foreach my $line (split(/\n/, $annotation)) {
 				next if ($line =~ /^!/);
 				# SynGraphのバージョンを消す
-				$line =~ s/ *SynGraph:\d+.\d+-\d+// if ($line =~ /^#/);
+				$line =~ s/ *SynGraph:\d+.\d+.*-\d+// if ($line =~ /^#/);
 				push(@buf, $line);
 			    }
 
