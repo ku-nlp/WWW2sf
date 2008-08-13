@@ -1,3 +1,8 @@
+2008-08-13  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/extract-sentences.perl:
+	Modified to work on English pages.
+
 2008-08-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/AddKNPResult.pm:
