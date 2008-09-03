@@ -14,14 +14,35 @@ source $HOME/.bashrc
 # ★以下の環境変数を変更すること★
 
 workspace=/tmp
-perlhome=$HOME/cvs/WWW2sf/tool/perl
-scripthome=$HOME/cvs/WWW2sf/tool/scripts
+perldir=$HOME/cvs/WWW2sf/tool/perl
+scriptdir=$HOME/cvs/WWW2sf/tool/scripts
 syngraph_pm=$HOME/cvs/SynGraph/perl
-syndb_path=$HOME/cvs/SynGraph/syndb/x86_64
+syndb_path=$HOME/cvs/SynGraph/syndb/`uname -p`
+
+# 解析に用いるJUMAN/KNPのインストール先
+tooldir=$HOME/local/080813/bin
+# jumanrc/knprcが置いてあるディレクトリの設定
+rcdir=$HOME/local/080813/etc
+
+jmncmd=$tooldir/juman
+knpcmd=$tooldir/knp
+jmnrc=$rcdir/jumanrc
+knprc=$rcdir/knprc
+
+# 解析に用いるツールの指定
+command_opt="-jmncmd $jmncmd -knpcmd $knpcmd -jmnrc $jmnrc -knprc $knprc"
+
+
 
 tool=
 recycle=0
-while getopts jksR OPT
+
+# -regist_exclude_semi_contentwordオプションを有効にするかどうかを指定する
+# 旧バージョンとの調整用オプション。有効にすると名詞的形容詞語幹（「多量摂
+# 取」の多量）に対してSYNノードを付与しなくなる。通常はオフ。
+# 
+no_regist_adjective_stem=
+while getopts jksRN OPT
 do
     case $OPT in
 	j)  tool="-jmn"
@@ -32,6 +53,7 @@ do
 	    ;;
 	R)  recycle=1
 	    ;;
+	N)  no_regist_adjective_stem="-no_regist_adjective_stem"
     esac
 done
 shift `expr $OPTIND - 1`
@@ -75,9 +97,8 @@ else
     outdir=s$id
     recycle_opt=
 fi
-logfile=$id.log
 
-command="perl -I $perlhome -I $syngraph_pm  $scripthome/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory"
+command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt"
 
 
 
