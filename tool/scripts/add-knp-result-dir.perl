@@ -17,7 +17,7 @@ use Error qw(:try);
 
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'syndb_on_memory', 'recycle_knp', 'debug');
+GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'syndb_on_memory', 'recycle_knp', 'no_regist_adjective_stem', 'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
     print STDERR "Please specify '-indir and -outdir'!\n";
@@ -51,7 +51,10 @@ if ($opt{syngraph}) {
     $regnode_option->{hypocut_attachnode} = $opt{hypocut} if $opt{hypocut};
     
     # 準内容語を除いたものもノードに登録するオプション(ネットワーク化 -> ネットワーク, 深み -> 深い)
-    $syngraph_option = { regist_exclude_semi_contentword => 1 };
+    $syngraph_option = {
+	regist_exclude_semi_contentword => 1,
+	no_regist_adjective_stem => $opt{no_regist_adjective_stem}
+    };
 
     $opt{regnode_option} = $regnode_option;
     $opt{syngraph_option} = $syngraph_option;
@@ -75,9 +78,13 @@ my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
 
 for my $file (glob ("$opt{indir}/*")) {
     if ($file =~ /\.gz$/) {
-	open F, "zcat $file |" or die;
+	unless (open F, "zcat $file |") {
+	    print STDERR "Can't open file: $file\n";
+	}
     } else {
-	open F, $file or die;
+	unless (open F, $file) {
+	    print STDERR "Can't open file: $file\n";
+	}
     }
     binmode(F, ':utf8');
 
