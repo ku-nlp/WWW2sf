@@ -1,5 +1,9 @@
 2008-09-03  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
+	* scripts/add-knp-result-dir.perl, scripts/embed-annotation.sh:
+	Out of memoryが発生した場合、自動的に処理を再開するようにした.
+	ulimitで設定するメモリの上限を修正 (ulimitで設定できる値はKB単位のため).
+
 	* scripts/embed-annotation.sh:
 	-Nオプションの追加（add-knp-result-dir.perlの-no_regist_adjective_stemが指定される）
 	解析ツールを指定するオプションを変数にまとめた.
