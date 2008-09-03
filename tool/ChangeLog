@@ -1,3 +1,23 @@
+2008-09-03  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-annotation.sh:
+	-Nオプションの追加（add-knp-result-dir.perlの-no_regist_adjective_stemが指定される）
+	解析ツールを指定するオプションを変数にまとめた.
+
+	* scripts/add-knp-result-dir.perl:
+	-no_regist_adjective_stemオプションの追加.
+
+	* perl/AddKNPResult.pm:
+	verboseが指定されたときのみ、「Too Long Sentence」を出力するようにした.
+
+2008-09-02  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-anchor.perl:
+	プロトコル名を削除, アンカーテキスト前後の空白を削除, アンカーテキスト中で２連続以上する空白を削除, CDB_Readerを使うようにした.
+
+	* scripts/extract-outlinks.sh, scripts/make-anchor-db.perl, scripts/make-inlink-db.sh, scripts/make-inlinks-txt.sh, scripts/merge-linkdata.perl, scripts/merge-outlinks.sh, scripts/split-inlink-text.perl:
+	リンクデータベース作成スクリプトを追加.
+
 2008-08-13  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/extract-sentences.perl:
