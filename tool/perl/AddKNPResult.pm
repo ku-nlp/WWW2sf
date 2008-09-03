@@ -8,6 +8,8 @@ use utf8;
 use strict;
 use Error qw(:try);
 
+binmode(STDERR, ':encoding(euc-jp)');
+
 sub new {
     my ($this, $juman, $knp, $syngraph, $opt) = @_;
 
@@ -42,7 +44,7 @@ sub AddKnpResult {
 			next if $text eq '';
 
 			if (defined $this->{opt}{sentence_length_max} && length($text) > $this->{opt}{sentence_length_max}) {
-			    print STDERR "Too Long Sentence: $text\n";
+			    print STDERR "Too Long Sentence: $text\n" if ($this->{opt}{verbose});
 			    next;
 			}
 
