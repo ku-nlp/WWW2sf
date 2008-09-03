@@ -98,7 +98,9 @@ else
     recycle_opt=
 fi
 
-command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt"
+LOGFILE=$workspace/$id.log
+touch $LOGFILE
+command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt -logfile $LOGFILE"
 
 
 
@@ -120,11 +122,15 @@ mkdir $outdir 2> /dev/null
 
 
 # スワップしないように仕様するメモリサイズを制限する(max 2GB)
-ulimit -m 2147483648
-ulimit -v 2147483648
+ulimit -m 2097152
+ulimit -v 2097152
 
 echo $command
-$command
+until [ `tail -1 $LOGFILE | grep finish` ] ;
+do
+    $command
+done
+
 
 
 

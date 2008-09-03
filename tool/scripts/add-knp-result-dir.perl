@@ -17,7 +17,29 @@ use Error qw(:try);
 
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', '-indir=s', '-outdir=s', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'syndb_on_memory', 'recycle_knp', 'no_regist_adjective_stem', 'debug');
+GetOptions(\%opt, 
+	   'jmn',
+	   'knp',
+	   'syngraph',
+	   'help',
+	   'all',
+	   'replace',
+	   'syndbdir=s',
+	   'hyponymy',
+	   'antonymy',
+	   'hypocut=i',
+	   'sentence_length_max=i',
+	   '-indir=s',
+	   '-outdir=s',
+	   'jmncmd=s',
+	   'knpcmd=s',
+	   'jmnrc=s',
+	   'knprc=s',
+	   'syndb_on_memory',
+	   'recycle_knp',
+	   'no_regist_adjective_stem',
+	   'logfile=s',
+	   'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
     print STDERR "Please specify '-indir and -outdir'!\n";
@@ -76,7 +98,42 @@ $syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngra
 
 my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
 
+# -logfile が指定されていない場合は終了
+unless (defined $opt{logfile}) {
+    print STDERR "Please set -logfile option !\n";
+    exit;
+}
+
+my %alreadyAnalyzedFiles = ();
+open(LOG, $opt{logfile}) or die $!;
+while (<LOG>) {
+    chomp;
+
+    my ($file, $status) = split(/ /, $_);
+    if ($status =~ /(success|error)/) {
+	$alreadyAnalyzedFiles{$file} = $status;
+    }
+    # ログのフォーマットにマッチしない = エラーにより終了
+    else {
+	$alreadyAnalyzedFiles{$file} = "error";
+    }
+}
+close(LOG);
+
+# ログフォーマットを整形して出力
+open(LOG, "> $opt{logfile}") or die $!;
+foreach my $file (sort {$a cmp $b} keys %alreadyAnalyzedFiles) {
+    my $status = $alreadyAnalyzedFiles{$file};
+    print LOG "$file $status\n";
+}
+close(LOG);
+
+open(LOG, ">> $opt{logfile}") or die $!;
 for my $file (glob ("$opt{indir}/*")) {
+    # 既に解析済みのファイルはスキップ
+    next if (exists $alreadyAnalyzedFiles{$file});
+
+    syswrite LOG, "$file ";
     if ($file =~ /\.gz$/) {
 	unless (open F, "zcat $file |") {
 	    print STDERR "Can't open file: $file\n";
@@ -129,4 +186,10 @@ for my $file (glob ("$opt{indir}/*")) {
     open F, '>:encoding(utf8)', $outfilename or die;
     print F $string;
     close F;
+
+    syswrite LOG, "success\n";
+    print STDERR "$file is success\n" if ($opt{debug});
 }
+
+print LOG "finish.\n";
+close (LOG);
