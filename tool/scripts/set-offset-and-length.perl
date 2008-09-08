@@ -24,19 +24,23 @@ $Data::Dumper::Useperl = 1;
 
 
 
-# 入出力のエンコードを設定
-binmode(STDIN,  ':encoding(utf8)');
-binmode(STDOUT, ':encoding(utf8)');
-binmode(STDERR, ':encoding(utf8)');
-
-
-
 my (%opt);
-GetOptions(\%opt, 'html=s', 'xml=s', 'html_encoding=s', 'max_length_of_html_entity=s', 'verbose', 'z');
+GetOptions(\%opt, 'html=s', 'xml=s', 'html_encoding=s', 'max_length_of_html_entity=s', 'verbose', 'z', 'debug');
 my $MAX_LENGTH_OF_HTML_ENTITY = ($opt{max_length_of_html_entity}) ? $opt{max_length_of_html_entity} : 10;
 $opt{html_encoding} = 'utf8' unless ($opt{html_encoding});
 $opt{max_num_of_discardable_chars_for_rawstring} = 5;
 $opt{max_num_of_discardable_chars_for_html} = 10;
+
+# 入出力のエンコードを設定
+if ($opt{debug}) {
+    binmode(STDIN,  ':encoding(euc-jp)');
+    binmode(STDOUT, ':encoding(euc-jp)');
+    binmode(STDERR, ':encoding(euc-jp)');
+} else {
+    binmode(STDIN,  ':encoding(utf8)');
+    binmode(STDOUT, ':encoding(utf8)');
+    binmode(STDERR, ':encoding(utf8)');
+}
 
 
 &main();
@@ -171,6 +175,7 @@ sub get_offset_and_length {
 
     my $offset = -1;
     my $miss = -1;
+    my $prev_ch_h = undef;
     while ($i < scalar(@chars_r)) {
 
 	# @chars_hを読みきった時の処理 length(@chars_r) > length(@chars_h)
@@ -185,7 +190,7 @@ sub get_offset_and_length {
 	    $j = 0;
 	}
 
-	($i, $j, $offset, $miss) = &alignment(\@chars_r, \@chars_h, $i, $j, $offset, $property);
+	($i, $j, $offset, $miss, $prev_ch_h) = &alignment(\@chars_r, \@chars_h, $i, $j, $offset, $property, $prev_ch_h);
 
 	last if ($miss > 0);
     }
@@ -225,10 +230,9 @@ sub get_offset_and_length {
 
 # アライメントをとる関数
 sub alignment {
-    my ($chars_r, $chars_h, $r, $h, $offset, $property) = @_;
+    my ($chars_r, $chars_h, $r, $h, $offset, $property, $prev_ch_h) = @_;
 
     my $ch_r = $chars_r->[$r];
-    my $prev_ch_h = ($h > 0) ? $chars_h->[$h - 1] : undef;
     my $next_ch_h = $chars_h->[$h + 1];
     my $ch_h = &normalized($chars_h->[$h], $prev_ch_h);
 
@@ -286,11 +290,11 @@ sub alignment {
 	    }
 	    last if ($flag > 0);
 
-	    return (-1, -1, $offset, 1) if ($flag < 0);
+	    return (-1, -1, $offset, 1, $ch_h) if ($flag < 0);
 	}
     }
 
-    return ($r, $h, $offset, -1);
+    return ($r, $h, $offset, -1, $ch_h);
 }
 
 
@@ -305,7 +309,7 @@ sub normalized {
     $ch = Unicode::Japanese->new($ch)->h2z->getu();
 
     # `ー'は汎化
-    $ch =~ s/(?:ー|―|−|─|━|‐)/ー/ if ($prev_ch =~ /^\p{Katakana}$/);
+    $ch =~ s/(?:ー|―|−|─|━|‐)/ー/ if ($prev_ch =~ /^(\p{Katakana}|ー)$/);
 
     # euc-jpにないコードを変換
     $ch =~ s/－/−/g; # FULLWIDTH HYPHEN-MINUS (U+ff0d) -> MINUS SIGN (U+2212)
