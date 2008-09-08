@@ -1,3 +1,8 @@
+2008-09-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl:
+	ーの直後のハイフンも正規化されるようにした.
+
 2008-09-03  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result-dir.perl, scripts/embed-annotation.sh:
