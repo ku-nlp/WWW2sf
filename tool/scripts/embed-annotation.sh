@@ -99,7 +99,6 @@ else
 fi
 
 LOGFILE=$workspace/$id.log
-touch $LOGFILE
 command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt -logfile $LOGFILE"
 
 
@@ -107,6 +106,7 @@ command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $r
 mkdir $workspace 2> /dev/null
 mkdir $workspace/finish 2> /dev/null
 cd $workspace
+touch $LOGFILE
 
 
 
