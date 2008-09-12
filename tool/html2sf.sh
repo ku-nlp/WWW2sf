@@ -100,6 +100,14 @@ clean_tmpfiles() {
 trap 'clean_tmpfiles; exit 1' 1 2 3 15
 base_dir=`dirname $0`
 
+# 入力がテキストファイルかどうかのチェック
+file $f | grep text
+if [ $? -eq 1 ]; then
+    echo "ERROR: $f is *NOT* a text file." 1>&2
+    exit
+fi
+
+
 # utf8に変換(crawlデータは変換済みのため、強制的に utf8 と判断させる)
 if [ $input_utf8html -eq 1 ]
 then
