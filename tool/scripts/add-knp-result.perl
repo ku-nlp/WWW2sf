@@ -18,7 +18,27 @@ use strict;
 use AddKNPResult;
 
 my (%opt);
-GetOptions(\%opt, 'jmn', 'knp', 'syngraph', 'help', 'usemodule', 'all', 'replace', 'syndbdir=s', 'hyponymy', 'antonymy', 'hypocut=i', 'sentence_length_max=i', 'jmncmd=s', 'knpcmd=s', 'jmnrc=s', 'knprc=s', 'syndb_on_memory', 'debug');
+GetOptions(\%opt,
+	   'jmn',
+	   'knp',
+	   'syngraph',
+	   'help',
+	   'usemodule',
+	   'all',
+	   'replace',
+	   'syndbdir=s',
+	   'hyponymy',
+	   'antonymy',
+	   'hypocut=i',
+	   'sentence_length_max=i',
+	   'jmncmd=s',
+	   'knpcmd=s',
+	   'jmnrc=s',
+	   'knprc=s',
+	   'syndb_on_memory',
+	   'recycle_knp',
+	   'no_regist_adjective_stem',
+	   'debug');
 
 my ($regnode_option, $syngraph_option);
 if ($opt{syngraph}) {
@@ -35,7 +55,10 @@ if ($opt{syngraph}) {
     $regnode_option->{hypocut_attachnode} = $opt{hypocut} if $opt{hypocut};
     
     # 準内容語を除いたものもノードに登録するオプション(ネットワーク化 -> ネットワーク, 深み -> 深い)
-    $syngraph_option = { regist_exclude_semi_contentword => 1 };
+    $syngraph_option = {
+	regist_exclude_semi_contentword => 1,
+	no_regist_adjective_stem => $opt{no_regist_adjective_stem}
+    };
 
     $opt{regnode_option} = $regnode_option;
     $opt{syngraph_option} = $syngraph_option;
