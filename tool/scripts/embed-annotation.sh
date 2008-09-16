@@ -103,8 +103,8 @@ command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $r
 
 
 
-mkdir $workspace 2> /dev/null
-mkdir $workspace/finish 2> /dev/null
+mkdir -p $workspace 2> /dev/null
+mkdir -p $workspace/finish 2> /dev/null
 cd $workspace
 touch $LOGFILE
 
@@ -117,7 +117,7 @@ echo tar xzf $sfdir.tgz
 tar xzf $sfdir.tgz
 rm -r $sfdir.tgz
 
-mkdir $outdir 2> /dev/null
+mkdir -p $outdir 2> /dev/null
 
 
 
