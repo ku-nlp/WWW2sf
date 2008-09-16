@@ -1,3 +1,21 @@
+2008-09-16  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl:
+	-recycle_knp, no_regist_adjective_stem オプションの追加.
+
+2008-09-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* html2sf.sh: テキスト形式以外のファイルを処理しないようにした.
+
+2008-09-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-annotation.sh:
+	作業用ディレクトリ作成後にログファイルをtouchするようにした.
+
+2008-09-08  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-annotation.sh: fixed typo.
+
 2008-09-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
