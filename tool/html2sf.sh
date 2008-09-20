@@ -101,7 +101,7 @@ trap 'clean_tmpfiles; exit 1' 1 2 3 15
 base_dir=`dirname $0`
 
 # 入力がテキストファイルかどうかのチェック
-file $f | grep text
+file $f | grep text > /dev/null
 if [ $? -eq 1 ]; then
     echo "ERROR: $f is *NOT* a text file." 1>&2
     exit
