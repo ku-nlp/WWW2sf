@@ -31,7 +31,14 @@ my $formatter = new SentenceFormatter(\%opt);
 
 my $parser = new XML::LibXML;
 my $doc = $parser->parse_string($buf);
-&xml_check_sentence($doc);
+foreach my $tagName (('Title', 'Description', 'Keywords', 'S')) {
+    my %option = (
+	setLogAttribute => 0,
+	setIdAttribute  => (($tagName eq 'S') ? 1 : 0)
+    );
+
+    &xml_check_sentence($doc, $tagName, \%option);
+}
 
 # XML-LibXML 1.63以降ではバイト列が返ってくるので、decodeする
 my $string = $doc->toString();
@@ -40,14 +47,14 @@ print utf8::is_utf8($string) ? $string : decode($doc->actualEncoding(), $string)
 
 
 sub xml_check_sentence {
-    my ($doc) = @_;
+    my ($doc, $tagName, $opt) = @_;
     my $count = 1;
 
-    for my $sentence ($doc->getElementsByTagName('S')) { # for each S
+    for my $sentence ($doc->getElementsByTagName($tagName)) { # for each $tagName
 	my $is_japanese_flag = $sentence->getAttribute('is_Japanese');
 	if (defined($is_japanese_flag) and $is_japanese_flag == 0) { # do not process non-Japanese
 	    $sentence->setAttribute('is_Japanese_Sentence', '0');
-	    $sentence->setAttribute('Id', $count++);
+	    $sentence->setAttribute('Id', $count++) if ($opt->{setIdAttribute});
 	    next;
 	}
 
@@ -69,8 +76,8 @@ sub xml_check_sentence {
 		    # $raw_string_node->removeChild($raw_string_element);
 		    # $raw_string_node->appendChild(XML::LibXML::Text->new(''));
 		}
-		$sentence->setAttribute('Id', $main->{sid});
-		$sentence->setAttribute('Log', $main->{comment}) if $main->{comment};
+		$sentence->setAttribute('Id', $main->{sid}) if ($opt->{setIdAttribute});
+		$sentence->setAttribute('Log', $main->{comment}) if ($main->{comment} && $opt->{setLogAttribute});
 		$count++;
 		last;
 	    }
