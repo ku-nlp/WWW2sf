@@ -1,3 +1,11 @@
+2008-10-04  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/extract-sentences.perl:
+	Modified to accept multiple html files.
+
+	* scripts/read-zaodata.perl:
+	Modified to output data to the current directory.
+
 2008-09-29  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/format-www-xml.perl:
