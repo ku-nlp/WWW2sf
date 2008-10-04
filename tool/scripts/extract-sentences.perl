@@ -76,25 +76,38 @@ if (-e $crawldate_file) {
 #                      処理開始
 ############################################################
 
-my $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
-my $Filter = new SentenceFilter if $opt{checkjapanese};
+our $HtmlGuessEncoding = new HtmlGuessEncoding(\%opt);
+our $Filter = new SentenceFilter if $opt{checkjapanese};
 
 our $Threshold_Filter = 0.6;
 our $Threshold_Zyoshi = $opt{zyoshi_threshold} ? $opt{zyoshi_threshold} : 0.005;
 
+our $textextractor_option = {language => $opt{language}};
+$textextractor_option->{uniq_br_and_linebreak} = $opt{uniq_br_and_linebreak} if $opt{uniq_br_and_linebreak};
+$textextractor_option->{cndbfile} = $opt{cndbfile} if $opt{cndbfile};
+$textextractor_option->{verbose} = $opt{verbose} if $opt{verbose};
+our $ext = new TextExtractor($textextractor_option);
 
+our $crawler_html = 0;
 my $flag = -1;
-my $crawler_html = 0;
 while (<>) {
-    if (!$buf and /^HTML (\S+)/) { # 1行目からURLを取得(read-zaodataが出力している)
-	$url = $1;
+    if (/^HTML (\S+)/) { # 1行目からURLを取得(read-zaodataが出力している)
+	my $next_url = $1;
 	$crawler_html = 1;
+
+	if ($buf) {
+	    &process_one_html($buf, $url);
+	    $buf = '';
+	}
+	$flag = -1;
+	$url = $next_url;
     }
 
     # ヘッダーが読み終わるまでバッファリングしない
     if (!$crawler_html || $flag > 0) {
 	$buf .= $_;
-    } else {
+    }
+    else {
 	# ウェブサーバーが応答した日時を取得
 	if ($_ =~ /^Date: (.+)$/) {
 	    $crawlTime = &convertTimeFormat($1);
@@ -106,130 +119,137 @@ while (<>) {
     }
 }
 exit 0 unless $buf;
+&process_one_html($buf, $url);
 
-my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {force_change_to_utf8_with_flag => 1});
-exit if $opt{checkencoding} and !$encoding;
+# ひとつのHTMLを処理
+sub process_one_html {
+    my ($buf, $url) = @_;
 
-# トラックバック、コメント、メニュー部分を削除（Movable Type用）
-if($opt{blog} eq 'mt'){
-    # <head>削除
-    if ($buf =~ m!^((?:.|\n|\r)+)<head>(?:.|\n|\r)+?</head>((?:.|\n|\r)+)$!) {
-	$buf = $1 . $2;
-    }
+    my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {force_change_to_utf8_with_flag => 1});
+    return 1 if $opt{checkencoding} and !$encoding;
 
-    # banner-inner, content-nav, entry-footerを削除
-    if ($buf =~ m!^((?:.|\n|\r)+)<div id="banner-inner" class="pkg">(?:.|\n|\r)+?</div>((?:.|\n|\r)+)$!) {
-	$buf = $1 . $2;
-    }
-    if ($buf =~ m!^((?:.|\n|\r)+)<p class="content-nav">(?:.|\n|\r)+?</p>((?:.|\n|\r)+)$!) {
-	$buf = $1 . $2;
-    }
-    if ($buf =~ m!^((?:.|\n|\r)+)<p class="entry-footer">(?:.|\n|\r)+?</p>((?:.|\n|\r)+)$!) {
-	$buf = $1 . $2;
-    }
-
-    if($buf =~ /<div class=\"trackbacks\">/){
-	my $before_menu = "$`";
-	my $menu_part = "$&$'";
-	while(1){
-	    if($menu_part =~ m!</div>!){
-		my $fwd = "$`";
-		my $bck = "$'";
-		if($fwd =~ m!(( |.|\n|\r)*)<div !){
-		    $menu_part = $1 . $bck;
-		}else{
-		    last;
-		}
-	    }else{
-		print "nothing.\n";
-	    }
+    # トラックバック、コメント、メニュー部分を削除（Movable Type用）
+    if ($opt{blog} eq 'mt') {
+	# <head>削除
+	if ($buf =~ m!^((?:.|\n|\r)+)<head>(?:.|\n|\r)+?</head>((?:.|\n|\r)+)$!) {
+	    $buf = $1 . $2;
 	}
-	$buf = $before_menu . $menu_part;
-    }
 
-    if($buf =~ /<div id=\"comments\" class=\"comments\">/){
-	my $before_menu = "$`";
-	my $menu_part = "$&$'";
-	while(1){
-	    if($menu_part =~ m!</div>!){
-		my $fwd = "$`";
-		my $bck = "$'";
-		if($fwd =~ m!(( |.|\n|\r)*)<div !){
-		    $menu_part = $1 . $bck;
-		}else{
-		    last;
-		}
-	    }else{
-		print "nothing.\n";
-	    }
+	# banner-inner, content-nav, entry-footerを削除
+	if ($buf =~ m!^((?:.|\n|\r)+)<div id="banner-inner" class="pkg">(?:.|\n|\r)+?</div>((?:.|\n|\r)+)$!) {
+	    $buf = $1 . $2;
 	}
-	$buf = $before_menu . $menu_part;
-    }
-
-    if($buf =~ /<div id=\"beta-inner\" class=\"pkg\">/){
-	my $before_menu = "$`";
-	my $menu_part = "$&$'";
-	while(1){
-	    if($menu_part =~ m!</div>!){
-		my $fwd = "$`";
-		my $bck = "$'";
-		if($fwd =~ m!(( |.|\n|\r)*)<div !){
-		    $menu_part = $1 . $bck;
-		}else{
-		    last;
-		}
-	    }else{
-		print "nothing.\n";
-	    }
+	if ($buf =~ m!^((?:.|\n|\r)+)<p class="content-nav">(?:.|\n|\r)+?</p>((?:.|\n|\r)+)$!) {
+	    $buf = $1 . $2;
 	}
-	$buf = $before_menu . $menu_part;
+	if ($buf =~ m!^((?:.|\n|\r)+)<p class="entry-footer">(?:.|\n|\r)+?</p>((?:.|\n|\r)+)$!) {
+	    $buf = $1 . $2;
+	}
+
+	if ($buf =~ /<div class=\"trackbacks\">/) {
+	    my $before_menu = "$`";
+	    my $menu_part = "$&$'";
+	    while (1) {
+		if ($menu_part =~ m!</div>!) {
+		    my $fwd = "$`";
+		    my $bck = "$'";
+		    if ($fwd =~ m!(( |.|\n|\r)*)<div !) {
+			$menu_part = $1 . $bck;
+		    }
+		    else {
+			last;
+		    }
+		}
+		else {
+		    print "nothing.\n";
+		}
+	    }
+	    $buf = $before_menu . $menu_part;
+	}
+
+	if ($buf =~ /<div id=\"comments\" class=\"comments\">/) {
+	    my $before_menu = "$`";
+	    my $menu_part = "$&$'";
+	    while (1) {
+		if ($menu_part =~ m!</div>!) {
+		    my $fwd = "$`";
+		    my $bck = "$'";
+		    if ($fwd =~ m!(( |.|\n|\r)*)<div !) {
+			$menu_part = $1 . $bck;
+		    }
+		    else {
+			last;
+		    }
+		}
+		else {
+		    print "nothing.\n";
+		}
+	    }
+	    $buf = $before_menu . $menu_part;
+	}
+
+	if ($buf =~ /<div id=\"beta-inner\" class=\"pkg\">/) {
+	    my $before_menu = "$`";
+	    my $menu_part = "$&$'";
+	    while (1) {
+		if ($menu_part =~ m!</div>!) {
+		    my $fwd = "$`";
+		    my $bck = "$'";
+		    if ($fwd =~ m!(( |.|\n|\r)*)<div !) {
+			$menu_part = $1 . $bck;
+		    }
+		    else {
+			last;
+		    }
+		}
+		else {
+		    print "nothing.\n";
+		}
+	    }
+	    $buf = $before_menu . $menu_part;
+	}
     }
-}
 
-# クローラのヘッダを削除
-$buf =~ s/^(?:\d|.|\n|\r)*?(<html)/\1/i if $crawler_html;
+    # クローラのヘッダを削除
+    $buf =~ s/^(?:\d|.|\n|\r)*?(<html)/\1/i if $crawler_html;
 
-# クローラのフッタを削除
-$buf =~ s/(<\/html>)(([^>]|\n)*?)?(\d|\r|\n)+$/\1\n/i if ($crawler_html);
+    # クローラのフッタを削除
+    $buf =~ s/(<\/html>)(([^>]|\n)*?)?(\d|\r|\n)+$/\1\n/i if ($crawler_html);
 
-# HTMLを文のリストに変換
-my $textextractor_option = {language => $opt{language}};
-$textextractor_option->{uniq_br_and_linebreak} = $opt{uniq_br_and_linebreak} if $opt{uniq_br_and_linebreak};
-$textextractor_option->{cndbfile} = $opt{cndbfile} if $opt{cndbfile};
-$textextractor_option->{verbose} = $opt{verbose} if $opt{verbose};
-my $ext = new TextExtractor($textextractor_option);
-my $parsed = $ext->extract_text(\$buf);
+    # HTMLを文のリストに変換
+    my $parsed = $ext->extract_text(\$buf);
 
-# my $parsed = new TextExtractor(\$buf, 'utf8', \%opt);
+    # my $parsed = new TextExtractor(\$buf, 'utf8', \%opt);
 
-# 助詞含有率をチェック
-if ($opt{checkzyoshi}) {
-    my $allbuf;
-    for my $i (0 .. $#{$parsed->{TEXT}}) {
-	$allbuf .= $parsed->{TEXT}[$i];
+    # 助詞含有率をチェック
+    if ($opt{checkzyoshi}) {
+	my $allbuf;
+	for my $i (0 .. $#{$parsed->{TEXT}}) {
+	    $allbuf .= $parsed->{TEXT}[$i];
+	}
+
+	my $ratio = &postp_check($allbuf);
+	if ($ratio <= $Threshold_Zyoshi) {
+	    print STDERR "$ratio is less than the threshold($Threshold_Zyoshi)\n";
+	    return 1;
+	}
     }
 
-    my $ratio = &postp_check($allbuf);
-    if ($ratio <= $Threshold_Zyoshi) {
-	print STDERR "$ratio is less than the threshold($Threshold_Zyoshi)\n";
-	exit;
+    # XML出力の準備
+    if ($opt{xml}) {
+	require XML::Writer;
+	$writer = new XML::Writer(OUTPUT => *STDOUT, DATA_MODE => 'true', DATA_INDENT => 2);
+	$writer->xmlDecl('utf-8');
     }
-}
 
-# XML出力の準備
-if ($opt{xml}) {
-    require XML::Writer;
-    $writer = new XML::Writer(OUTPUT => *STDOUT, DATA_MODE => 'true', DATA_INDENT => 2);
-    $writer->xmlDecl('utf-8');
+    # 文に分割して出力
+    &print_page_header($parsed, $opt{url} ? $opt{url} : $url, $encoding, $crawlTime);
+    &print_extract_sentences($parsed, $buf);
+    &print_page_footer();
 }
-
-# 文に分割して出力
-&print_page_header($opt{url} ? $opt{url} : $url, $encoding, $crawlTime);
-&print_extract_sentences($buf);
-&print_page_footer();
 
 sub print_page_header {
-    my ($url, $encoding, $crawlTime) = @_;
+    my ($parsed, $url, $encoding, $crawlTime) = @_;
 
     my $formatTime = strftime("%Y-%m-%d %T %Z", localtime(time));
 
@@ -287,7 +307,7 @@ sub print_page_header {
 }
 
 sub print_extract_sentences {
-    my ($buf) = @_;
+    my ($parsed, $buf) = @_;
     my ($prev_offset, $prev_length);
 
     for my $i (0 .. $#{$parsed->{TEXT}}) {
