@@ -34,9 +34,8 @@ $OFFSET = $opt{offset} ? $opt{offset} : 0;
 my $filenum_in_dir = 10000;
 
 for my $f (@ARGV) {
-    my ($head) = ($f =~ /^([^.]+)/);
-
     my ($filename, $path, $suffix) = fileparse($f, ".idx");
+    my ($head) = ($filename =~ /^([^.]+)/);
 
     my $fnum = $opt{splithtml} ? 0 : 1;
     my $filesize = 0;
