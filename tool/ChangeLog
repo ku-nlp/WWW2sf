@@ -1,3 +1,7 @@
+2008-10-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm: 半角英数字間の空白がつまらないようにした.
+
 2008-10-04  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/extract-sentences.perl:
