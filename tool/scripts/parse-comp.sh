@@ -7,10 +7,6 @@ usage() {
     exit 1
 }
 
-if [ ! -f "$1" ]; then
-    usage
-fi
-
 base_dir=`dirname $0`
 
 # please change these variables
@@ -19,6 +15,21 @@ PERL=perl
 ParseCMD=knp
 KNParg="-dpnd-use-ncf -tab -postprocess"
 RCarg=
+
+while getopts k: OPT
+do  
+    case $OPT in
+	k)  KNParg=$OPTARG
+	    ;;
+        h)  usage
+            ;;
+    esac
+done
+shift `expr $OPTIND - 1`
+
+if [ ! -f "$1" ]; then
+    usage
+fi
 
 jmn=$1
 prejmn=$jmn
