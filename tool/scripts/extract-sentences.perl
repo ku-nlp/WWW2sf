@@ -91,7 +91,7 @@ our $ext = new TextExtractor($textextractor_option);
 our $crawler_html = 0;
 my $flag = -1;
 while (<>) {
-    if (/^HTML (\S+)/) { # 1行目からURLを取得(read-zaodataが出力している)
+    if (/^HTML (\S+)/ && $flag < 0) { # 1行目からURLを取得(read-zaodataが出力している)
 	my $next_url = $1;
 	$crawler_html = 1;
 
