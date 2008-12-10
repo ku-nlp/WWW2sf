@@ -310,6 +310,8 @@ sub print_extract_sentences {
     my ($parsed, $buf) = @_;
     my ($prev_offset, $prev_length);
 
+    my $para = 0;
+    my $prev_para = -1;
     for my $i (0 .. $#{$parsed->{TEXT}}) {
 	my $line = $parsed->{TEXT}[$i];
 
@@ -317,6 +319,11 @@ sub print_extract_sentences {
 	    next if (defined $parsed->{PROPERTY}[$i]{title} ||
 		     defined $parsed->{PROPERTY}[$i]{keywords} ||
 		     defined $parsed->{PROPERTY}[$i]{description});
+
+	    if (length($line) > 200) {
+		print STDERR "The following sentence has too much chars: $line\n";
+		next;
+	    }
 
 	    $prev_offset = $parsed->{PROPERTY}[$i]{offset};
 	    $prev_length = $parsed->{PROPERTY}[$i]{length};
@@ -329,7 +336,10 @@ sub print_extract_sentences {
 	    }
 
 #	    $writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
-	    $writer->startTag('S');
+	    $para++ if ($prev_para < -1 || $prev_para != $parsed->{PROPERTY}[$i]{paragraph});
+	    $prev_para = $parsed->{PROPERTY}[$i]{paragraph};
+
+	    $writer->startTag('S', Paragraph => $para);
 	    $writer->startTag('RawString');
 	    $writer->characters($line);
 	    $writer->endTag('RawString');

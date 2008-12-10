@@ -421,6 +421,7 @@ sub extract_text {
     my @s_property;
     my $s_count = 0;
     my $s_num = 1;
+    my $paraID = 1;
     my $num_before = 0;
 
     for (my $i = 0; $i < scalar(@$text); $i++) {
@@ -445,59 +446,75 @@ sub extract_text {
 
 	# 整形処理
 	my @buf;
+	my $j = 0;
 	for my $str (split(/\n{2,}/, $buf)) { # 2個以上の改行で文を切る
 	    if ($this->{opt}{language} eq 'japanese') {
 		my $tmp = &ProcessJapanese($str, $property->[$i]);
-		push(@buf, $tmp);
+		push(@{$buf[$j]}, $tmp);
 	    }
 	    elsif ($this->{opt}{language} eq 'english') {
 		# $buf = &ProcessEnglish($buf);
-		push(@buf, $str);
+		push(@{$buf[$j]}, $str);
 	    }
 	    else {
 		die "Unknown language: $this->{opt}{language}\n";
 	    }
+
+	    # 段落ごとに格納する配列をかえる
+	    $j++;
 	}
 
 	my @buf2;
-	foreach my $x (@buf) {
-	    if (&is_unseparate_property($property->[$i])) {
-		# <title>, <meta keywords=>, <meta description=> に関しては句読点区切りをしない
-		push(@buf2, $x);
-	    } else {
-		# 句読点で区切る
-		push(@buf2, SentenceExtractor->new($x, $this->{opt}{language})->GetSentences());
+	my $j = 0;
+	foreach my $paragraph (@buf) {
+	    foreach my $sent (@$paragraph) {
+		if (&is_unseparate_property($property->[$i])) {
+		    # <title>, <meta keywords=>, <meta description=> に関しては句読点区切りをしない
+		    push(@{$buf2[$j]}, $sent);
+		} else {
+		    # 句読点で区切る
+		    push(@{$buf2[$j]}, SentenceExtractor->new($sent, $this->{opt}{language})->GetSentences());
+		}
 	    }
+	    $j++;
 	}
 
 	# 顔文字、（笑）等で文を区切る
-	@buf2 = $this->SplitByEmoticon(\@buf2) unless (&is_unseparate_property($property->[$i]));
+	foreach my $paragraph (@buf2) {
+	    @{$paragraph} = $this->SplitByEmoticon($paragraph) unless (&is_unseparate_property($property->[$i]));
+	}
+
 
 	if ($property->[$i]->{num} == $num_before) {
 	    $s_num--;
 	}
 
 	my $x = 0;
-	foreach my $y (@buf2) {
-	    unless ($y =~ /^(?:　|\s)*$/) {
-	        # 先頭、末尾の空白を削除
-		$y =~ s/^\s+//;
-		$y =~ s/\s+$//;
-		$y =~ s/^(?:　)+//;
-		$y =~ s/(?:　)+$//;
+	foreach my $paragraph (@buf2) {
+	    foreach my $y (@$paragraph) {
+		unless ($y =~ /^(?:　|\s)*$/) {
+		    # 先頭、末尾の空白を削除
+		    $y =~ s/^\s+//;
+		    $y =~ s/\s+$//;
+		    $y =~ s/^(?:　)+//;
+		    $y =~ s/(?:　)+$//;
 
-		$s_text[$s_count] = $y;
- 		for my $key (keys %{$property->[$i]}) {
-		    if ($key ne 'num') {
-		        $s_property[$s_count]->{$key} = $property->[$i]->{$key};
+		    $s_text[$s_count] = $y;
+		    for my $key (keys %{$property->[$i]}) {
+			if ($key ne 'num') {
+			    $s_property[$s_count]->{$key} = $property->[$i]->{$key};
+			}
 		    }
+		    $s_property[$s_count]->{num} = $s_num;
+		    $s_property[$s_count]->{paragraph} = $paraID;
+		    $s_count++;
+		    $s_num++;
+		    $x++;
 		}
-		$s_property[$s_count]->{num} = $s_num;
-		$s_count++;
-		$s_num++;
-                $x++;
-            }
+	    }
+	    $paraID++;
 	}
+
         if ($x == 0) {
             $s_num++;
         }
