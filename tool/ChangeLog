@@ -1,3 +1,8 @@
+2008-12-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl, perl/TextExtractor.pm:
+	段落IDを出力するようにした.
+
 2008-11-26  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl: ヘッダー中のURLを取得する部分を修正.
