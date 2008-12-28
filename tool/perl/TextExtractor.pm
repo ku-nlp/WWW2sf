@@ -449,7 +449,7 @@ sub extract_text {
 	my $j = 0;
 	for my $str (split(/\n{2,}/, $buf)) { # 2個以上の改行で文を切る
 	    if ($this->{opt}{language} eq 'japanese') {
-		my $tmp = &ProcessJapanese($str, $property->[$i]);
+		my $tmp = $this->ProcessJapanese($str, $property->[$i]);
 		push(@{$buf[$j]}, $tmp);
 	    }
 	    elsif ($this->{opt}{language} eq 'english') {
@@ -611,7 +611,7 @@ sub extract_text {
 }
 
 sub ProcessJapanese {
-    my ($buf, $property) = @_;
+    my ($this, $buf, $property) = @_;
 
     $buf =~ s/\n/ /g;	    # 改行コードは半角の空白に変換
     $buf =~ s/([　-。・-；゛-龠]+?)\s+([　-。・-；゛-龠]+?)/$1$2/g;
