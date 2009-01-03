@@ -42,7 +42,7 @@ recycle=0
 # 取」の多量）に対してSYNノードを付与しなくなる。通常はオフ。
 # 
 no_regist_adjective_stem=
-while getopts jksRN OPT
+while getopts jksRNTOIDKS OPT
 do
     case $OPT in
 	j)  tool="-jmn"
@@ -54,6 +54,18 @@ do
 	R)  recycle=1
 	    ;;
 	N)  no_regist_adjective_stem="-no_regist_adjective_stem"
+	    ;;
+	T)  command_opt="$command_opt -title"
+	    ;;
+	O)  command_opt="$command_opt -outlink"
+	    ;;
+	I)  command_opt="$command_opt -inlink"
+	    ;;
+	D)  command_opt="$command_opt -description"
+	    ;;
+	K)  command_opt="$command_opt -keywords"
+	    ;;
+	S)  command_opt="$command_opt -sentence"
     esac
 done
 shift `expr $OPTIND - 1`
@@ -107,7 +119,6 @@ mkdir -p $workspace 2> /dev/null
 mkdir -p $workspace/finish 2> /dev/null
 cd $workspace
 touch $LOGFILE
-
 
 
 echo scp $filepath ./

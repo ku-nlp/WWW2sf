@@ -39,6 +39,12 @@ GetOptions(\%opt,
 	   'recycle_knp',
 	   'no_regist_adjective_stem',
 	   'logfile=s',
+	   'title',
+	   'outlink',
+	   'inlink',
+	   'keywords',
+	   'description',
+	   'sentence',
 	   'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
@@ -53,6 +59,14 @@ $opt{jmnrc} = '/share09/home/skeiji/local/080512/etc/jumanrc' unless ($opt{jmnrc
 $opt{knpcmd} = '/share09/home/skeiji/local/080512/bin/knp' unless ($opt{knpcmd});
 $opt{knprc} = '/share09/home/skeiji/local/080512/etc/knprc' unless ($opt{knprc});
 
+if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{description} && !$opt{sentence}) {
+    $opt{title} = 1;
+    $opt{outlink} = 1;
+    $opt{inlink} = 1;
+    $opt{keywords} = 1;
+    $opt{description} = 1;
+    $opt{sentence} = 1;
+}
 
 if (! -d $opt{outdir}) {
     mkdir $opt{outdir};
@@ -165,12 +179,12 @@ for my $file (glob ("$opt{indir}/*")) {
     };
     next unless ($doc);
 
-    $addknpresult->AddKnpResult($doc, 'Title');
-    $addknpresult->AddKnpResult($doc, 'OutLink');
-    $addknpresult->AddKnpResult($doc, 'InLink');
-    $addknpresult->AddKnpResult($doc, 'Keywords');
-    $addknpresult->AddKnpResult($doc, 'Description');
-    $addknpresult->AddKnpResult($doc, 'S');
+    $addknpresult->AddKnpResult($doc, 'Title') if ($opt{title});
+    $addknpresult->AddKnpResult($doc, 'OutLink') if ($opt{outlink});
+    $addknpresult->AddKnpResult($doc, 'InLink') if ($opt{inlink});
+    $addknpresult->AddKnpResult($doc, 'Keywords') if ($opt{keywords});
+    $addknpresult->AddKnpResult($doc, 'Description') if ($opt{description});
+    $addknpresult->AddKnpResult($doc, 'S') if ($opt{sentence});
 
     my $string = $doc->toString();
 
