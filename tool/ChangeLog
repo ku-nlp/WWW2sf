@@ -1,3 +1,12 @@
+2009-01-03  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-annotation.sh, scripts/add-knp-result-dir.perl:
+	言語解析する場所をオプションで指定できるようにした．(指定がない場合は全てが解析対象)
+
+2008-12-28  Tomohide Shibata, KYOTOU  <shibata@iccc010.crawl.kclab.jgn2.jp>
+
+	* perl/TextExtractor.pm: 関数ProcessJapaneseをグローバルに変更
+
 2008-12-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl, perl/TextExtractor.pm:
