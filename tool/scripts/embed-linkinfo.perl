@@ -46,14 +46,14 @@ sub main {
     foreach my $file (sort {$a cmp $b} readdir(DIR)) {
 	next unless ($file =~ /xml/);
 
-	# ¥ê¥ó¥¯¾ðÊó¤ÎÆÉ¤ß¹þ¤ß
+	# ãƒªãƒ³ã‚¯æƒ…å ±ã®èª­ã¿è¾¼ã¿
 	my ($fid) = ($file =~ /(\d+).xml/);
 	my $inlinks = $incdb->get($fid);
 	my $outlinks = $outcdb->get($fid);
 
 
 
-	# É¸½à¥Õ¥©¡¼¥Þ¥Ã¥È¥Ç¡¼¥¿¤ÎÆÉ¤ß¹þ¤ß
+	# æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒžãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿
 	if ($opt{z}) {
 	    open(READER, "zcat $opt{indir}/$file |");
 	} else {
@@ -69,7 +69,7 @@ sub main {
 
 
 
-	# ¥¤¥ó¥ê¥ó¥¯¡¦¥¢¥¦¥È¥ê¥ó¥¯¤Î¤É¤Á¤é¤«¤¬¤¢¤ì¤ÐËä¤á¹þ¤à
+	# ã‚¤ãƒ³ãƒªãƒ³ã‚¯ãƒ»ã‚¢ã‚¦ãƒˆãƒªãƒ³ã‚¯ã®ã©ã¡ã‚‰ã‹ãŒã‚ã‚Œã°åŸ‹ã‚è¾¼ã‚€
 	if (defined($inlinks) || defined($outlinks)) {
 	    my $inlink_node = &create_inlink_node(decode('utf8', $inlinks));
 	    my $outlink_node = &create_outlink_node(decode('utf8', $outlinks));
@@ -84,7 +84,7 @@ sub main {
 
 
 
-	# ½ÐÎÏ
+	# å‡ºåŠ›
 	if ($opt{compress}) {
 	    $file .= '.gz' unless ($file =~ /gz$/);
 	    open(WRITER, "| gzip > $opt{outdir}/$file");
