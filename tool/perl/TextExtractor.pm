@@ -179,6 +179,8 @@ sub detag {
     my $link_buf;          # <a>タグの中身すべて
     my $link_buf2;         # <a>タグの途中を保持
 
+    my @outlinks;          # outlink DB作成用データ
+
     # テキスト要素直前のタグ
     my $immediately_before_tag = '';
 
@@ -274,6 +276,8 @@ sub detag {
 		$mode{style} = 1;
 	    } elsif ($tag eq 'a') {
 		$mode{link} = 1;
+
+		push(@outlinks, {text => '', url => $token->[2]{href}});
 	    }
         }
 	# 終了タグ
@@ -346,6 +350,11 @@ sub detag {
 	    } elsif ($mode{script} or $mode{style}) {
 		# nothing to do
 	    } else {
+		if ($mode{link}) {
+		    $outlinks[-1]->{text} .= $text;
+		}
+		    
+
 		# 複合名詞データベースが指定されている場合
 		if ($this->{opt}{cndbfile}) {
 		    # <a>タグの中
@@ -408,14 +417,14 @@ sub detag {
 	$property[2]->{length} = $description_length;
     }
 
-    return (\@text, \@property);
+    return (\@text, \@property, \@outlinks);
 }
 
 
 sub extract_text {
     my($this, $raw_html) = @_;  # 対象となるHTMLファイルを引数として渡す
 
-    my ($text, $property) = $this->detag($raw_html);
+    my ($text, $property, $outlinks) = $this->detag($raw_html);
 
     my @s_text;
     my @s_property;
@@ -599,13 +608,30 @@ sub extract_text {
 	}
     }
 
-#     $this->{TEXT} = \@s_text;
-#     $this->{PROPERTY} = \@s_property;
+    my %outlinks = ();
+    foreach my $e (@$outlinks) {
+	next if ($e->{text} eq '');
+
+	my $T = $e->{text};
+
+	$T = decode('utf8', $T) unless (utf8::is_utf8($T));
+	$T =~ s/&nbsp;/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
+	$T = decode_entities($T);
+	$T = &ProcessJapanese($T);
+
+	$T =~ s/^\s+//;
+	$T =~ s/\s+$//;
+	$T =~ s/^(?:　)+//;
+	$T =~ s/(?:　)+$//;
+
+	push (@{$outlinks{$T}}, $e->{url});
+    }
 
     my $ret = {
 	TEXT => \@s_text,
-	PROPERTY => \@s_property
-	};
+	PROPERTY => \@s_property,
+	OUTLINKS => \%outlinks
+    };
 
     return $ret;
 }
