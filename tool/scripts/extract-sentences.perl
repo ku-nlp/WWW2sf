@@ -19,6 +19,8 @@ use Getopt::Long;
 use utf8;
 use File::Basename;
 use HTTP::Date qw(parse_date);
+use URI::Split qw(uri_split uri_join);
+use URI::Escape;
 use Data::Dumper;
 {
     package Data::Dumper;
@@ -219,8 +221,6 @@ sub process_one_html {
     # HTMLを文のリストに変換
     my $parsed = $ext->extract_text(\$buf);
 
-    # my $parsed = new TextExtractor(\$buf, 'utf8', \%opt);
-
     # 助詞含有率をチェック
     if ($opt{checkzyoshi}) {
 	my $allbuf;
@@ -293,6 +293,10 @@ sub print_page_header {
 		last if ($i > 2); # title, keywords, description は3番目までに全て入っている
 	    }
 	}
+
+	# アウトリンク情報を出力
+	&print_outlinks($url, $parsed->{OUTLINKS});
+
 	$writer->endTag('Header');
 	$writer->startTag('Text', Type => 'default');
     }
@@ -304,6 +308,69 @@ sub print_page_header {
 	    print "<PAGE>\n";
 	}
     }
+}
+
+sub print_outlinks {
+    my ($baseurl, $outlinks) = @_;
+
+    if ($opt{xml}) {
+	$writer->startTag('OutLinks');
+	foreach my $rawstring (keys %$outlinks) {
+	    my $urls = $outlinks->{$rawstring};
+
+	    $writer->startTag('OutLink');
+
+	    $writer->startTag('RawString');
+	    $writer->characters($rawstring);
+	    $writer->endTag('RawString');
+
+	    $writer->startTag('DocIDs');
+	    foreach my $_url (@$urls) {
+		my $URL = &convertURL($baseurl, $_url);
+
+		$writer->startTag('DocID', Url => $URL);
+		$writer->endTag('DocID');
+	    }
+	    $writer->endTag('DocIDs');
+
+	    $writer->endTag('OutLink');
+	}
+	$writer->endTag('OutLinks');
+    }
+    else {
+    }
+}
+
+# 相対パスから絶対パスへ変換
+sub convertURL {
+    my ($url, $fpath) = @_;
+
+    return $fpath if ($fpath =~ /^http/);
+
+    $url =~ s!/{2,}!/!;
+    $url =~ s!:/!://!;
+    my ($scheme, $auth, $path, $query, $frag) = uri_split($url);
+
+    my $returl;
+    if ($fpath =~ m!^/!) {
+	$returl = uri_join($scheme, $auth, $fpath);	
+    }
+    else {
+	if ($path =~ /\//) {
+	    if ($path ne '/') {
+		my @f = split('/', $path);
+		$f[-1] = $fpath;
+		$returl = uri_join($scheme, $auth, join('/', @f));
+	    } else {
+		$returl = uri_join($scheme, $auth, $path . $fpath);
+	    }		
+	}
+	else {
+	    $returl = uri_join($scheme, $auth, $path);
+	}
+    }
+
+    return &uri_unescape($returl);
 }
 
 sub print_extract_sentences {
