@@ -20,7 +20,9 @@ $Data::Dumper::Useperl = 1;
 
 
 my (%opt);
-GetOptions(\%opt, 'in=s', 'out=s', 'indir=s', 'outdir=s', 'z', 'compress', 'verbose', 'help');
+GetOptions(\%opt, 'in=s', 'out=s', 'indir=s', 'outdir=s', 'z', 'compress', 'verbose', 'help', 'remove_old_link');
+
+$opt{remove_old_link} = 1;
 
 if (!defined $opt{in}) {
     print STDERR "Please set -in option.\n";
@@ -62,8 +64,17 @@ sub main {
 	binmode(READER, ':utf8');
 
 	my $buf;
+	my $outsideOfLink = 1;
 	while (<READER>) {
-	    $buf .= $_;
+	    if ($opt{remove_old_link}) {
+		$outsideOfLink = 0 if ($_ =~ /<InLinks>/ || $_ =~ /<OutLinks>/);
+
+		$buf .= $_ if ($outsideOfLink);
+
+		$outsideOfLink = 1 if ($_ =~ /<\/InLinks>/ || $_ =~ /<\/OutLinks>/);
+	    } else {
+		$buf .= $_;
+	    }
 	}
 	close(READER);
 
