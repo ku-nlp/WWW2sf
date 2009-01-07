@@ -94,7 +94,9 @@ our $ext = new TextExtractor($textextractor_option);
 our $crawler_html = 0;
 my $flag = -1;
 my $htmlfile = $ARGV[-1];
-my ($id) = ($htmlfile =~ /(\d+)\.html?/);
+my ($id) = ($htmlfile =~ /(\d+)(\.\d+)(\.utf8)?\.html?/);
+my $dir = `dirname $htmlfile`; chop $dir;
+
 open (HTML, $htmlfile) or die "$!";
 while (<HTML>) {
     if (/^HTML (\S+)/ && $flag < 0) { # 1行目からURLを取得(read-zaodataが出力している)
@@ -352,7 +354,7 @@ sub print_outlinks {
     }
 
     if ($opt{make_urldb}) {
-	open (WRITER, '>:utf8', sprintf ("h%s.outlinks", $id)) or die "$!";
+	open (WRITER, '>:utf8', sprintf ("%s/h%s.outlinks", $dir, $id)) or die "$!";
 	foreach my $e (@buff) {
 	    printf WRITER ("%s\t%s\t%s\t%s\n"), $id, $url, $e->{url}, $e->{text};
 	}
