@@ -17,7 +17,8 @@ fsize_threshold=5242880
 
 base_dir=`dirname $0`
 
-while getopts jkshS:c:uUz OPT
+flag_of_make_urldb=
+while getopts jkshS:c:uUzO OPT
 do  
     case $OPT in
 	j)  html2sf_extra_args="-j"
@@ -35,6 +36,9 @@ do
 	U)  html2sf_extra_args="-U $html2sf_extra_args"
 	    ;;
 	z)  ext=".gz"
+	    ;;
+	O)  html2sf_extra_args="-O $html2sf_extra_args"
+	    flag_of_make_urldb=1
 	    ;;
         h)  usage
             ;;
@@ -76,3 +80,13 @@ do
 	rm -f $f
     fi
 done
+
+############################
+# アウトリンク情報をまとめる
+############################
+
+if [ $flag_of_make_urldb==1 ]
+then
+    for f in `ls $hdir | grep outlinks | sort` ; do cat $hdir/$f ; done > $hdir.outlinks
+    for f in `ls $hdir | grep outlinks | sort` ; do rm  $hdir/$f ; done
+fi

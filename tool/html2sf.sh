@@ -20,6 +20,7 @@ usage() {
 # -M: 解析結果を埋め込むために、AddKNPResult.pmを用いない
 # -u: utf8に変換したHTML文書を保存する
 # -U: 入力がすでにutf8に変換済みの場合
+# -O: アウトリンク情報を抽出する
 
 # Change this for SynGraph annotation
 syngraph_home=$HOME/cvs/SynGraph
@@ -36,7 +37,7 @@ use_module=1
 annotation=
 input_utf8html=0
 
-while getopts bfjkspPhBwc:umMU OPT
+while getopts bfjkspPhBwc:umMUiO OPT
 do  
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -70,6 +71,8 @@ do
             ;;
         U)  input_utf8html=1
             ;;
+	O)  extract_args="-make_urldb $extract_args"
+	    ;;
         h)  usage
             ;;
     esac
