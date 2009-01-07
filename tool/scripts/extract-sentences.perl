@@ -19,6 +19,7 @@ use Getopt::Long;
 use utf8;
 use File::Basename;
 use HTTP::Date qw(parse_date);
+use URI;
 use URI::Split qw(uri_split uri_join);
 use URI::Escape;
 use Data::Dumper;
@@ -39,7 +40,7 @@ sub usage {
 
 
 our (%opt, $writer, $filter);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s', 'cndbfile=s', 'uniq_br_and_linebreak', 'verbose');
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s', 'cndbfile=s', 'uniq_br_and_linebreak', 'make_urldb', 'verbose');
 $opt{language} = 'japanese' unless $opt{language}; # デフォルト言語: japanese
 $opt{blog} = 'none' unless $opt{blog};
 
@@ -92,7 +93,10 @@ our $ext = new TextExtractor($textextractor_option);
 
 our $crawler_html = 0;
 my $flag = -1;
-while (<>) {
+my $htmlfile = $ARGV[-1];
+my ($id) = ($htmlfile =~ /(\d+)\.html?/);
+open (HTML, $htmlfile) or die "$!";
+while (<HTML>) {
     if (/^HTML (\S+)/ && $flag < 0) { # 1行目からURLを取得(read-zaodataが出力している)
 	my $next_url = $1;
 	$crawler_html = 1;
@@ -120,6 +124,7 @@ while (<>) {
 	}
     }
 }
+close (HTML);
 exit 0 unless $buf;
 &process_one_html($buf, $url);
 
@@ -313,6 +318,7 @@ sub print_page_header {
 sub print_outlinks {
     my ($baseurl, $outlinks) = @_;
 
+    my @buff;
     if ($opt{xml}) {
 	$writer->startTag('OutLinks');
 	foreach my $rawstring (keys %$outlinks) {
@@ -330,6 +336,10 @@ sub print_outlinks {
 
 		$writer->startTag('DocID', Url => $URL);
 		$writer->endTag('DocID');
+
+		if ($opt{make_urldb}) {
+		    push (@buff, {url => $URL, text => $rawstring});
+		}
 	    }
 	    $writer->endTag('DocIDs');
 
@@ -338,6 +348,15 @@ sub print_outlinks {
 	$writer->endTag('OutLinks');
     }
     else {
+	# 何もしない
+    }
+
+    if ($opt{make_urldb}) {
+	open (WRITER, '>:utf8', sprintf ("h%s.outlinks", $id)) or die "$!";
+	foreach my $e (@buff) {
+	    printf WRITER ("%s\t%s\t%s\t%s\n"), $id, $url, $e->{url}, $e->{text};
+	}
+	close (WRITER);
     }
 }
 
@@ -345,32 +364,12 @@ sub print_outlinks {
 sub convertURL {
     my ($url, $fpath) = @_;
 
-    return $fpath if ($fpath =~ /^http/);
+    my $returl = URI->new($fpath)->abs($url);
 
-    $url =~ s!/{2,}!/!;
-    $url =~ s!:/!://!;
-    my ($scheme, $auth, $path, $query, $frag) = uri_split($url);
+    # プロトコル削除
+    # $returl =~ s/^.+?:\/\///;
 
-    my $returl;
-    if ($fpath =~ m!^/!) {
-	$returl = uri_join($scheme, $auth, $fpath);	
-    }
-    else {
-	if ($path =~ /\//) {
-	    if ($path ne '/') {
-		my @f = split('/', $path);
-		$f[-1] = $fpath;
-		$returl = uri_join($scheme, $auth, join('/', @f));
-	    } else {
-		$returl = uri_join($scheme, $auth, $path . $fpath);
-	    }		
-	}
-	else {
-	    $returl = uri_join($scheme, $auth, $path);
-	}
-    }
-
-    return &uri_unescape($returl);
+    return $returl;
 }
 
 sub print_extract_sentences {
