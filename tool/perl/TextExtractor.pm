@@ -617,7 +617,7 @@ sub extract_text {
 	$T = decode('utf8', $T) unless (utf8::is_utf8($T));
 	$T =~ s/&nbsp;/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
 	$T = decode_entities($T);
-	$T = &ProcessJapanese($T);
+	$T = $this->ProcessJapanese($T);
 
 	$T =~ s/^\s+//;
 	$T =~ s/\s+$//;
