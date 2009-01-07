@@ -37,7 +37,7 @@ use_module=1
 annotation=
 input_utf8html=0
 
-while getopts bfjkspPhBwc:umMUiO OPT
+while getopts bfjkspPhBwc:umMUO OPT
 do  
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
