@@ -366,7 +366,7 @@ sub print_outlinks {
 sub convertURL {
     my ($url, $fpath) = @_;
 
-    my $returl = URI->new($fpath)->abs($url);
+    my $returl = (defined $url) ? URI->new($fpath)->abs($url) : $fpath;
 
     # プロトコル削除
     # $returl =~ s/^.+?:\/\///;
