@@ -6,6 +6,7 @@
 # Output: RawFile (utf8)
 
 # --all: extract all the sentences including "全体削除"
+# --sid-head str: string added before S-ID
 
 # $Id$
 
@@ -16,7 +17,7 @@ use Getopt::Long;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'all');
+GetOptions(\%opt, 'all', 'sid-head=s');
 
 my ($buf);
 while (<STDIN>) {
@@ -42,7 +43,7 @@ sub extract_rawstring {
 		for my $node ($s_child_node->getChildNodes) {
 		    my $text = $node->string_value;
 
-		    print "\# S-ID:$sid\n";
+		    printf "\# S-ID:%s%s\n", $opt{'sid-head'}, $sid;
 		    print $text, "\n";
 		}
 	    }
