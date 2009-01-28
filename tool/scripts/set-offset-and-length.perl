@@ -59,6 +59,9 @@ sub main {
     }
     close(READER);
 
+    # URL中などに含まれる「&」を「&amp;」に変更
+    $buf =~ s/&/&amp;/g;
+
     if ($opt{z}) {
 	open(READER, "zcat $opt{html} |") or die $!;
     } else {
