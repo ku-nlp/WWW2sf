@@ -24,6 +24,9 @@ while (<STDIN>) {
     $buf .= $_;
 }
 
+# URL中などに含まれる「&」を「&amp;」に変更
+$buf =~ s/&/&amp;/g;
+
 my $parser = new XML::LibXML;
 my $doc = $parser->parse_string($buf);
 &extract_rawstring($doc, 'Title');
