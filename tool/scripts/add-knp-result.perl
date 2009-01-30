@@ -11,11 +11,13 @@ use XML::LibXML;
 use Encode qw(decode);
 use encoding 'utf8';
 binmode STDERR, ':encoding(utf8)';
+binmode STDOUT, ':encoding(utf8)';
 use Getopt::Long;
 use Juman;
 use KNP;
 use strict;
 use AddKNPResult;
+use HTML::Entities;
 
 my (%opt);
 GetOptions(\%opt,
@@ -38,7 +40,22 @@ GetOptions(\%opt,
 	   'syndb_on_memory',
 	   'recycle_knp',
 	   'no_regist_adjective_stem',
+	   'title',
+	   'outlink',
+	   'inlink',
+	   'keywords',
+	   'description',
+	   'sentence',
 	   'debug');
+
+if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{description} && !$opt{sentence}) {
+    $opt{title} = 1;
+    $opt{outlink} = 1;
+    $opt{inlink} = 1;
+    $opt{keywords} = 1;
+    $opt{description} = 1;
+    $opt{sentence} = 1;
+}
 
 my ($regnode_option, $syngraph_option);
 if ($opt{syngraph}) {
@@ -82,22 +99,30 @@ my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
 
 my ($buf);
 while (<STDIN>) {
-    $buf .= $_;
+    my $line = $_;
+    if ($line =~ /DocID /) {
+	my ($url, $did) = ($line =~ /Url=\"(.+)\">(\d+)<\/DocID>/);
+
+	# エンティティの変換
+	$url = &encode_entities($url);
+
+	$line = sprintf qq(          <DocID Url="%s">%09d</DocID>\n), $url, $did;
+    }
 }
 
-# URL中などに含まれる「&」を「&amp;」に変更
-$buf =~ s/&/&amp;/g;
+# \n(\x0a) 以外のコントロールコードは削除する
+$buf =~ tr/\x00-\x09\x0b-\x1f\x7f-\x9f//d;
 
 my $parser = new XML::LibXML;
 my $doc = $parser->parse_string($buf);
 
 if ($opt{usemodule}) {
-    $addknpresult->AddKnpResult($doc, 'Title');
-    $addknpresult->AddKnpResult($doc, 'OutLink');
-    $addknpresult->AddKnpResult($doc, 'InLink');
-    $addknpresult->AddKnpResult($doc, 'Keywords');
-    $addknpresult->AddKnpResult($doc, 'Description');
-    $addknpresult->AddKnpResult($doc, 'S');
+    $addknpresult->AddKnpResult($doc, 'Title') if ($opt{title});
+    $addknpresult->AddKnpResult($doc, 'OutLink') if ($opt{outlink});
+    $addknpresult->AddKnpResult($doc, 'InLink') if ($opt{inlink});
+    $addknpresult->AddKnpResult($doc, 'Keywords') if ($opt{keywords});
+    $addknpresult->AddKnpResult($doc, 'Description') if ($opt{description});
+    $addknpresult->AddKnpResult($doc, 'S') if ($opt{sentence});
 }
 # 解析結果を読み込む
 else {
