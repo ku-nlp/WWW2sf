@@ -6,6 +6,7 @@ use XML::LibXML;
 use Encode qw(decode);
 use encoding 'utf8';
 binmode STDERR, ':encoding(utf8)';
+binmode STDOUT, ':encoding(utf8)';
 use Getopt::Long;
 use File::Basename;
 use Juman;
@@ -13,6 +14,8 @@ use KNP;
 use strict;
 use AddKNPResult;
 use Error qw(:try);
+use HTML::Entities;
+use Data::Dumper;
 
 
 
@@ -163,11 +166,22 @@ for my $file (glob ("$opt{indir}/*")) {
 
     my ($buf);
     while (<F>) {
-	$buf .= $_;
-    }
-    $buf =~ s/\&/\&amp;/g;
+	my $line = $_;
+	if ($line =~ /DocID /) {
+	    my ($url, $did) = ($line =~ /Url=\"(.+)\">(\d+)<\/DocID>/);
 
+	    # エンティティの変換
+	    $url = &encode_entities($url);
+
+	    $line = sprintf qq(          <DocID Url="%s">%09d</DocID>\n), $url, $did;
+	}
+
+	$buf .= $line;
+    }
     close F;
+
+    # \n(\x0a) 以外のコントロールコードは削除する
+    $buf =~ tr/\x00-\x09\x0b-\x1f\x7f-\x9f//d;
 
     my $parser = new XML::LibXML;
     my $doc;
