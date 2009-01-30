@@ -1,3 +1,16 @@
+2009-01-30  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl:
+	部分解析オプションの追加, URL中のエンティティを変換するようにした, アンカーテキスト内の制御文字を削除するようにした
+
+	* scripts/add-knp-result-dir.perl:
+	URL中のエンティティを変換するようにした, アンカーテキスト内の制御文字を削除するようにした
+
+2009-01-28  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl, scripts/set-offset-and-length.perl, scripts/extract-rawstring.perl:
+	LibXMLに与える前に、URL中の&をエンティティに変換するようにした.
+
 2009-01-21  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/extract-rawstring.perl:
