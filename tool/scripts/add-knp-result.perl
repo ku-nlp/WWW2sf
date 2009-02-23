@@ -18,6 +18,9 @@ use KNP;
 use strict;
 use AddKNPResult;
 use HTML::Entities;
+use Error qw(:try);
+
+
 
 my (%opt);
 GetOptions(\%opt,
@@ -46,6 +49,7 @@ GetOptions(\%opt,
 	   'keywords',
 	   'description',
 	   'sentence',
+	   'timeout=s',
 	   'debug');
 
 if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{description} && !$opt{sentence}) {
@@ -56,6 +60,8 @@ if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{
     $opt{description} = 1;
     $opt{sentence} = 1;
 }
+
+$opt{timeout} = 60 unless ($opt{timeout});
 
 my ($regnode_option, $syngraph_option);
 if ($opt{syngraph}) {
@@ -108,6 +114,7 @@ while (<STDIN>) {
 
 	$line = sprintf qq(          <DocID Url="%s">%09d</DocID>\n), $url, $did;
     }
+    $buf .= $_;
 }
 
 # \n(\x0a) 以外のコントロールコードは削除する
@@ -117,12 +124,25 @@ my $parser = new XML::LibXML;
 my $doc = $parser->parse_string($buf);
 
 if ($opt{usemodule}) {
-    $addknpresult->AddKnpResult($doc, 'Title') if ($opt{title});
-    $addknpresult->AddKnpResult($doc, 'OutLink') if ($opt{outlink});
-    $addknpresult->AddKnpResult($doc, 'InLink') if ($opt{inlink});
-    $addknpresult->AddKnpResult($doc, 'Keywords') if ($opt{keywords});
-    $addknpresult->AddKnpResult($doc, 'Description') if ($opt{description});
-    $addknpresult->AddKnpResult($doc, 'S') if ($opt{sentence});
+    try {
+	# タイムアウトの設定
+	local $SIG{ALRM} = sub {die "timeout"};
+	alarm $opt{timeout};
+
+	$addknpresult->AddKnpResult($doc, 'Title') if ($opt{title});
+	$addknpresult->AddKnpResult($doc, 'OutLink') if ($opt{outlink});
+	$addknpresult->AddKnpResult($doc, 'InLink') if ($opt{inlink});
+	$addknpresult->AddKnpResult($doc, 'Keywords') if ($opt{keywords});
+	$addknpresult->AddKnpResult($doc, 'Description') if ($opt{description});
+	$addknpresult->AddKnpResult($doc, 'S') if ($opt{sentence});
+
+	# 時間内に終了すればタイムアウトの設定を解除
+	alarm 0;
+    } catch Error with {
+	my $err = shift;
+	printf STDERR (qq([WARNING] Time out occured! (time=%d [sec])\n), $opt{timeout});
+	exit;
+    };
 }
 # 解析結果を読み込む
 else {

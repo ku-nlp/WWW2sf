@@ -16,6 +16,7 @@ use AddKNPResult;
 use Error qw(:try);
 use HTML::Entities;
 use Data::Dumper;
+use Error qw(:try);
 
 
 
@@ -48,12 +49,15 @@ GetOptions(\%opt,
 	   'keywords',
 	   'description',
 	   'sentence',
+	   'timeout=s',
 	   'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
     print STDERR "Please specify '-indir and -outdir'!\n";
     exit;
 }
+
+$opt{timeout} = 60 unless ($opt{timeout});
 
 $opt{usemodule} = 1;
 
@@ -122,20 +126,22 @@ unless (defined $opt{logfile}) {
 }
 
 my %alreadyAnalyzedFiles = ();
-open(LOG, $opt{logfile}) or die $!;
-while (<LOG>) {
-    chomp;
+if (-f $opt{logfile}) {
+    open(LOG, $opt{logfile}) or die $!;
+    while (<LOG>) {
+	chomp;
 
-    my ($file, $status) = split(/ /, $_);
-    if ($status =~ /(success|error)/) {
-	$alreadyAnalyzedFiles{$file} = $status;
+	my ($file, $status) = split(/ /, $_);
+	if ($status =~ /(success|error|timeout)/) {
+	    $alreadyAnalyzedFiles{$file} = $status;
+	}
+	# ログのフォーマットにマッチしない = エラーにより終了
+	else {
+	    $alreadyAnalyzedFiles{$file} = "error";
+	}
     }
-    # ログのフォーマットにマッチしない = エラーにより終了
-    else {
-	$alreadyAnalyzedFiles{$file} = "error";
-    }
+    close(LOG);
 }
-close(LOG);
 
 # ログフォーマットを整形して出力
 open(LOG, "> $opt{logfile}") or die $!;
@@ -188,35 +194,51 @@ for my $file (glob ("$opt{indir}/*")) {
     try {
 	$doc = $parser->parse_string($buf);
     } catch Error with {
-	    my $err = shift;
-	    print STDERR "Exception at line ",$err->{-line}," in ",$err->{-file}," at $file.\n";
+	my $err = shift;
+	print STDERR "Exception at line ",$err->{-line}," in ",$err->{-file}," at $file.\n";
     };
     next unless ($doc);
 
-    $addknpresult->AddKnpResult($doc, 'Title') if ($opt{title});
-    $addknpresult->AddKnpResult($doc, 'OutLink') if ($opt{outlink});
-    $addknpresult->AddKnpResult($doc, 'InLink') if ($opt{inlink});
-    $addknpresult->AddKnpResult($doc, 'Keywords') if ($opt{keywords});
-    $addknpresult->AddKnpResult($doc, 'Description') if ($opt{description});
-    $addknpresult->AddKnpResult($doc, 'S') if ($opt{sentence});
-
-    my $string = $doc->toString();
-
-    # XML-LibXML 1.63以降ではバイト列が返ってくるので、decodeする
-    unless (utf8::is_utf8($string)) {
-	$string = decode($doc->actualEncoding(), $string);
-    }
-    $string =~ s/&amp;/&/g;
 
 
-    my $outfilename = $opt{outdir} . '/' . basename($file);
-    $outfilename =~ s/\.gz$//;
-    open F, '>:encoding(utf8)', $outfilename or die;
-    print F $string;
-    close F;
+    try {
+	# タイムアウトの設定
+	local $SIG{ALRM} = sub {die "timeout"};
+	alarm $opt{timeout};
 
-    syswrite LOG, "success\n";
-    print STDERR "$file is success\n" if ($opt{debug});
+	$addknpresult->AddKnpResult($doc, 'Title') if ($opt{title});
+ 	$addknpresult->AddKnpResult($doc, 'OutLink') if ($opt{outlink});
+ 	$addknpresult->AddKnpResult($doc, 'InLink') if ($opt{inlink});
+ 	$addknpresult->AddKnpResult($doc, 'Keywords') if ($opt{keywords});
+ 	$addknpresult->AddKnpResult($doc, 'Description') if ($opt{description});
+ 	$addknpresult->AddKnpResult($doc, 'S') if ($opt{sentence});
+
+	# 時間内に終了すればタイムアウトの設定を解除
+	alarm 0;
+
+
+	# 解析結果が埋め込まれたXMLデータを取得
+	my $string = $doc->toString();
+
+	# XML-LibXML 1.63以降ではバイト列が返ってくるので、decodeする
+	unless (utf8::is_utf8($string)) {
+	    $string = decode($doc->actualEncoding(), $string);
+	}
+	$string =~ s/&amp;/&/g;
+
+
+	my $outfilename = $opt{outdir} . '/' . basename($file);
+	$outfilename =~ s/\.gz$//;
+	open F, '>:encoding(utf8)', $outfilename or die;
+	print F $string;
+	close F;
+
+	syswrite LOG, "success\n";
+	print STDERR "$file is success\n" if ($opt{debug});
+    } catch Error with {
+	syswrite LOG, "timeout\n";
+	printf STDERR (qq([WARNING] Time out occured! (time=%d [sec], file=%s)\n), $opt{timeout}, $file);
+    };
 }
 
 print LOG "finish.\n";
