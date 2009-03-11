@@ -1,3 +1,13 @@
+2009-03-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-anchor.perl:
+	URLを抽出する際に正規化するように, プロトコル名も出力に含めるように
+
+2009-02-23  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result-dir.perl, scripts/add-knp-result.perl:
+	タイムアウト機能の追加(デフォルト60秒).
+
 2009-01-30  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl:
