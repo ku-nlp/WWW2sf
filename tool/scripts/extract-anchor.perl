@@ -24,6 +24,7 @@ use Unicode::Normalize;
 use Unicode::Japanese;
 use ModifiedTokeParser;
 use CDB_Reader;
+use URI;
 
 my (%opt);
 GetOptions(\%opt, 'dir=s', 'dbmap=s', 'z', 'verbose');
@@ -78,10 +79,11 @@ sub main {
 		    if (defined $href && $href !~ /^mail|javascript|\#/ && $href !~ /\.(jpg|jpeg|gif|png)$/) {
 			$in_anchor = 1;
 			if ($href =~ /^http.?:\/\//) {
-			    $outlink = "$'";
+			    $outlink = $href;
 			} else {
 			    $outlink = &soutai2zettai($baseurl, $href);
 			    $outlink =~ s!/\./!/!g;
+			    $outlink = "http://" . $outlink unless ($outlink =~ /^http/);
 			}
 
 			$anchor_offset = $offset;
@@ -131,8 +133,10 @@ sub main {
 			$anchor_text =~ s/^　//;
 			$anchor_text =~ s/　$//;
 			# my $len = $offset + $length - $anchor_offset;
-			my $outlink_did = $url2did->get($outlink);
-			print "$did $baseurl_wo_protocol $outlink_did $outlink $anchor_text\n" if (defined $outlink_did && $anchor_text ne '');
+
+			my $can_outlink = &CanonicalizeURL($outlink);
+			my $outlink_did = $url2did->get($can_outlink);
+			print "$did $baseurl $outlink_did $can_outlink $anchor_text\n" if (defined $outlink_did && $anchor_text ne '');
 		    }
 		    $in_anchor = 0;
 		    $anchor_text = '';
@@ -194,4 +198,50 @@ sub decompose_url {
     }
 
     return ($domain, $dir, $file);
+}
+
+# ~t-morii/development/crawling/lib/urlcan.pm より
+sub CanonicalizeURL($)
+{
+	my ($uri) = @_;
+
+	my $uri_obj = URI->new($uri);
+
+	return undef if ( $uri_obj->scheme !~ /http(s)?/ );
+	return undef unless ( $uri_obj->host );
+
+	my $path = CanonicalizePath($uri_obj->path);
+
+	my $uri_after = $uri_obj->scheme.'://'.$uri_obj->host.CanonicalizePath($uri_obj->path);
+	$uri_after .= "?".$uri_obj->query if ( defined($uri_obj->query) );
+
+	return URI->new($uri_after)->canonical;
+}
+
+# パス名の正規化
+# http://www.ipa.go.jp/security/awareness/vendor/programming/b07_07_main.html
+sub CanonicalizePath($)
+{
+	my $path = shift;
+
+	$path = "/$path" if ( $path !~ m|^/| );				# 先頭に / が無い場合は、/ を付加する
+
+	# 正規化パス名の作成
+	my @components = ();						# 正規化パス名中間データを初期化
+	foreach my $component ( split('/', $path) )
+	{
+		next if ( $component eq "" );				# // は無視
+		next if ( $component eq "." );				# /./ は無視
+		if ( $component eq ".." )				# /../ なら
+		{
+			pop(@components);				# 1 つ前の構成要素も無視
+			next;
+		}
+		push(@components, $component);				# 構成要素を追加
+	}
+
+	my $result = '/'.join('/', @components);			# パス名文字列を生成
+	$result .= '/' if ( $path =~ /\/$/ && $result !~ /\/$/ );	# / が抜けた場合は付加する
+
+	return $result;
 }
