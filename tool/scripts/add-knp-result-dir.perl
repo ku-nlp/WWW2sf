@@ -41,8 +41,10 @@ GetOptions(\%opt,
 	   'knprc=s',
 	   'syndb_on_memory',
 	   'recycle_knp',
+	   'remove_annotation',
 	   'no_regist_adjective_stem',
 	   'logfile=s',
+	   'nologfile',
 	   'title',
 	   'outlink',
 	   'inlink',
@@ -120,7 +122,7 @@ $syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngra
 my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
 
 # -logfile が指定されていない場合は終了
-unless (defined $opt{logfile}) {
+unless (defined $opt{logfile} || $opt{nologfile}) {
     print STDERR "Please set -logfile option !\n";
     exit;
 }
@@ -144,19 +146,21 @@ if (-f $opt{logfile}) {
 }
 
 # ログフォーマットを整形して出力
-open(LOG, "> $opt{logfile}") or die $!;
-foreach my $file (sort {$a cmp $b} keys %alreadyAnalyzedFiles) {
-    my $status = $alreadyAnalyzedFiles{$file};
-    print LOG "$file $status\n";
+unless ($opt{nologfile}) {
+    open(LOG, "> $opt{logfile}") or die $!;
+    foreach my $file (sort {$a cmp $b} keys %alreadyAnalyzedFiles) {
+	my $status = $alreadyAnalyzedFiles{$file};
+	print LOG "$file $status\n";
+    }
+    close(LOG);
 }
-close(LOG);
 
-open(LOG, ">> $opt{logfile}") or die $!;
+open(LOG, ">> $opt{logfile}") or die $! unless $opt{nologfile};
 for my $file (glob ("$opt{indir}/*")) {
     # 既に解析済みのファイルはスキップ
-    next if (exists $alreadyAnalyzedFiles{$file});
+    next if (!$opt{nologfile} && exists $alreadyAnalyzedFiles{$file});
 
-    syswrite LOG, "$file ";
+    syswrite LOG, "$file " unless $opt{nologfile};
     if ($file =~ /\.gz$/) {
 	unless (open F, "zcat $file |") {
 	    print STDERR "Can't open file: $file\n";
@@ -233,7 +237,7 @@ for my $file (glob ("$opt{indir}/*")) {
 	print F $string;
 	close F;
 
-	syswrite LOG, "success\n";
+	syswrite LOG, "success\n" unless $opt{nologfile};
 	print STDERR "$file is success\n" if ($opt{debug});
     } catch Error with {
 	syswrite LOG, "timeout\n";
@@ -241,5 +245,5 @@ for my $file (glob ("$opt{indir}/*")) {
     };
 }
 
-print LOG "finish.\n";
-close (LOG);
+print LOG "finish.\n" unless $opt{nologfile};
+close (LOG) unless $opt{nologfile};
