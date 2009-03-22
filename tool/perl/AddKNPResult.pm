@@ -34,6 +34,14 @@ sub AddKnpResult {
 	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
 	next if !$this->{opt}{all} and !$jap_sent_flag; # not Japanese
 
+	if ($this->{opt}{remove_annotation}) {
+	    for my $s_child_node ($sentence->getChildNodes) {
+		if ($s_child_node->nodeName eq 'Annotation') {
+		    $sentence->removeChild($s_child_node);
+		}
+	    }
+	}
+
 	my $rawstring;
 	for my $s_child_node ($sentence->getChildNodes) {
 	    if (!$this->{opt}{recycle_knp}) {
