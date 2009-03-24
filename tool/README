@@ -23,6 +23,9 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
     - Error
     - HTTP::Date (libwww-perl-5.805にある)
 
+  o 複合名詞データベース (optional, 以下のhtml2sf.shに`-c'オプションで与える)
+
+    - wget http://reed.kuee.kyoto-u.ac.jp:/home/skeiji/public_html/data/cns.100M.cls.df1000.cdb
 
 処理
 ----
