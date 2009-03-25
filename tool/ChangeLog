@@ -1,3 +1,23 @@
+2009-03-25  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result-dir.perl:
+	エンティティ参照をそのまま出力するように.
+
+2009-03-24  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* README: 複合名詞データベースに関する記述を追加
+
+2009-03-24  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* README: Added a necessary perl module.
+
+2009-03-22  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm: remove_annotationオプションを追加
+
+	* scripts/add-knp-result-dir.perl: -nologfileオプションを追加
+	-remove_annotationオプションを追加
+
 2009-03-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-anchor.perl:
@@ -31,7 +51,7 @@
 	* scripts/embed-annotation.sh, scripts/add-knp-result-dir.perl:
 	言語解析する場所をオプションで指定できるようにした．(指定がない場合は全てが解析対象)
 
-2008-12-28  Tomohide Shibata, KYOTOU  <shibata@iccc010.crawl.kclab.jgn2.jp>
+2008-12-28  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm: 関数ProcessJapaneseをグローバルに変更
 
@@ -44,7 +64,7 @@
 
 	* scripts/extract-sentences.perl: ヘッダー中のURLを取得する部分を修正.
 
-2008-11-06  Tomohide Shibata, KYOTOU  <shibata@iccc010.crawl.kclab.jgn2.jp>
+2008-11-06  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/parse-comp.sh: KNPargをオプションで指定できるようにした(-k)
 
