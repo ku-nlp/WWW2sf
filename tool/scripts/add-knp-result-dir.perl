@@ -228,7 +228,6 @@ for my $file (glob ("$opt{indir}/*")) {
 	unless (utf8::is_utf8($string)) {
 	    $string = decode($doc->actualEncoding(), $string);
 	}
-	$string =~ s/&amp;/&/g;
 
 
 	my $outfilename = $opt{outdir} . '/' . basename($file);
