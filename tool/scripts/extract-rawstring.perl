@@ -5,7 +5,10 @@
 # Input : XML (utf8)
 # Output: RawFile (utf8)
 
-# --all: extract all the sentences including "全体削除"
+# --all: extract all the sentences including "全体削除" (including a title)
+# --title: extract a title as well
+
+# --text-only: do not print S-ID
 # --sid-head str: string added before S-ID
 
 # $Id$
@@ -17,19 +20,19 @@ use Getopt::Long;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'all', 'sid-head=s');
+GetOptions(\%opt, 'all', 'title', 'text-only', 'sid-head=s');
 
 my ($buf);
 while (<STDIN>) {
     $buf .= $_;
 }
 
-# URL���ȂǂɊ܂܂��u&�v���u&amp;�v�ɕύX
+# URL中などに含まれる「&」を「&amp;」に変更
 $buf =~ s/&/&amp;/g;
 
 my $parser = new XML::LibXML;
 my $doc = $parser->parse_string($buf);
-&extract_rawstring($doc, 'Title');
+&extract_rawstring($doc, 'Title') if $opt{title} or $opt{all};
 &extract_rawstring($doc, 'S');
 
 
@@ -38,15 +41,16 @@ sub extract_rawstring {
 
     for my $sentence ($doc->getElementsByTagName($tagName)) { # for each S
 	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
+	next if !$opt{all} and !($opt{title} and $tagName eq 'Title') and !$jap_sent_flag; # not Japanese
 	my $sid = $sentence->getAttribute('Id'); # the title string has 0 as its Id.
-	next if !$opt{all} and !$jap_sent_flag; # not Japanese
+	$sid = 0 if $tagName eq 'Title' and !defined($sid); # set the sid of title to 0
 
 	for my $s_child_node ($sentence->getChildNodes) {
 	    if ($s_child_node->nodeName eq 'RawString') { # one of the children of S is Text
 		for my $node ($s_child_node->getChildNodes) {
 		    my $text = $node->string_value;
 
-		    printf "\# S-ID:%s%s\n", $opt{'sid-head'}, $sid;
+		    printf "\# S-ID:%s%s\n", $opt{'sid-head'}, $sid unless $opt{'text-only'};
 		    print $text, "\n";
 		}
 	    }
