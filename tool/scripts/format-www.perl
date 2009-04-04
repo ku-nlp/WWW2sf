@@ -70,7 +70,7 @@ while (<>) {
     }
 
     $count++;
-    $sid = defined($site) ? "$head-$site-$file-$count" : "$head-$file-$count";
+    $sid = sprintf("%s%s%s-%d", $head, defined($site) ? "-$site" : '', defined($file) ? "-$file" : '', $count);
 
     # 蟈妐綽輪支喟裡及質咥
     my ($main, @parens) = $formatter->FormatSentence($_, $sid);
