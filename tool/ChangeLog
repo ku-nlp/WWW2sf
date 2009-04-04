@@ -1,3 +1,10 @@
+2009-04-04  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/format-www.perl:
+	Modified S-ID checking.
+
+	* scripts/sentence-splitter.perl: added.
+
 2009-03-26  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/extract-rawstring.perl:
