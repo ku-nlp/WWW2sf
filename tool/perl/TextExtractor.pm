@@ -501,12 +501,11 @@ sub extract_text {
 	my $x = 0;
 	foreach my $paragraph (@buf2) {
 	    foreach my $y (@$paragraph) {
-		unless ($y =~ /^(?:　|\s)*$/) {
+		unless ($y =~ /^(?:　|\s)*$/o) { # added o by ynaga
 		    # 先頭、末尾の空白を削除
-		    $y =~ s/^\s+//;
-		    $y =~ s/\s+$//;
-		    $y =~ s/^(?:　)+//;
-		    $y =~ s/(?:　)+$//;
+		    # modified by ynaga.
+                    $y =~ s/^(?:　|\s)+//o;
+                    $y = reverse ($y); $y =~ s/^(?:　|\s)+//o; $y = reverse ($y);
 
 		    $s_text[$s_count] = $y;
 		    for my $key (keys %{$property->[$i]}) {
@@ -534,7 +533,7 @@ sub extract_text {
     my $start_itemization = 0;
     for (my $i = 0; $i < scalar(@s_text); $i++) {
 	# 箇条書きかどうか
-	if ($s_text[$i] =~ /^$ITEMIZE__HEADER/) {
+	if ($s_text[$i] =~ /^$ITEMIZE__HEADER/o) { # added o by ynaga
 	    if ($start_itemization > 0) {
 		# 以下のお店、
 		# ・さえずり
@@ -573,7 +572,7 @@ sub extract_text {
 	    } else {
 		push(@buff2, $s_text[$i]);
 	    }
-	    $start_itemization = ($s_text[$i] =~ /$CHARS_OF_BEGINNING_OF_ITEMIZATION$/ &&
+	    $start_itemization = ($s_text[$i] =~ /$CHARS_OF_BEGINNING_OF_ITEMIZATION$/o && # added o by ynaga
 				  !&is_unseparate_property($s_property[$i]) &&
 				  !defined $s_property[$i]->{description} &&
 				  !defined $s_property[$i]->{keywords}) ? 1 : 0;
@@ -639,10 +638,11 @@ sub extract_text {
 sub ProcessJapanese {
     my ($this, $buf, $property) = @_;
 
-    $buf =~ s/\n/ /g;	    # 改行コードは半角の空白に変換
-    $buf =~ s/([　-。・-；゛-龠]+?)\s+([　-。・-；゛-龠]+?)/$1$2/g;
-    $buf =~ s/([!-~]+?)\s+([　-。・-；゛-龠]+?)/$1$2/g;
-    $buf =~ s/([　-。・-；゛-龠]+?)\s+([!-~]+?)/$1$2/g;
+    $buf =~ s/\n/ /g;    # 改行コードは半角の空白に変換
+    # ynaga; +? is meaningless, here.
+    $buf =~ s/([　-。・-；゛-龠])\s+([　-。・-；゛-龠])/$1$2/g; 
+    $buf =~ s/([!-~])\s+([　-。・-；゛-龠])/$1$2/g;
+    $buf =~ s/([　-。・-；゛-龠])\s+([!-~])/$1$2/g;
     # $buf =~ s/((\p{Han}|\p{Hiragana}|\p{Katakana})+?)\s+((\p{Han}|\p{Hiragana}|\p{Katakana})+?)/$1$3/g;
 
     if (defined($property->{pre})) {
@@ -690,22 +690,16 @@ sub SplitByEmoticon {
 
     my @retbuf;
     foreach my $x (@{$buf}) {
-	my @chars = split(//, $x);
-	my @ret = $this->{annotator}->markup(\@chars);
-
-	my $str;
-	for (my $p = 0; $p < scalar(@chars); $p++) {
-	    if ($ret[$p] != 0) {
-		while ($ret[$p] > 0) {
-		    $str .= $chars[$p];
-		    $p++;
-		}
-		push @retbuf, $str;
-		$str = ''
-		}
-	    $str .= $chars[$p];
+	# darts の置換メソッドを利用
+	my $newstr = decode("utf8", $this->{annotator}->{da}->gsub($x, sub{ "$_[0]\n" }));
+	# デリミタ, 顔文字が文末に連続している場合はまとめる
+	while ($newstr =~ /\n(?:(?:$this->{annotator}->{pat})\n)*/o) {
+	    $newstr = $'; # perl mode で適切にハイライトさせるための「'」
+	    my $sent = $` . $&;
+	    $sent =~ s/\n//g;
+	    push (@retbuf, $sent);
 	}
-	push @retbuf, $str;
+	push (@retbuf, $newstr);
     }
     return @retbuf;
 }
