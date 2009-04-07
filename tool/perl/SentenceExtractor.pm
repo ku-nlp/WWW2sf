@@ -57,18 +57,21 @@ sub GetSentences
 
 sub FixParenthesis {
     my ($slist) = @_;
-
     for my $i (0 .. scalar(@{$slist} - 1)) {
 	# 1つ目の文以降で、閉じ括弧が文頭にある場合は、閉じ括弧をとって前の文にくっつける
-	if ($i > 0 && $slist->[$i] =~ /^($close_kakko)(.*)/) {
-	    $slist->[$i - 1] .= $1;
-	    $slist->[$i] = $2;
+        if ($i > 0 && $slist->[$i] =~ /^$close_kakko(.*)$/) {
+	    $slist->[$i - 1] .= $&;
+	    $slist->[$i] = $1;
 	}
 
 	# 1つ前の文と当該文に”が奇数個含まれている場合は、前の文に該当文をくっつける
 	if ($i > 0) {
-	    my $num_of_zenaku_quote_prev = scalar(split('”', $slist->[$i - 1])) - 1;
-	    my $num_of_zenaku_quote_curr = scalar(split('”', $slist->[$i])) - 1;
+            my $num_of_zenaku_quote_prev = ($slist->[$i - 1] =~ s/”/$&/go);
+            my $num_of_zenaku_quote_curr = ($slist->[$i] =~ s/”/$&/go);
+            # ynaga; perl の split の仕様で、区切り文字が先頭/末尾に出現するときは正しくカウントできない
+	    # my $num_of_zenaku_quote_prev = scalar(split('”', $slist->[$i - 1])) - 1;
+	    # my $num_of_zenaku_quote_curr = scalar(split('”', $slist->[$i])) - 1;
+
 	    if ($num_of_zenaku_quote_prev > 0 && $num_of_zenaku_quote_curr > 0) {
 		if ($num_of_zenaku_quote_prev % 2 == 1 && $num_of_zenaku_quote_curr % 2 == 1) {
 		    $slist->[$i - 1] .= $slist->[$i];
@@ -79,7 +82,7 @@ sub FixParenthesis {
 
 	# 当該文が^$itemize_header$にマッチする場合、箇条書きと判断し、次の文とくっつける
 	if (defined $slist->[$i + 1]) {
-	    if ($slist->[$i] =~ /^$itemize_header$/) {
+	    if ($slist->[$i] =~ /^$itemize_header$/o) { # added o by ynaga
 		$slist->[$i] .= $slist->[$i + 1];
 		splice(@$slist, $i + 1, 1);
 	    }
@@ -93,93 +96,60 @@ sub SplitJapanese {
     my ($str) = @_;
     my (@chars, @buf, $ignore_level);
 
-    # 字単位に分割 (UTF8)
-#   my @chars = split(//, decode('utf8', $str));
-    my @chars = split(//, $str);
-
-#   my @open = grep(/^$open_kakko$/o, @chars);
-#   my @close = grep(/^$close_kakko$/o, @chars);
-
-    # 開きカッコと閉じカッコの数が整合しない場合、または
-    # カッコがない場合はカッコを考慮しない
-    # 括弧の対応をまじめに考えるように変更
-#   if ((scalar(@open) == 0 and scalar(@close) == 0) || 
-#       (scalar(@open) != scalar(@close))) {
-#	$ignore_level = 1;
-#   }
-
     my $level = 0;
-    @buf = ('');
-    for my $i (0 .. scalar(@chars) - 1) {
-	my $char = $chars[$i];
-
-	$buf[-1] .= $char;
-	# ((括弧内でない && ．の両側にアルファベット・数字が現れていない) || $char が句読点) ならば
-	if (($ignore_level || $level == 0) && 
-	    # dotの前後にアルファベットや数字がある場合は切らない(URLなど)
-	    (($char =~ /^$dot$/o && 
-	      !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^(?:\p{alphabet_or_number}|$comma)$/o || # 右側にアルファベットがあるかどうか
-		# カンマも考慮にいれるように変更 (by Y.Kato) 「Co., Ltd.」で切れないように
-		($i == 0 || $chars[$i - 1] =~ /^\p{alphabet_or_number}$/o))) || # 左側にアルファベットがあるかどうか
-	     $char =~ /^$period$/o)) {
-
-	    if ($buf[-1] =~ /^(?:$period|$dot)$/o && scalar(@buf) > 1) { # periodの連続は前に結合
-		$buf[-2] .= $buf[-1];
-		$buf[-1] = '';
-	    }
-	    else {
-		## ・・・で文を区切る
- 		my $cdot = '・';
-		my $sent = $buf[-1];
-		my @buf2 = ();
- 		while($sent =~ /^(.*?)((?:$cdot){3,}(?:$period)?)/o){
- 		    my $sent1 = $1 . $2;
- 		    push(@buf2, $sent1);
-
- 		    $sent = "$'";
- 		}
-		push(@buf2, $sent);
-
-		my @buf3 = ();
-		foreach my $s (@buf2){
-		    # 文の先頭から（...）が始まっていたら
-		    if($s =~ /^(（.+?）)/){
-			my $sub_s = $1;
-			$s = "$'";
-			while($sub_s =~ m/(.+?(?:$period|$dot))/){
-			    push(@buf3, $1);
-			    $sub_s = "$'";
-			}
-			if($sub_s ne ''){
-			    push(@buf3, $sub_s);
-			}
-		    }
-		    push(@buf3, $s);
-		}
-
-		my $size = scalar(@buf) - 1;
-		foreach my $s (@buf3){
-		    $buf[$size++] = $s;
-		}
-		push(@buf, ''); # 新しい文を始める
-		$level = 0; # 括弧の対応をリセット
-	    }
-	}
-	elsif ($char =~ /^$open_kakko$/o) {
-	    $level++;
-	}
-	elsif ($char =~ /^$close_kakko$/o) {
-	    $level-- if ($level > 0); # 開き括弧が既出であれば
-	}
+    ## ynaga; 処理を改善したバージョン;
+    ## 1) ・・・を区切り文字として扱う
+    ## 2) 文頭を除いて区切り文字のみの文を禁止
+    ## 3) 区切り文字を含まない場合にも文頭（）の処理を行う
+    ## 注1) 区切り文字を含む顔文字がある場合、その処理を先にする方が良さそう
+    ## 注2) ・・・を区切り文字として扱った関係でその直後の顔文字が次文に回される
+    @buf = ();
+    my @tmp = ();
+    my $sent = '';
+    my $cdot = '・';
+    while ($str =~ /(?:(?:$period)|((?:$cdot){3,})|(?<!\p{alphabet_or_number})(?:$dot)(?!\p{alphabet_or_number}|$comma))(?:$dot|$period)*/o) { # check delimiter & split
+      my $pre = $`;
+      $str = $'; #'
+      $sent .= $` . $&;
+      if ($1 eq '' || $pre ne '') { # a sentence should include strings other than $cdot{3,}
+        unless ($ignore_level) {
+          while ($pre =~ /($open_kakko)|(?:$close_kakko)/o) { # mimicking the original routine to count kakko level
+            $level += ($1 ne '') ? 1 : -1;
+            $level = 0 if ($level < 0);
+            $pre = $'; #'
+          }
+        }
+        # FEATURE: process only those strings recognized by $dot/$period
+        if ($level == 0) {
+          push (@tmp, $sent);
+          $sent = '';
+        }
+      }
+    }
+    push (@tmp, $sent . $str);
+    foreach my $s (@tmp) {
+      if ($s =~ /^（.+?）/o) {
+        my $ss = $&;
+        my $sss = '';
+        $s = $';
+        while ($ss =~ /(?:(?:$period)|(?:$cdot){3,}|(?<!\p{alphabet_or_number})(?:$dot)(?!\p{alphabet_or_number}|$comma))(?:$dot|$period)*/o) {
+          $pre = $`;
+          $sss .= $` . $&;
+          if ($& !~ /^$cdot/ || $pre ne '（') {
+            push(@buf, $sss);
+            $sss = '';
+          }
+          $ss = $';
+        }
+        push(@buf, $ss) if ($ss ne '');
+      }
+      push(@buf, $s) if ($s ne '');
     }
 
     my @buf2 = ();
     foreach my $y (@buf) {
-	$y =~ s/^\s+//;
-	$y =~ s/\s+$//;
-	$y =~ s/^(?:　)+//;
-	$y =~ s/(?:　)+$//;
-
+        $y =~ s/^(?:\s|　)+//o;
+        $y = reverse ($y); $y =~ s/^(?:\s|　)+//o; $y = reverse ($y);
 	push(@buf2, $y);
     }
 
@@ -207,10 +177,10 @@ sub concatSentences {
     my @buff = ();
     my $tail = scalar(@{$sents}) - 1;
     while ($tail > 0) {
-	if ($sents->[$tail - 1] =~ /(?:！|？|$close_kakko)$/ && $sents->[$tail] =~ /^(?:と|っ|です)/) {
+        if ($sents->[$tail] =~ /^(?:と|っ|です)/o && $sents->[$tail - 1] =~ /(?:！|？|$close_kakko)$/o) {
 	    $sents->[$tail - 1] .= $sents->[$tail];
 	}
-	elsif ($sents->[$tail - 1] =~ /$itemize_header$/ && $sents->[$tail] =~ /^(?:と|や|の)($itemize_header)?/) {
+        elsif ($sents->[$tail] =~ /^(?:と|や|の)($itemize_header)?/o && $sents->[$tail - 1] =~ /$itemize_header$/o) {
 	    $sents->[$tail - 1] .= $sents->[$tail];
 	}
 	else {
