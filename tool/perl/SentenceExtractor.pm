@@ -118,9 +118,9 @@ sub SplitJapanese {
 	if (($ignore_level || $level == 0) && 
 	    # dotの前後にアルファベットや数字がある場合は切らない(URLなど)
 	    (($char =~ /^$dot$/o && 
-	      !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^(?:\p{alphabet_or_number}|$comma)$/o && # 右側にアルファベットがあるかどうか
+	      !($i < scalar(@chars) - 1 && $chars[$i + 1] =~ /^(?:\p{alphabet_or_number}|$comma)$/o || # 右側にアルファベットがあるかどうか
 		# カンマも考慮にいれるように変更 (by Y.Kato) 「Co., Ltd.」で切れないように
-		($i == 0 || $chars[$i - 1] =~ /^\p{alphabet_or_number}$/o))) || # 右側にアルファベットがあるかどうか
+		($i == 0 || $chars[$i - 1] =~ /^\p{alphabet_or_number}$/o))) || # 左側にアルファベットがあるかどうか
 	     $char =~ /^$period$/o)) {
 
 	    if ($buf[-1] =~ /^(?:$period|$dot)$/o && scalar(@buf) > 1) { # periodの連続は前に結合
