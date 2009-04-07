@@ -2,6 +2,7 @@ package Annotator;
 
 use utf8;
 use Encode;
+use Text::Darts;
 use strict;
 use Data::Dumper;
 {
@@ -29,6 +30,11 @@ sub new {
     push(@{$this->{patterns}}, $DelimiterDic);
     push(@{$this->{patterns}}, $EmoticonDic);
 
+    # added by ynaga
+    my @dic = sort (@{$DelimiterDic}, @{$EmoticonDic});
+    $this->{da} = Text::Darts->new(@dic);
+    $this->{pat} = join('|', @dic);
+    
     bless $this;
 }
 
