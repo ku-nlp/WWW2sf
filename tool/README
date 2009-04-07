@@ -22,6 +22,7 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
     - Unicode::Japanese
     - Error
     - HTTP::Date (libwww-perl-5.805にある)
+    - Text::Darts
 
 処理
 ----
