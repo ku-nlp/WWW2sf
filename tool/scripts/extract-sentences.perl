@@ -434,13 +434,9 @@ sub postp_check {
     my ($buf) = @_;
     my ($pp_count, $count);
 
-    foreach my $chr (split(//, $buf)) {
-	next if $chr eq "\n";
-	if ($chr =~ /^が|を|に|は|の|で$/) {
-	    $pp_count++;
-	}
-	$count++;
-    }
+    # modified by ynaga.
+    $pp_count = ($buf =~ s/(が|を|に|は|の|で)/\1/g);
+    $count = length($buf);
 
     return eval {$pp_count/$count};
 }
