@@ -1,3 +1,27 @@
+2009-04-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result-dir.perl, scripts/add-knp-result.perl:
+	格解析オプション(case)の追加, 警告メッセージの出力を変更.
+
+	* perl/AddKNPResult.pm:
+	格解析を行うオプションに対応.
+
+2009-04-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl: postp_checkを高速化.
+
+	* perl/SentenceExtractor.pm:
+	文境界を正規表現を使って検出するように, 正規表現内の変数の再評価を行わないように(oの指定)
+
+	* perl/SentenceExtractor.pm:
+	bug fixed. (「.」を文区切りとするかどうかの判定ルールを修正)
+
+	* perl/TextExtractor.pm:
+	デリミタと顔文字のマッチングにdartsのメソッドを利用するように, 正規表現内の変数の再評価を行わないように(oの指定).
+
+	* perl/Annotator.pm:
+	区切り文字, 顔文字のデータをText::Dartsで持つようにした.
+
 2009-04-04  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/format-www.perl:
