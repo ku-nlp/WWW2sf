@@ -353,7 +353,6 @@ sub detag {
 		if ($mode{link}) {
 		    $outlinks[-1]->{text} .= $text;
 		}
-		    
 
 		# 複合名詞データベースが指定されている場合
 		if ($this->{opt}{cndbfile}) {
@@ -616,12 +615,18 @@ sub extract_text {
 	$T = decode('utf8', $T) unless (utf8::is_utf8($T));
 	$T =~ s/&nbsp;/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
 	$T = decode_entities($T);
+
+	# \n(\x0a) 以外のコントロールコードは削除する
+	$T =~ tr/\x00-\x09\x0b-\x1f\x7f-\x9f//d;
+	# 改行の処理
+ 	$T =~ s/([^\x0a])\x0a+$/$1/; # 最後の改行を削除
+ 	$T =~ s/^\x0a+([^\x0a])/$1/; # 頭の改行を削除
+	$T =~ s/([^\x0a])\x0a([^\x0a])/$1 $2/g; # 単独の改行をスペースに (後でまわりをみて処理)
+
 	$T = $this->ProcessJapanese($T);
 
-	$T =~ s/^\s+//;
-	$T =~ s/\s+$//;
-	$T =~ s/^(?:　)+//;
-	$T =~ s/(?:　)+$//;
+	$T =~ s/^(?:　|\s)+//o;
+	$T = reverse ($T); $T =~ s/^(?:　|\s)+//o; $T = reverse ($T);
 
 	push (@{$outlinks{$T}}, $e->{url});
     }
