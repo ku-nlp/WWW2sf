@@ -8,18 +8,20 @@ use utf8;
 use strict;
 use Error qw(:try);
 
+
 binmode(STDERR, ':encoding(euc-jp)');
 
 sub new {
-    my ($this, $juman, $knp, $syngraph, $opt) = @_;
+    my ($this, $juman, $knp, $knp_w_case, $syngraph, $opt) = @_;
 
     $this = {
 	juman => $juman,
 	knp => $knp,
+	knp_w_case => $knp_w_case,
 	syngraph => $syngraph,
 	opt => $opt
 	};
-    
+
     bless $this;
 }
 
@@ -32,6 +34,7 @@ sub AddKnpResult {
 
     for my $sentence ($doc->getElementsByTagName($tagName)) { # for each $tagName
 	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
+	$jap_sent_flag = 1 if ($tagName ne 'S');
 	next if !$this->{opt}{all} and !$jap_sent_flag; # not Japanese
 
 	if ($this->{opt}{remove_annotation}) {
@@ -61,15 +64,15 @@ sub AddKnpResult {
 
 			    # jmn
 			    if ($this->{opt}{jmn}) {
-				$this->AppendNode($doc, $sentence, $text, 'Juman');
+				$this->AppendNode($doc, $sentence, $text, 'Juman', $jap_sent_flag);
 			    }
 			    # SynGraph
 			    elsif ($this->{opt}{syngraph}) {
-				$this->AppendNode($doc, $sentence, $text, 'SynGraph');
+				$this->AppendNode($doc, $sentence, $text, 'SynGraph', $jap_sent_flag);
 			    }
 			    # knp
 			    elsif ($this->{opt}{knp}) {
-				$this->AppendNode($doc, $sentence, $text, 'Knp');
+				$this->AppendNode($doc, $sentence, $text, 'Knp', $jap_sent_flag);
 			    }
 			}
 		    }
@@ -100,7 +103,7 @@ sub AddKnpResult {
 			    }
 
 			    my $knp_result = new KNP::Result(join("\n", @buf));
-			    $this->AppendNode($doc, $sentence, $knp_result, 'SynGraph');
+			    $this->AppendNode($doc, $sentence, $knp_result, 'SynGraph', $jap_sent_flag);
 			}
 			else {
 			    print "パラメータの指定が不正です (-recycle_knpオプションを指定時は-syngraphのみ有効です)\n";
@@ -120,7 +123,7 @@ sub AddKnpResult {
 # ノードを追加する
 # $type: Juman or Knp or SynGraph
 sub AppendNode {
-    my ($this, $doc, $sentence, $text, $type) = @_;
+    my ($this, $doc, $sentence, $text, $type, $jap_sent_flag) = @_;
 
     my $newchild = $doc->createElement('Annotation');
     $newchild->setAttribute('Scheme', $type);
@@ -139,7 +142,12 @@ sub AppendNode {
 		$result = $text;
 	    } else {
 		$text = "# VERSION:\n$text";
-		$result = $this->{knp}->parse_mlist($this->{knp}->juman($text));
+		if ($this->{opt}{case} && $jap_sent_flag) {
+		    $result = $this->{knp_w_case}->parse_mlist($this->{knp_w_case}->juman($text));
+		} else {
+		    # 格解析オプションが指定されていない場合, もしくは日本語文でない場合
+		    $result = $this->{knp}->parse_mlist($this->{knp}->juman($text));
+		}
 	    }
 
 	    return unless $result;
