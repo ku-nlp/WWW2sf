@@ -26,6 +26,7 @@ my (%opt);
 GetOptions(\%opt,
 	   'jmn',
 	   'knp',
+	   'case',
 	   'syngraph',
 	   'help',
 	   'usemodule',
@@ -76,7 +77,7 @@ if ($opt{syngraph}) {
     $regnode_option->{relation} = ($opt{hyponymy}) ? 1 : 0;
     $regnode_option->{antonym} = ($opt{antonymy}) ? 1 : 0;
     $regnode_option->{hypocut_attachnode} = $opt{hypocut} if $opt{hypocut};
-    
+
     # 準内容語を除いたものもノードに登録するオプション(ネットワーク化 -> ネットワーク, 深み -> 深い)
     $syngraph_option = {
 	regist_exclude_semi_contentword => 1,
@@ -89,19 +90,28 @@ if ($opt{syngraph}) {
     $syngraph_option->{db_on_memory} = 1 if $opt{syndb_on_memory};
 }
 
-my ($juman, $knp, $syngraph);
+my ($juman, $knp, $knp_w_case, $syngraph);
 $juman = new Juman (-Command => $opt{jmncmd},
 		    -Rcfile => $opt{jmnrc},
 		    -Option => '-i \#') if $opt{jmn};
+
 $knp = new KNP (-Command => $opt{knpcmd},
 		-Rcfile => $opt{knprc},
 		-JumanCommand => $opt{jmncmd},
 		-JumanRcfile => $opt{jmnrc},
 		-JumanOption => '-i \#',
 		-Option => '-tab -dpnd -postprocess') if $opt{knp} || $opt{syngraph};
+
+$knp_w_case = new KNP (-Command => $opt{knpcmd},
+		       -Rcfile => $opt{knprc},
+		       -JumanCommand => $opt{jmncmd},
+		       -JumanRcfile => $opt{jmnrc},
+		       -JumanOption => '-i \#',
+		       -Option => '-tab -postprocess') if (($opt{knp} || $opt{syngraph}) && $opt{case});
+
 $syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngraph};
 
-my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
+my $addknpresult = new AddKNPResult($juman, $knp, $knp_w_case, $syngraph, \%opt);
 
 my ($buf);
 while (<STDIN>) {
@@ -126,7 +136,7 @@ my $doc = $parser->parse_string($buf);
 if ($opt{usemodule}) {
     try {
 	# タイムアウトの設定
-	local $SIG{ALRM} = sub {die "timeout"};
+	local $SIG{ALRM} = sub {die sprintf ("Time out occured! (time=%d [sec]\n)", $opt{timeout})};
 	alarm $opt{timeout};
 
 	$addknpresult->AddKnpResult($doc, 'Title') if ($opt{title});
@@ -140,7 +150,10 @@ if ($opt{usemodule}) {
 	alarm 0;
     } catch Error with {
 	my $err = shift;
-	printf STDERR (qq([WARNING] Time out occured! (time=%d [sec])\n), $opt{timeout});
+	my $file = $err->{-file};
+	my $line = $err->{-line};
+	my $text = $err->{-text};
+	printf STDERR (qq([WARNING] %s (line: %d ad %s)\n), $text, $line, $file);
 	exit;
     };
 }

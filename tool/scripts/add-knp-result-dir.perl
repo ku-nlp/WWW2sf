@@ -21,9 +21,10 @@ use Error qw(:try);
 
 
 my (%opt);
-GetOptions(\%opt, 
+GetOptions(\%opt,
 	   'jmn',
 	   'knp',
+	   'case',
 	   'syngraph',
 	   'help',
 	   'all',
@@ -63,11 +64,6 @@ $opt{timeout} = 60 unless ($opt{timeout});
 
 $opt{usemodule} = 1;
 
-$opt{jmncmd} = '/share09/home/skeiji/local/080512/bin/juman' unless ($opt{jmncmd});
-$opt{jmnrc} = '/share09/home/skeiji/local/080512/etc/jumanrc' unless ($opt{jmnrc});
-$opt{knpcmd} = '/share09/home/skeiji/local/080512/bin/knp' unless ($opt{knpcmd});
-$opt{knprc} = '/share09/home/skeiji/local/080512/etc/knprc' unless ($opt{knprc});
-
 if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{description} && !$opt{sentence}) {
     $opt{title} = 1;
     $opt{outlink} = 1;
@@ -94,7 +90,7 @@ if ($opt{syngraph}) {
     $regnode_option->{relation} = ($opt{hyponymy}) ? 1 : 0;
     $regnode_option->{antonym} = ($opt{antonymy}) ? 1 : 0;
     $regnode_option->{hypocut_attachnode} = $opt{hypocut} if $opt{hypocut};
-    
+
     # 準内容語を除いたものもノードに登録するオプション(ネットワーク化 -> ネットワーク, 深み -> 深い)
     $syngraph_option = {
 	regist_exclude_semi_contentword => 1,
@@ -105,7 +101,7 @@ if ($opt{syngraph}) {
     $opt{syngraph_option} = $syngraph_option;
 }
 
-my ($juman, $knp, $syngraph);
+my ($juman, $knp, $knp_w_case, $syngraph);
 $juman = new Juman (-Command => $opt{jmncmd},
 		    -Rcfile => $opt{jmnrc},
 		    -Option => '-i \#') if $opt{jmn};
@@ -116,10 +112,18 @@ $knp = new KNP (-Command => $opt{knpcmd},
 		-JumanOption => '-i \#',
 		-Option => '-tab -dpnd -postprocess') if $opt{knp} || $opt{syngraph};
 
+$knp_w_case = new KNP (-Command => $opt{knpcmd},
+		       -Rcfile => $opt{knprc},
+		       -JumanCommand => $opt{jmncmd},
+		       -JumanRcfile => $opt{jmnrc},
+		       -JumanOption => '-i \#',
+		       -Option => '-tab -postprocess') if (($opt{knp} || $opt{syngraph}) && $opt{case});
+
 $syngraph_option->{db_on_memory} = 1 if $opt{syndb_on_memory};
 $syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngraph};
 
-my $addknpresult = new AddKNPResult($juman, $knp, $syngraph, \%opt);
+
+my $addknpresult = new AddKNPResult($juman, $knp, $knp_w_case, $syngraph, \%opt);
 
 # -logfile が指定されていない場合は終了
 unless (defined $opt{logfile} || $opt{nologfile}) {
@@ -207,7 +211,7 @@ for my $file (glob ("$opt{indir}/*")) {
 
     try {
 	# タイムアウトの設定
-	local $SIG{ALRM} = sub {die "timeout"};
+	local $SIG{ALRM} = sub {die sprintf ("Time out occured! (time=%d [sec]\n)", $opt{timeout})};
 	alarm $opt{timeout};
 
 	$addknpresult->AddKnpResult($doc, 'Title') if ($opt{title});
@@ -240,7 +244,11 @@ for my $file (glob ("$opt{indir}/*")) {
 	print STDERR "$file is success\n" if ($opt{debug});
     } catch Error with {
 	syswrite LOG, "timeout\n";
-	printf STDERR (qq([WARNING] Time out occured! (time=%d [sec], file=%s)\n), $opt{timeout}, $file);
+	my $err = shift;
+	my $file = $err->{-file};
+	my $line = $err->{-line};
+	my $text = $err->{-text};
+	printf STDERR (qq([WARNING] %s (line: %d ad %s)\n), $text, $line, $file);
     };
 }
 
