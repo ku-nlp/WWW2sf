@@ -87,6 +87,7 @@ done
 
 if [ $flag_of_make_urldb==1 ]
 then
-    for f in `ls $hdir | grep outlinks | sort` ; do cat $hdir/$f ; done > $hdir.outlinks
-    for f in `ls $hdir | grep outlinks | sort` ; do rm  $hdir/$f ; done
+    for f in `ls $xdir | grep outlinks | sort` ; do cat $xdir/$f ; done > $hdir.outlinks
+    for f in `ls $xdir | grep outlinks | sort` ; do rm  $xdir/$f ; done
+    gzip $hdir.outlinks
 fi
