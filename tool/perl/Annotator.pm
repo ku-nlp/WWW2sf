@@ -20,8 +20,13 @@ sub new {
     my ($class, $opt) = @_;
 
     # decode the emoticon dictionary
-    $_ = decode('utf8', $_) foreach @{$DelimiterDic};
-    $_ = decode('utf8', $_) foreach @{$EmoticonDic};
+    unless (utf8::is_utf8($DelimiterDic->[0])) {
+	$_ = decode('utf8', $_) foreach @{$DelimiterDic};
+    }
+
+    unless (utf8::is_utf8($EmoticonDic->[0])) {
+	$_ = decode('utf8', $_) foreach @{$EmoticonDic};
+    }
 
     my $this = {opt => $opt,
 		# emoticon_pattern => decode('utf8', sprintf("(?:%s)", join('|', @{$EmoticonDic}))), 
