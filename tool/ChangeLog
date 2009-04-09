@@ -1,4 +1,12 @@
+2009-04-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm:
+	最初に<TITLE>タグで囲まれた表現をタイトルとするように.
+
 2009-04-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm:
+	アンカーテキストに対して, 空白処理, 制御コード処理を適用するように, アンカーテキスト前後の空白を削除.
 
 	* scripts/add-knp-result-dir.perl, scripts/add-knp-result.perl:
 	格解析オプション(case)の追加, 警告メッセージの出力を変更.
