@@ -111,6 +111,14 @@ if [ $? -eq 1 ]; then
 fi
 
 
+# 入力ファイルの行数が5000行を超える場合は怪しいファイルと見なす
+lnum=`wc -l $f | awk '{print $1}'`
+if [ $lnum -gt 5000 ]; then
+    echo "ERROR: $f has too much lines ($lnum)." 1>&2
+    exit
+fi
+
+
 # utf8に変換(crawlデータは変換済みのため、強制的に utf8 と判断させる)
 if [ $input_utf8html -eq 1 ]
 then
