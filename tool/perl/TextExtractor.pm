@@ -219,7 +219,7 @@ sub detag {
 		$text[$count] .= "\n";
 	    }
 
-	    if ($tag eq 'title') {
+	    if ($tag eq 'title' && $title eq '') {
 		$mode{title} = 1;
 	    } elsif (defined $HEADING_TAGS{$tag}) {
 		$mode{heading} = $HEADING_TAGS{$tag};
