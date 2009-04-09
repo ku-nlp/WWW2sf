@@ -59,9 +59,9 @@ sub FixParenthesis {
     my ($slist) = @_;
     for my $i (0 .. scalar(@{$slist} - 1)) {
 	# 1つ目の文以降で、閉じ括弧が文頭にある場合は、閉じ括弧をとって前の文にくっつける
-        if ($i > 0 && $slist->[$i] =~ /^$close_kakko(.*)$/) {
+        if ($i > 0 && $slist->[$i] =~ /^$close_kakko+/o) {
 	    $slist->[$i - 1] .= $&;
-	    $slist->[$i] = $1;
+	    $slist->[$i] = "$'";
 	}
 
 	# 1つ前の文と当該文に”が奇数個含まれている場合は、前の文に該当文をくっつける
@@ -152,17 +152,19 @@ sub SplitJapanese {
 
     if ($this->{opt}{debug}) {
 	print Dumper(\@buf2) . "\n";
-	    print "-----\n";
+	print "-----\n";
     }
+
     &FixParenthesis(\@buf2);
     if ($this->{opt}{debug}) {
 	print Dumper(\@buf2) . "\n";
-	    print "-----\n";
+	print "-----\n";
     }
+
     @buf = &concatSentences(\@buf2);
     if ($this->{opt}{debug}) {
 	print Dumper(\@buf2) . "\n";
-	    print "-----\n";
+	print "-----\n";
     }
 
     pop(@buf) unless $buf[-1];
