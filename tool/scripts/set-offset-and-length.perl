@@ -59,8 +59,8 @@ sub main {
     }
     close(READER);
 
-    # URL中などに含まれる「&」を「&amp;」に変更
-    $xmldat =~ s/&/&amp;/g;
+    # URL中などに含まれる&単体を&amp;に変更
+    $xmldat =~ s/&(?!amp)/&amp;/g;
 
     if ($opt{z}) {
 	open(READER, "zcat $opt{html} |") or die $!;
