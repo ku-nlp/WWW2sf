@@ -19,13 +19,13 @@ base_dir=`dirname $0`
 
 flag_of_make_urldb=
 while getopts jkshS:c:uUzO OPT
-do  
+do
     case $OPT in
-	j)  html2sf_extra_args="-j"
+	j)  html2sf_extra_args="-j $html2sf_extra_args"
 	    ;;
-	k)  html2sf_extra_args="-k"
+	k)  html2sf_extra_args="-k $html2sf_extra_args"
 	    ;;
-	s)  html2sf_extra_args="-s"
+	s)  html2sf_extra_args="-s $html2sf_extra_args"
 	    ;;
 	S)  fsize_threshold=$OPTARG
 	    ;;
@@ -69,7 +69,7 @@ do
     if [ $fsize -lt $fsize_threshold ]; then
 	echo $f
 	$base_dir/html2sf.sh $html2sf_extra_args -p -f $f > $xdir/$base_f.xml
-	
+
 	# 出力が0の場合、削除
 	if [ ! -s $xdir/$base_f.xml ]; then
             rm -f $xdir/$base_f.xml
