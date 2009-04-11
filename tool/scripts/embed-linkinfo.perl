@@ -6,9 +6,13 @@ use strict;
 use utf8;
 use Encode;
 use Getopt::Long;
+use POSIX qw(strftime);
 use CDB_File;
+use File::Basename;
 use XML::LibXML;
+use XML::Writer;
 use CDB_Reader;
+use Error qw(:try);
 use Data::Dumper;
 {
     package Data::Dumper;
@@ -18,9 +22,8 @@ $Data::Dumper::Useperl = 1;
 
 # binmode(STDOUT, ':encoding(euc-jp)');
 
-
 my (%opt);
-GetOptions(\%opt, 'in=s', 'out=s', 'indir=s', 'outdir=s', 'z', 'compress', 'verbose', 'help', 'remove_old_link');
+GetOptions(\%opt, 'in=s', 'out=s', 'indir=s', 'outdir=s', 'z', 'compress', 'verbose', 'help', 'remove_old_link', 'inlink_sf');
 
 $opt{remove_old_link} = 1;
 
@@ -29,7 +32,7 @@ if (!defined $opt{in}) {
     exit;
 }
 
-if (!defined $opt{out}) {
+if (!defined $opt{out} && !$opt{inlink_sf}) {
     print STDERR "Please set -out option.\n";
     exit;
 }
@@ -37,7 +40,57 @@ if (!defined $opt{out}) {
 
 mkdir $opt{outdir} unless (-e $opt{outdir});
 
-&main();
+
+
+if ($opt{inlink_sf}) {
+    &main4make_inlink_sf();
+} else {
+    &main();
+}
+
+# InLinksだけからなる標準フォーマットを作成する関数（リンクDB更新に伴うアンカーインデックス更新用）
+sub main4make_inlink_sf {
+    my $VERSION;
+    my $version_file = sprintf("%s/../data/VERSION", dirname($0));
+    if (-e $version_file) {
+	open F, "< $version_file" or die $!;
+	$VERSION = <F>;
+	chomp $VERSION;
+	close F;
+    } else {
+	print STDERR "[WARNING] $version_file was not found.\n";
+    }
+
+    my $incdb = new CDB_Reader($opt{in});
+
+    foreach my $cdb (@{$incdb->getCDBs()}) {
+	while (my ($fid, $inlinks) = each (%$cdb)) {
+	    my $inlinkNode = &create_inlink_node(decode('utf8', $inlinks));
+
+
+	    my $formatTime = strftime("%Y-%m-%d %T %Z", localtime(time));
+	    my $xmldat = qq(<?xml version="1.0" encoding="utf-8"?>\n);
+	    $xmldat .= sprintf (qq(<StandardFormat FormatTime="%s" FormatProgVersion="%s">\n), $formatTime, $VERSION);
+	    $xmldat .= "<Header>\n";
+	    $xmldat .= $inlinkNode;
+	    $xmldat .= "</Header>\n";
+	    $xmldat .= "<Text/>\n";
+	    $xmldat .= "</StandardFormat>\n";
+
+	    my $file = sprintf ("%09d.xml", $fid);
+	    # 出力
+	    if ($opt{compress}) {
+		$file .= '.gz';
+		open(WRITER, "| gzip > $opt{outdir}/$file");
+	    } else {
+		open(WRITER, "> $opt{outdir}/$file");
+	    }
+ 	    binmode(WRITER, ':utf8');
+ 	    print WRITER $xmldat;
+ 	    close(WRITER);
+	}
+    }
+}
 
 sub main {
 
@@ -115,24 +168,47 @@ sub create_inlink_node {
     my ($inlink) = @_;
 
     my $inbuff = &get_inlinks($inlink);
-    my $str = '';
-    foreach my $rawstring (keys %$inbuff) {
-	$str .= "      <InLink>\n";
-	$str .= "        <RawString>$rawstring</RawString>\n";
-	# $str .= qq(<Annotation Scheme="KNP"><![CDATA[$inbuff->{$rawstring}{knpresult}]]></Annotation>\n);
-	$str .= "        <DocIDs>\n";
-	foreach my $a (@{$inbuff->{$rawstring}{inlinks}}) {
-	    $str .= qq(          <DocID Url="$a->{from_url}">$a->{from_id}</DocID>\n);
-	}
-	$str .= "        </DocIDs>\n";
-	$str .= "      </InLink>\n";
-    }
-    if ($str ne '') {
-	$str  = "    <InLinks>\n$str";
-	$str .= "    </InLinks>\n";
-    }
 
-    return $str;
+    my $xmldat = '';
+    my $writer = new XML::Writer(OUTPUT => \$xmldat, DATA_MODE => 'true', DATA_INDENT => 2);
+    $writer->xmlDecl('utf-8');
+
+    $writer->startTag('InLinks');
+    foreach my $rawstring (keys %$inbuff) {
+	$writer->startTag('InLink');
+
+	my $properRawstring = 1;
+	$writer->startTag('RawString');
+	try {
+	    $writer->characters($rawstring);
+	} catch Error with {
+	    my $err = shift;
+	    printf STDERR ("Exception at line %d in %s (%s)\n"), $err->{-line}, $err->{-file}, $err->{-text};
+	    $properRawstring = 0;
+	};
+	$writer->endTag('RawString');
+
+	# RawString要素が適切に書き込めなかった場合は、DocIDsは書き出さない
+	if ($properRawstring) {
+	    $writer->startTag('DocIDs');
+	    foreach my $a (@{$inbuff->{$rawstring}{inlinks}}) {
+		$writer->startTag('DocID', Url => $a->{from_url});
+		$writer->characters($a->{from_id});
+		$writer->endTag('DocID');
+	    }
+	    $writer->endTag('DocIDs');
+	}
+
+	$writer->endTag('InLink');
+    }
+    $writer->endTag('InLinks');
+    $writer->end();
+
+
+    # 自動的に付与されるxml宣言を削除
+    $xmldat =~ s/<\?xml version="1.0" encoding="utf-8"\?>\n\n//;
+
+    return $xmldat;
 }
 
 
