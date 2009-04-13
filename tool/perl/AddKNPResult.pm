@@ -53,6 +53,7 @@ sub AddKnpResult {
 			my $text = $node->string_value;
 
 			next if $text eq '';
+			$text =~ s/(?:\n|\r)/ /g;
 
 			if (defined $this->{opt}{sentence_length_max} && length($text) > $this->{opt}{sentence_length_max}) {
 			    print STDERR "Too Long Sentence: $text\n" if ($this->{opt}{verbose});
