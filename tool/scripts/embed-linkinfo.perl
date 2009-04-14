@@ -23,17 +23,15 @@ $Data::Dumper::Useperl = 1;
 # binmode(STDOUT, ':encoding(euc-jp)');
 
 my (%opt);
-GetOptions(\%opt, 'in=s', 'out=s', 'indir=s', 'outdir=s', 'z', 'compress', 'verbose', 'help', 'remove_old_link', 'inlink_sf');
-
-$opt{remove_old_link} = 1;
+GetOptions(\%opt, 'in=s', 'out=s', 'url2did=s', 'indir=s', 'outdir=s', 'z', 'compress', 'verbose', 'help', 'remove_old_link', 'inlink_sf');
 
 if (!defined $opt{in}) {
     print STDERR "Please set -in option.\n";
     exit;
 }
 
-if (!defined $opt{out} && !$opt{inlink_sf}) {
-    print STDERR "Please set -out option.\n";
+if (!$opt{out} && !$opt{url2did} && !$opt{inlink_sf}) {
+    print STDERR "Please set -out or -url2did option.\n";
     exit;
 }
 
@@ -44,6 +42,9 @@ mkdir $opt{outdir} unless (-e $opt{outdir});
 
 if ($opt{inlink_sf}) {
     &main4make_inlink_sf();
+}
+elsif ($opt{url2did}) {
+    &main4embed_inlinks_and_dids();
 } else {
     &main();
 }
@@ -90,6 +91,88 @@ sub main4make_inlink_sf {
  	    close(WRITER);
 	}
     }
+}
+
+# InLinks, 文書IDの埋め込み
+sub main4embed_inlinks_and_dids {
+    my $incdb = new CDB_Reader($opt{in});
+    my $url2did = new CDB_Reader($opt{url2did});
+
+    opendir(DIR, $opt{indir}) or die;
+    foreach my $file (sort {$a cmp $b} readdir(DIR)) {
+	next unless ($file =~ /xml/);
+
+	# インリンク情報の読み込み
+	my ($fid) = ($file =~ /(\d+).xml/);
+	my $inlinks = $incdb->get($fid);
+
+
+	# 標準フォーマットデータの読み込み
+	if ($opt{z}) {
+	    open(READER, "zcat $opt{indir}/$file |");
+	} else {
+	    open(READER, "$opt{indir}/$file");
+	}
+	binmode(READER, ':utf8');
+
+	my $buf;
+	my $outsideOfLink = 1;
+	while (<READER>) {
+ 	    if ($opt{remove_old_link}) {
+ 		$outsideOfLink = 0 if ($_ =~ /<InLinks>/ || $_ =~ /<OutLinks>/);
+
+ 		$buf .= $_ if ($outsideOfLink);
+
+ 		$outsideOfLink = 1 if ($_ =~ /<\/InLinks>/ || $_ =~ /<\/OutLinks>/);
+ 	    } else {
+		$buf .= $_;
+	    }
+	}
+	close(READER);
+
+
+	# インリンクがあれば埋め込む
+	if (defined($inlinks)) {
+	    my $inlinkNode = &create_inlink_node(decode('utf8', $inlinks));
+
+	    if ($buf =~ /<\/Header>/) {
+		$buf =~ s/<\/Header>/$inlinkNode<\/Header>/;
+	    } elsif ($buf =~ /<Header\/>/) {
+		$buf =~ s/<Header\/>/<Header>\n$inlinkNode<\/Header>/;
+	    }
+	}
+
+
+	# OutLinkに文書IDを埋め込む
+	my $parser = new XML::LibXML;
+	my $dom = $parser->parse_string($buf);
+
+	foreach my $outlink ($dom->getElementsByTagName('OutLink')) { # for each OutLink
+	    foreach my $docid ($outlink->getElementsByTagName('DocID')) { # for each DocID
+		my $url = $docid->getAttribute('Url');
+		$url =~ s!^http://!!;
+		my $did = $url2did->get($url);
+		$docid->appendChild($dom->createTextNode($did)) if ($did);
+	    }
+	}
+
+
+	# 出力
+	my $string = $dom->toString();
+	$string = decode($dom->actualEncoding(), $string) unless (utf8::is_utf8($string));
+
+	if ($opt{compress}) {
+	    $file .= '.gz' unless ($file =~ /gz$/);
+	    open(WRITER, "| gzip > $opt{outdir}/$file");
+	} else {
+	    $file =~ s/.gz$// if ($file =~ /gz$/);
+	    open(WRITER, "> $opt{outdir}/$file");
+	}
+	binmode(WRITER, ':utf8');
+	print WRITER $string;
+	close(WRITER);
+    }
+    closedir(DIR);
 }
 
 sub main {
