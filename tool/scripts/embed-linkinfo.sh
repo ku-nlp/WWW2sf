@@ -4,7 +4,8 @@
 
 # リンク情報を標準フォーマットに埋め込むスクリプト
 
-# Usage: sh embed-linkinfo.sh iccc020:/share09/home/skeiji/sample-dat/x00458.tgz 
+# Usage: sh embed-linkinfo.sh somewhere/url2did.cdb.keymap somehost:/somewhere/xXXXXX.tgz
+
 
 workspace=/tmp/skeiji
 cdblist=/share09/home/skeiji/sample-dat/cdblist
@@ -12,17 +13,19 @@ perldir=/share09/home/skeiji/cvs/WWW2sf/tool/scripts
 utildir=/share09/home/skeiji/cvs/Utils/perl
 
 
-fp=$1
+url2did_keymap=$1
+fp=$2
+
 id=`basename $fp | cut -f 1 -d '.' | cut -f 2 -d 'x'`
 indir=x$id
 outdir=xx$id
 
 
 incdb_keymap=$workspace/$id.inlinks.cdb.keymap
-outcdb_keymap=$workspace/$id.outlinks.cdb.keymap
+# outcdb_keymap=$workspace/$id.outlinks.cdb.keymap
 
-
-command="perl -I $utildir $perldir/embed-linkinfo.perl -in $incdb_keymap -out $outcdb_keymap -indir $indir -outdir $outdir"
+# command="perl -I $utildir $perldir/embed-linkinfo.perl -in $incdb_keymap -out $outcdb_keymap -indir $indir -outdir $outdir"
+command="perl -I $utildir $perldir/embed-linkinfo.perl -in $incdb_keymap -url2did $url2did_keymap -indir $indir -outdir $outdir"
 
 # 入力となる素の標準フォーマットデータは gzip 圧縮されている
 command="$command -z"
@@ -50,11 +53,11 @@ do
     scp $f ./
 done
 
-# アウトリンクに関係するデータのコピー
-for f in `grep $id.outlink $cdblist`
-do
-    scp $f ./
-done
+# # アウトリンクに関係するデータのコピー
+# for f in `grep $id.outlink $cdblist`
+# do
+#     scp $f ./
+# done
 
 
 
@@ -71,7 +74,7 @@ $command
 
 # 後処理
 rm -r $id.inlink*
-rm -r $id.outlink*
+# rm -r $id.outlink*
 rm -r $indir
 
 
