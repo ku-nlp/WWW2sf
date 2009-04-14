@@ -1,4 +1,36 @@
+2009-04-14  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-linkinfo.sh:
+	インリンク，アウトリンクの文書IDを埋め込むように変更.
+
+	* scripts/embed-linkinfo.perl:
+	インリンク, アウトリンクの文書IDを埋め込むオプションの追加 (url2did)
+
+	* scripts/extract-anchor.perl:
+	文書セット内にないURLについては, 文書IDとして999999999を出力するように.
+
+2009-04-13  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm: RawString内の改行を削除.
+
+2009-04-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-linkinfo.perl:
+	インリンクだけの標準フォーマットを作成するオプションの追加, インリンク情報を出力する際、XML::Writerを通すように.
+
+2009-04-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl: &を&amp;に変換する条件を修正.
+
+	* www2sf.sh:
+	解析ツール名のオプションを指定すると、それ以前に指定していたオプションがリセットされるバグを修正.
+
 2009-04-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* www2sf.sh: アウトリンクのデータが$hdir.outlinksに出力されうように.
+
+	* html2sf.sh:
+	入力ファイルの行数が5000行を超える場合は怪しいファイルとみなすように.
 
 	* perl/TextExtractor.pm:
 	最初に<TITLE>タグで囲まれた表現をタイトルとするように.
