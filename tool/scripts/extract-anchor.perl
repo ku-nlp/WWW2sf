@@ -136,7 +136,8 @@ sub main {
 
 			my $can_outlink = &CanonicalizeURL($outlink);
 			my $outlink_did = $url2did->get($can_outlink);
-			print "$did $baseurl $outlink_did $can_outlink $anchor_text\n" if (defined $outlink_did && $anchor_text ne '');
+			$outlink_did = '999999999' unless ($outlink_did);
+			print "$did $baseurl $outlink_did $can_outlink $anchor_text\n" if ($anchor_text ne '');
 		    }
 		    $in_anchor = 0;
 		    $anchor_text = '';
