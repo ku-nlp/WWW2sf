@@ -3,15 +3,16 @@ package Emoticon;
 use utf8;
 use Encode;
 use strict;
+use File::Basename;
 
 # read the emoticon dictionary
-our $EmoticonDic = require 'Emoticon.dic';
+our $EmoticonDic = require sprintf("%s/Emoticon.dic", dirname($INC{'Emoticon.pm'}));
 
 sub new {
     my ($class, $opt) = @_;
 
     # decode the emoticon dictionary
-    $_ = decode('utf8', $_) foreach @{$EmoticonDic};
+    map {$_ = decode('utf8', $_) unless (utf8::is_utf8($_))} @$EmoticonDic;
 
     my $this = {opt => $opt, 
 		# emoticon_pattern => decode('utf8', sprintf("(?:%s)", join('|', @{$EmoticonDic}))), 
