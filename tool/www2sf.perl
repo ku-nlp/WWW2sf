@@ -498,7 +498,7 @@ sub print_outlinks {
 		    $writer->endTag('DocID');
 		} catch Error with {
 		    my $err = shift;
-		    print STDERR "Exception at line ",$err->{-line}," in ",$err->{-file},"(",$err->{-text} ,")\n";
+		    printf STDERR ("[WARNING] An exception was detected in %s (%s)\n", $id, $err->{-text});
 		    next;
 		};
 
