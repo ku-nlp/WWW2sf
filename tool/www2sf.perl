@@ -26,6 +26,7 @@ use ConvertCode qw(convert_code);
 use HTML::Entities;
 use XML::LibXML;
 use SentenceFormatter;
+use Error qw(:try);
 
 binmode(STDOUT, ':utf8');
 binmode(STDERR, ':utf8');
@@ -43,6 +44,7 @@ my (%opt);
 	    'save_utf8html=s',
 #	    'ignore_encoding',
 	    'filesize',
+	    'linenum=s',
 	    'workspace=s',
 	    'cndb',
 
@@ -71,6 +73,7 @@ mkdir $opt{save_utf8html} if (!-e $opt{save_utf8html} && $opt{save_utf8html});
 
 # ファイルサイズの閾値(default 5M)
 $opt{filesize} = 5242880 unless ($opt{filesize});
+$opt{linenum} = 5000 unless ($opt{linenum});
 
 $opt{checkencoding} = 1;
 $opt{checkjapanese} = 1;
@@ -144,7 +147,7 @@ sub main {
 	}
 
 	# 入力ファイルの行数が5000行を超える場合は怪しいファイルと見なす
-	if ($file->{linenum} > 5000) {
+	if ($file->{linenum} > $opt{linenum}) {
 	    printf STDERR "[SKIP] %s is over lines.\n", $file->{name};
 	    next;
 	}
@@ -162,8 +165,6 @@ sub main {
 
 	my $ext = new TextExtractor($textextractor_option);
 	my $htmlrawdat = $file->{content};
-
-
 	my ($url, $crawlTime, $buf, $isCrawlerHtml) = &getParameterFromHtmlheader($file->{content});
 
 	my $htmlfile = $file->{name};
@@ -175,7 +176,7 @@ sub main {
 
 
 	if ($opt{save_utf8html}) {
-	    open (HTMLFILE, '>:utf8', sprintf ("%s/%s.html", $opt{save_utf8html}, $id)) or die $!;
+	    open (HTMLFILE, sprintf ("> %s/%s.html", $opt{save_utf8html}, $id)) or die $!;
 	    print HTMLFILE $htmlrawdat;
 	    close (HTMLFILE)
 	}
@@ -492,8 +493,14 @@ sub print_outlinks {
 	    foreach my $_url (@$urls) {
 		my $URL = &convertURL($baseurl, $_url);
 
-		$writer->startTag('DocID', Url => $URL);
-		$writer->endTag('DocID');
+		try {
+		    $writer->startTag('DocID', Url => $URL);
+		    $writer->endTag('DocID');
+		} catch Error with {
+		    my $err = shift;
+		    print STDERR "Exception at line ",$err->{-line}," in ",$err->{-file},"(",$err->{-text} ,")\n";
+		    next;
+		};
 
 		if ($opt{make_urldb}) {
 		    push (@buff, {url => $URL, text => $rawstring});
