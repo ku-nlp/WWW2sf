@@ -291,7 +291,15 @@ sub process_one_html {
     }
 
     # HTMLを文のリストに変換
-    my $parsed = $ext->extract_text(\$buf);
+    my $parsed;
+    try {
+	$parsed = $ext->extract_text(\$buf);
+    } catch Error with {
+	my $err = shift;
+	printf STDERR ("[SKIP] An exception was detected in %s (%s)\n", $id, $err->{-text});
+	return 0;
+    };
+
 
     # 助詞含有率をチェック
     if ($opt{checkzyoshi}) {
@@ -322,14 +330,14 @@ sub process_one_html {
     &print_extract_sentences($writer, $parsed, $buf);
     &print_page_footer($writer);
 
-    $xmldat = &embedOffsetAndLength($htmldat, $xmldat, $crawler_html);
+    $xmldat = &embedOffsetAndLength($htmldat, $xmldat, $crawler_html, $id);
 
 
     return $xmldat;
 }
 
 sub embedOffsetAndLength {
-    my ($htmldat, $xmldat, $crawler_html) = @_;
+    my ($htmldat, $xmldat, $crawler_html, $id) = @_;
 
     # クローラのヘッダはアライメントの対象としない
     my $ignored_chars;
@@ -382,7 +390,16 @@ sub embedOffsetAndLength {
 
     # 標準フォーマットから文情報を取得
     my $parser = new XML::LibXML;
-    my $doc = $parser->parse_string($xmldat);
+    my $doc = undef;
+    try {
+	$doc = $parser->parse_string($xmldat);
+    } catch Error with {
+	my $err = shift;
+	printf STDERR ("[SKIP] An exception was detected in %s (%s)\n", $id, $err->{-text});
+	return 0;
+    };
+    return 0 unless (defined $doc);
+
     my $sentences = &get_sentence_nodes($doc);
 
 
