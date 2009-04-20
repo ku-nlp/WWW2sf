@@ -532,6 +532,9 @@ sub convertURL {
     # プロトコル削除
     # $returl =~ s/^.+?:\/\///;
 
+    # 制御コードを削除
+    $returl =~ tr/\x00-\x1f\x7f-\x9f//d;
+
     return $returl;
 }
 
