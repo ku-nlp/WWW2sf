@@ -24,8 +24,12 @@ sub new {
 
 	# 入力がテキストファイルかどうかのチェック
 	if ($opt->{skip_binary_file} && !-T FILE) {
-	    print STDERR "[SKIP] $file is * NOT * a text file.\n";
-	    next;
+	    my $result = `file $file`;
+	    unless ($result =~ /text/) {
+		my ($ftype) = ($result =~ /: (.+)$/);
+		printf STDERR ("[SKIP] %s is * NOT * a text file. (%s)\n", $file, $ftype);
+		next;
+	    }
 	}
 
 	my $buf;
