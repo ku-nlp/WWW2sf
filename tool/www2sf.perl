@@ -74,7 +74,7 @@ $opt{filesize} = 5242880 unless ($opt{filesize});
 
 $opt{checkencoding} = 1;
 $opt{checkjapanese} = 1;
-$opt{checkzyoshi} = 1;
+# $opt{checkzyoshi} = 1;
 
 $opt{language} = 'japanese' unless $opt{language}; # デフォルト言語: japanese
 $opt{blog} = 'none' unless $opt{blog};
@@ -139,13 +139,13 @@ sub main {
     while (my $file = $archiver->nextFile()) {
 	# ファイルサイズを調べる
 	if ($file->{size} > $opt{filesize}) {
-	    print STDERR "[WARNING] %s is over file size.\n", $file->{size};
+	    printf STDERR "[SKIP] %s is over file size.\n", $file->{name};
 	    next;
 	}
 
 	# 入力ファイルの行数が5000行を超える場合は怪しいファイルと見なす
 	if ($file->{linenum} > 5000) {
-	    print STDERR "[WARNING] %s is over lines.\n", $file->{size};	    
+	    printf STDERR "[SKIP] %s is over lines.\n", $file->{name};
 	    next;
 	}
 
@@ -182,10 +182,11 @@ sub main {
 
 	my $xmldat = &process_one_html($buf, $url, $encoding, $isCrawlerHtml, $ext, $crawlTime, $VERSION, $CRAWL_DATE, $htmlrawdat, $id);
 
-
-	open (WRITER, '>:utf8', sprintf ("%s/%09d.xml", $opt{outdir}, $id));
-	print WRITER $xmldat;
-	close (WRITER);
+	if ($xmldat) {
+	    open (WRITER, '>:utf8', sprintf ("%s/%09d.xml", $opt{outdir}, $id));
+	    print WRITER $xmldat;
+	    close (WRITER);
+	}
     }
     $archiver->close();
 }
@@ -300,8 +301,8 @@ sub process_one_html {
 
 	my $ratio = &postp_check($allbuf);
 	if ($ratio <= $opt{Threshold_Zyoshi}) {
-	    print STDERR "$ratio is less than the threshold($opt{Threshold_Zyoshi})\n";
-	    return 1;
+	    print STDERR "[SKIP] $id is * NOT * a Japanese web page. (joshi ratio $ratio (< $opt{Threshold_Zyoshi}))\n";
+	    return 0;
 	}
     }
 
