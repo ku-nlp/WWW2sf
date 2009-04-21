@@ -47,6 +47,7 @@ my (%opt);
 	    'linenum=s',
 	    'workspace=s',
 	    'cndb',
+	    'timeout=s',
 
 	    'include_paren',
 	    'divide_paren',
@@ -74,6 +75,7 @@ mkdir $opt{save_utf8html} if (!-e $opt{save_utf8html} && $opt{save_utf8html});
 # ファイルサイズの閾値(default 5M)
 $opt{filesize} = 5242880 unless ($opt{filesize});
 $opt{linenum} = 5000 unless ($opt{linenum});
+$opt{timeout} = 60 unless ($opt{timeout});
 
 $opt{checkencoding} = 1;
 $opt{checkjapanese} = 1;
@@ -139,55 +141,69 @@ sub main {
     $textextractor_option->{cndbfile} = $opt{cndbfile} if $opt{cndbfile};
     $textextractor_option->{verbose} = $opt{verbose} if $opt{verbose};
 
+  LOOP:
     while (my $file = $archiver->nextFile()) {
-	# ファイルサイズを調べる
-	if ($file->{size} > $opt{filesize}) {
-	    printf STDERR "[SKIP] %s is over file size.\n", $file->{name};
-	    next;
-	}
+	try {
+	    # タイムアウトの設定
+	    local $SIG{ALRM} = sub {die sprintf ("timeout occured! (time=%d [sec])", $opt{timeout})};
+	    alarm $opt{timeout};
 
-	# 入力ファイルの行数が5000行を超える場合は怪しいファイルと見なす
-	if ($file->{linenum} > $opt{linenum}) {
-	    printf STDERR "[SKIP] %s is over lines.\n", $file->{name};
-	    next;
-	}
+	    # ファイルサイズを調べる
+	    if ($file->{size} > $opt{filesize}) {
+		printf STDERR "[SKIP] %s is over file size.\n", $file->{name};
+		next;
+	    }
 
-	# utf8に変換(crawlデータは変換済みのため、強制的に utf8 と判断させる)
-	unless ($HtmlGuessEncoding->ProcessEncoding(\$file->{content}, {force_change_to_utf8_with_flag => $opt{force}, change_to_utf8 => !$opt{utf8}})) {
-	    next;
-	}
+	    # 入力ファイルの行数が5000行を超える場合は怪しいファイルと見なす
+	    if ($file->{linenum} > $opt{linenum}) {
+		printf STDERR "[SKIP] %s is over lines.\n", $file->{name};
+		next;
+	    }
 
-
-
-	############################################################
-	#                      処理開始
-	############################################################
-
-	my $ext = new TextExtractor($textextractor_option);
-	my $htmlrawdat = $file->{content};
-	my ($url, $crawlTime, $buf, $isCrawlerHtml) = &getParameterFromHtmlheader($file->{content});
-
-	my $htmlfile = $file->{name};
-	my ($id) = ($htmlfile =~ /(\d+)\.html?/);
-	my $dir = `dirname $htmlfile`; chop $dir;
-
-	my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {force_change_to_utf8_with_flag => 1});
-	next if $opt{checkencoding} and !$encoding;
+	    # utf8に変換(crawlデータは変換済みのため、強制的に utf8 と判断させる)
+	    unless ($HtmlGuessEncoding->ProcessEncoding(\$file->{content}, {force_change_to_utf8_with_flag => $opt{force}, change_to_utf8 => !$opt{utf8}})) {
+		next;
+	    }
 
 
-	if ($opt{save_utf8html}) {
-	    open (HTMLFILE, sprintf ("> %s/%s.html", $opt{save_utf8html}, $id)) or die $!;
-	    print HTMLFILE $htmlrawdat;
-	    close (HTMLFILE)
-	}
 
-	my $xmldat = &process_one_html($buf, $url, $encoding, $isCrawlerHtml, $ext, $crawlTime, $VERSION, $CRAWL_DATE, $htmlrawdat, $id);
+	    ############################################################
+	    #                      処理開始
+	    ############################################################
 
-	if ($xmldat) {
-	    open (WRITER, '>:utf8', sprintf ("%s/%09d.xml", $opt{outdir}, $id));
-	    print WRITER $xmldat;
-	    close (WRITER);
-	}
+	    my $ext = new TextExtractor($textextractor_option);
+	    my $htmlrawdat = $file->{content};
+	    my ($url, $crawlTime, $buf, $isCrawlerHtml) = &getParameterFromHtmlheader($file->{content});
+
+	    my $htmlfile = $file->{name};
+	    my ($id) = ($htmlfile =~ /(\d+)\.html?/);
+	    my $dir = `dirname $htmlfile`; chop $dir;
+
+	    my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {force_change_to_utf8_with_flag => 1});
+	    next if $opt{checkencoding} and !$encoding;
+
+
+	    if ($opt{save_utf8html}) {
+		open (HTMLFILE, sprintf ("> %s/%s.html", $opt{save_utf8html}, $id)) or die $!;
+		print HTMLFILE $htmlrawdat;
+		close (HTMLFILE)
+		}
+
+	    my $xmldat = &process_one_html($buf, $url, $encoding, $isCrawlerHtml, $ext, $crawlTime, $VERSION, $CRAWL_DATE, $htmlrawdat, $id);
+
+	    if ($xmldat) {
+		open (WRITER, '>:utf8', sprintf ("%s/%09d.xml", $opt{outdir}, $id));
+		print WRITER $xmldat;
+		close (WRITER);
+	    }
+
+	    # 時間内に終了すればタイムアウトの設定を解除
+	    alarm 0;
+	} catch Error with {
+	    my $err = shift;
+	    printf STDERR ("[SKIP] An exception was detected in %s (file: %s, line: %s, msg; %s)\n", $file->{name}, $err->{-file}, $err->{-line}, $err->{-text});
+	    next LOOP;
+	};
     }
     $archiver->close();
 }
@@ -291,15 +307,7 @@ sub process_one_html {
     }
 
     # HTMLを文のリストに変換
-    my $parsed;
-    try {
-	$parsed = $ext->extract_text(\$buf);
-    } catch Error with {
-	my $err = shift;
-	printf STDERR ("[SKIP] An exception was detected in %s (%s)\n", $id, $err->{-text});
-	return 0;
-    };
-
+    my $parsed = $ext->extract_text(\$buf);
 
     # 助詞含有率をチェック
     if ($opt{checkzyoshi}) {
@@ -390,15 +398,8 @@ sub embedOffsetAndLength {
 
     # 標準フォーマットから文情報を取得
     my $parser = new XML::LibXML;
-    my $doc = undef;
-    try {
-	$doc = $parser->parse_string($xmldat);
-    } catch Error with {
-	my $err = shift;
-	printf STDERR ("[SKIP] An exception was detected in %s (%s)\n", $id, $err->{-text});
-	return 0;
-    };
-    return 0 unless (defined $doc);
+    my $doc = $parser->parse_string($xmldat);
+
 
     my $sentences = &get_sentence_nodes($doc);
 
