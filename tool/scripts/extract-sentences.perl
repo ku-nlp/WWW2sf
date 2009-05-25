@@ -48,7 +48,7 @@ $opt{blog} = 'none' unless $opt{blog};
 # --checkjapanese: 日本語(ひらがな、カタカナ、漢字)含有率をチェックする
 # --checkzyoshi:   助詞含有率をチェックする
 
-my ($VERSION, $CRAWL_DATE, $buf, $crawlTime, $url);
+my ($VERSION, $CRAWL_DATE, $buf, $crawlTime, $url, $nocache, $noindex);
 
 # 変換スクリプトのバージョンを読み込み
 my $version_file = sprintf("%s/../data/VERSION", dirname($INC{'TextExtractor.pm'}));
@@ -99,16 +99,20 @@ my $dir = `dirname $htmlfile`; chop $dir;
 
 open (HTML, $htmlfile) or die "$!";
 while (<HTML>) {
-    if (/^HTML (\S+)/ && $flag < 0) { # 1行目からURLを取得(read-zaodataが出力している)
-	my $next_url = $1;
+    if (/^HTML (.+)[\r|\n]$/ && $flag < 0) { # 1行目からURLを取得(read-zaodataが出力している)
+	my @args = split (/ /, $1);
+	my $next_url = shift @args;
+	my $option = join (' ', @args);
 	$crawler_html = 1;
 
 	if ($buf) {
-	    &process_one_html($buf, $url);
+	    &process_one_html($buf, $url, $nocache, $noindex);
 	    $buf = '';
 	}
 	$flag = -1;
 	$url = $next_url;
+	$nocache = ($option =~ /NOCACHE/) ? 1 : 0;
+	$noindex = ($option =~ /NOINDEX/) ? 1 : 0;
     }
 
     # ヘッダーが読み終わるまでバッファリングしない
@@ -128,11 +132,11 @@ while (<HTML>) {
 }
 close (HTML);
 exit 0 unless $buf;
-&process_one_html($buf, $url);
+&process_one_html($buf, $url, $nocache, $noindex);
 
 # ひとつのHTMLを処理
 sub process_one_html {
-    my ($buf, $url) = @_;
+    my ($buf, $url, $nocache, $noindex) = @_;
 
     my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {force_change_to_utf8_with_flag => 1});
     return 1 if $opt{checkencoding} and !$encoding;
@@ -250,13 +254,13 @@ sub process_one_html {
     }
 
     # 文に分割して出力
-    &print_page_header($parsed, $opt{url} ? $opt{url} : $url, $encoding, $crawlTime);
+    &print_page_header($parsed, $opt{url} ? $opt{url} : $url, $encoding, $crawlTime, $nocache, $noindex);
     &print_extract_sentences($parsed, $buf);
     &print_page_footer();
 }
 
 sub print_page_header {
-    my ($parsed, $url, $encoding, $crawlTime) = @_;
+    my ($parsed, $url, $encoding, $crawlTime, $nocahce, $noindex) = @_;
 
     my $formatTime = strftime("%Y-%m-%d %T %Z", localtime(time));
 
@@ -265,6 +269,8 @@ sub print_page_header {
 			  Url => $url,
 			  OriginalEncoding => $encoding,
 			  CrawlTime => ($crawlTime) ? $crawlTime : $CRAWL_DATE,
+			  NoCache => $nocache,
+			  NoIndex => $noindex,
 			  FormatTime => $formatTime,
 			  FormatProgVersion => $VERSION
 	    );
