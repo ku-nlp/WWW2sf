@@ -17,7 +17,7 @@ fsize_threshold=5242880
 
 base_dir=`dirname $0`
 
-flag_of_make_urldb=
+flag_of_make_urldb=0
 while getopts jkshS:c:uUzO OPT
 do
     case $OPT in
@@ -85,8 +85,7 @@ done
 # アウトリンク情報をまとめる
 ############################
 
-if [ $flag_of_make_urldb==1 ]
-then
+if [ $flag_of_make_urldb -eq 1 ]; then
     for f in `ls $xdir | grep outlinks | sort` ; do cat $xdir/$f ; done > $hdir.outlinks
     for f in `ls $xdir | grep outlinks | sort` ; do rm  $xdir/$f ; done
     gzip $hdir.outlinks
