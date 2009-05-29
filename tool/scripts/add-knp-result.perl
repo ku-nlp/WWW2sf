@@ -115,15 +115,6 @@ my $addknpresult = new AddKNPResult($juman, $knp, $knp_w_case, $syngraph, \%opt)
 
 my ($buf);
 while (<STDIN>) {
-    my $line = $_;
-    if ($line =~ /DocID /) {
-	my ($url, $did) = ($line =~ /Url=\"(.+)\">(\d+)<\/DocID>/);
-
-	# エンティティの変換
-	$url = &encode_entities($url);
-
-	$line = sprintf qq(          <DocID Url="%s">%09d</DocID>\n), $url, $did;
-    }
     $buf .= $_;
 }
 

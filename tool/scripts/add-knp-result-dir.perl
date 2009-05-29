@@ -180,17 +180,7 @@ for my $file (glob ("$opt{indir}/*")) {
 
     my ($buf);
     while (<F>) {
-	my $line = $_;
-	if ($line =~ /DocID /) {
-	    my ($url, $did) = ($line =~ /Url=\"(.+)\">(\d+)<\/DocID>/);
-
-	    # エンティティの変換
-	    $url = &encode_entities($url);
-
-	    $line = sprintf qq(          <DocID Url="%s">%09d</DocID>\n), $url, $did;
-	}
-
-	$buf .= $line;
+	$buf .= $_;
     }
     close F;
 
@@ -203,7 +193,7 @@ for my $file (glob ("$opt{indir}/*")) {
 	$doc = $parser->parse_string($buf);
     } catch Error with {
 	my $err = shift;
-	print STDERR "Exception at line ",$err->{-line}," in ",$err->{-file}," at $file.\n";
+	printf STDERR ("[SKIP] An exception was detected in %s (file: %s, line: %s, msg; %s)\n", $file, $err->{-file}, $err->{-line}, $err->{-text});
     };
     next unless ($doc);
 
