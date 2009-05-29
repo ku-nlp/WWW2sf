@@ -48,6 +48,7 @@ my (%opt);
 	    'workspace=s',
 	    'cndb',
 	    'timeout=s',
+	    'utf8',
 
 	    'include_paren',
 	    'divide_paren',
@@ -513,6 +514,7 @@ sub print_outlinks {
 
 		try {
 		    $writer->startTag('DocID', Url => $URL);
+		    $writer->characters("999999999");
 		    $writer->endTag('DocID');
 		} catch Error with {
 		    my $err = shift;
