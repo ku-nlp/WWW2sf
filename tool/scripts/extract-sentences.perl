@@ -343,6 +343,7 @@ sub print_outlinks {
 		my $URL = &convertURL($baseurl, $_url);
 
 		$writer->startTag('DocID', Url => $URL);
+		$writer->characters("999999999");
 		$writer->endTag('DocID');
 
 		if ($opt{make_urldb}) {
