@@ -31,21 +31,21 @@ sub ProcessEncoding {
     if ($$buf_ref =~ /<meta [^>]*content=[" ]*text\/html[; ]*charset=([^" >]+)/i) { 
         my $charset = lc($1);
 	# 英語/西欧言語
-	if ($charset =~ /^iso-8859-1|iso-8859-15|windows-1252|macintosh|x-mac-roman$/i) {
+	if ($charset =~ /^iso-8859-1|iso-8859-15|windows-1252|macintosh|x-mac-roman|iso8859-1$/i) {
 	    $language = 'english';
 	}
 	# 日本語EUC
-	elsif ($charset =~ /^euc-jp|x-euc-jp$/i) {
+	elsif ($charset =~ /^euc-jp|x-euc-jp|x-euc-japan|euc_jp$/i) {
 	    $language = 'japanese';
 	    $encoding = 'euc-jp';
 	}
 	# 日本語JIS
-	elsif ($charset =~ /^iso-2022-jp$/i) {
+	elsif ($charset =~ /^iso-2022-jp|iso2022-jp$/i) {
 	    $language = 'japanese';
 	    $encoding = '7bit-jis';
 	}
 	# 日本語SJIS
-	elsif ($charset =~ /^sjis|shift_jis|windows-932|x-sjis|shift-jp|shift-jis$/i) {
+	elsif ($charset =~ /^sjis|shift_jis|windows-932|x-sjis|shift-jp|shift-jis|x_sjis|shift_sjis|shiftjis|sift_jis|x\(sjis$/i) {
 	    $language = 'japanese';
 	    $encoding = 'shiftjis';
 	}
@@ -61,13 +61,26 @@ sub ProcessEncoding {
     # metaがない場合は推定
     else {
 	my $enc = guess_encoding($$buf_ref, qw/ascii euc-jp shiftjis 7bit-jis utf8/); # range
-	return unless ref($enc);
-	if ($enc->name eq 'ascii') {
-	    $language = 'english';
-	}
-	else {
+	unless (ref($enc)) {
+	    # 推定できなかった場合
+	    return if ($enc =~ /No appropriate encodings found!/);
+
 	    $language = 'japanese';
-	    $encoding = $enc->name;
+	    if ($enc =~ /euc/) {
+		$encoding = 'euc-jp';
+	    } elsif ($enc =~ /shiftjis/) {
+		$encoding = 'shiftjis';
+	    } else {
+		$encoding = 'utf8';
+	    }
+	} else {
+	    if ($enc->name eq 'ascii') {
+		$language = 'english';
+	    }
+	    else {
+		$language = 'japanese';
+		$encoding = $enc->name;
+	    }
 	}
     }
 
