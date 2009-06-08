@@ -163,6 +163,7 @@ sub main {
 
 	    # utf8に変換(crawlデータは変換済みのため、強制的に utf8 と判断させる)
 	    unless ($HtmlGuessEncoding->ProcessEncoding(\$file->{content}, {force_change_to_utf8_with_flag => $opt{force}, change_to_utf8 => !$opt{utf8}})) {
+		printf STDERR "[SKIP] ProcessEncoding is failed. (%s)\n", $file->{name};
 		next;
 	    }
 
@@ -177,7 +178,14 @@ sub main {
 	    my ($url, $crawlTime, $buf, $isCrawlerHtml) = &getParameterFromHtmlheader($file->{content});
 
 	    my $htmlfile = $file->{name};
-	    my ($id) = ($htmlfile =~ /(\d+)\.html?/);
+	    my $id;
+	    if ($htmlfile =~ /NW/) {
+		# for NTCIR
+		($id) = ($htmlfile =~ /NW(\d+)\.data/);
+	    } else {
+		($id) = ($htmlfile =~ /(\d+)\.html?/);
+	    }
+
 	    my $dir = `dirname $htmlfile`; chop $dir;
 
 	    my $encoding = $HtmlGuessEncoding->ProcessEncoding(\$buf, {force_change_to_utf8_with_flag => 1});
