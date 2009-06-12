@@ -105,42 +105,50 @@ sub SplitJapanese {
     my $sent = '';
     my $cdot = '・';
     while ($str =~ /(?:(?:$period)|((?:$cdot){3,})|(?<!\p{alphabet_or_number})(?:$dot)(?!\p{alphabet_or_number}|$comma))(?:$dot|$period)*/o) { # check delimiter & split
-      my $pre = $`;
-      $str = $'; #'
-      $sent .= $` . $&;
-      if ($1 eq '' || $pre ne '') { # a sentence should include strings other than $cdot{3,}
-        unless ($ignore_level) {
-          while ($pre =~ /($open_kakko)|(?:$close_kakko)/o) { # mimicking the original routine to count kakko level
-            $level += ($1 ne '') ? 1 : -1;
-            $level = 0 if ($level < 0);
-            $pre = $'; #'
-          }
-        }
-        # FEATURE: process only those strings recognized by $dot/$period
-        if ($level == 0) {
-          push (@tmp, $sent);
-          $sent = '';
-        }
-      }
+	my $pre = $`;
+	$str = $'; ## this line stops incorrect coloring '
+	$sent .= $` . $&;
+
+	if ($1 eq '' || $pre ne '') { # a sentence should include strings other than $cdot{3,}
+	    unless ($ignore_level) {
+		while ($pre =~ /($open_kakko)|(?:$close_kakko)/o) { # mimicking the original routine to count kakko level
+		    $level += ($1 ne '') ? 1 : -1;
+		    $level = 0 if ($level < 0);
+		    $pre = $'; #'
+		}
+	    }
+	    # FEATURE: process only those strings recognized by $dot/$period
+	    if ($level == 0) {
+		push (@tmp, $sent);
+		$sent = '';
+	    }
+	}
     }
     push (@tmp, $sent . $str);
     foreach my $s (@tmp) {
-      if ($s =~ /^（.+?）/o) {
-        my $ss = $&;
-        my $sss = '';
-        $s = $';
-        while ($ss =~ /(?:(?:$period)|(?:$cdot){3,}|(?<!\p{alphabet_or_number})(?:$dot)(?!\p{alphabet_or_number}|$comma))(?:$dot|$period)*/o) {
-          $pre = $`;
-          $sss .= $` . $&;
-          if ($& !~ /^$cdot/ || $pre ne '（') {
-            push(@buf, $sss);
-            $sss = '';
-          }
-          $ss = $';
-        }
-        push(@buf, $ss) if ($ss ne '');
-      }
-      push(@buf, $s) if ($s ne '');
+	# 先頭がカッコで囲まれた文から始まっている場合
+	if ($s =~ /^(（.+?）)(.+)$/o) {
+	    # カッコで囲まれた文
+	    my $s_enclosed_by_kakko = $1;
+
+	    # カッコで囲まれた文以降
+	    $s = $2;
+
+	    my $s_tmp = '';
+	    # カッコで囲まれた文がデリミタを含んでいるならば区切る
+	    while ($s_enclosed_by_kakko =~ /(?:(?:$period)|(?:$cdot){3,}|(?<!\p{alphabet_or_number})(?:$dot)(?!\p{alphabet_or_number}|$comma))(?:$dot|$period)*/o) {
+		my $pre = $`;
+		$s_enclosed_by_kakko = $'; # '
+
+		$s_tmp .= $` . $&;
+		if ($& !~ /^$cdot/ || $pre ne '（') {
+		    push(@buf, $s_tmp);
+		    $s_tmp = '';
+		}
+	    }
+	    push(@buf, $s_enclosed_by_kakko) if ($s_enclosed_by_kakko ne '');
+	}
+	push(@buf, $s) if ($s ne '');
     }
 
     my @buf2 = ();
