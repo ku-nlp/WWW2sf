@@ -108,12 +108,23 @@ sub main {
 
 	# HTMLエンティティを変換し、差分の文字数を半角空白でつめる
 	# &lt; -> '<___'
+
+	# 末尾の記号としては ; の他に / を考慮する
+	# （&lt/であってもdecode_entitiesが</に変更してしまうため）
+	# &amp;
+	# &amp/
 	my $buf;
-	while ($text->[$i] =~ /(&.+?;)/g) {
+	while ($text->[$i] =~ /(&\S+?[;|\/])/g) {
 	    $buf .= "$`";
 	    $text->[$i] = "$'";
 
 	    my $entity = $1;
+	    # エンティティコードの末尾が ; ではなかった時の処理
+	    if ($entity =~ /^(.+?)([^;])$/) {
+		$entity = $1;
+		$text->[$i] = $2 . $text->[$i];
+	    }
+
 	    my $length = length($entity);
 	    my $decodedEntity = decode_entities($entity);
 
@@ -144,6 +155,7 @@ sub main {
     # HTML文書、標準フォーマット間 のアライメントをとる
     foreach my $s (@$sentences) {
 	my $rawstring = &get_rawstring($s);
+
 	my ($offset, $length, $is_successful) = &get_offset_and_length($rawstring, $text, $property);
 	$s->setAttribute('Offset', $offset);
 	$s->setAttribute('Length', $length);
