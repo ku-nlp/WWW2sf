@@ -1,3 +1,52 @@
+2009-06-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/SentenceExtractor.pm:
+	bug fixed (丸括弧で囲まれた文の扱いを修正)
+
+2009-06-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* www2sf.perl:
+	NW*.dataファイルに対応, 文字コードの推定に失敗した時にエラーを出力するように.
+
+	* perl/HtmlGuessEncoding.pm:
+	METAタグで指定される文字コードのバリエーションを追加, 文字コードが曖昧な時の処理を追加.
+
+2009-05-29  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl:
+	文書IDとして999999999を出力するように.
+
+	* www2sf.perl:
+	utf8オプションの追加. 文書IDとして999999999を出力するように.
+
+	* scripts/add-knp-result-dir.perl, scripts/add-knp-result.perl:
+	URL中のHTMLエンティティを変換しないように (標準フォーマット生成時に変換されているため)
+
+2009-05-25  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl: NOCACHE, NOINDEX情報を埋め込むように.
+
+2009-04-21  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* www2sf.perl: タイムアウト機能の追加, try ... catch の場所を変更.
+
+2009-04-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* www2sf.perl:
+	TextExtractor.pmが出力するエラーを例外としてキャッチするように.
+
+	* www2sf.perl: URL内の制御コードを削除するように.
+
+	* www2sf.perl:
+	-linenumオプションの追加, XML生成時に不適切な文字が出力されてもおちないように, utf8形式のHTMLファイルが出力されるように.
+
+	* perl/Archiver.pm: テキストファイルかどうかのチェック方法を修正.
+
+2009-04-19  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/Emoticon.pm:
+	Emoticon.dicのパスを指定するように, 複数回newされた時、EmoticonDicのエントリが複数回decodeされないように.
+
 2009-04-14  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-linkinfo.sh:
