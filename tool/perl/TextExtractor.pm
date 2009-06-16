@@ -441,7 +441,7 @@ sub extract_text {
 	# HTML 中の特殊文字をデコードする
 	my $buf = $text->[$i];
 	$text->[$i] = decode('utf8', $text->[$i]) unless (utf8::is_utf8($text->[$i]));
-	$buf =~ s/&nbsp;/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
+	$buf =~ s/(?:&\#160|&nbsp);/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
 	$buf = decode_entities($buf);
 
 	# \n(\x0a) 以外のコントロールコードは削除する
@@ -613,7 +613,7 @@ sub extract_text {
 	my $T = $e->{text};
 
 	$T = decode('utf8', $T) unless (utf8::is_utf8($T));
-	$T =~ s/&nbsp;/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
+	$T =~ s/[&\#160|&nbsp];/ /g; # &nbsp; はスペースに変換 (\xa0に変換させない)
 	$T = decode_entities($T);
 
 	# \n(\x0a) 以外のコントロールコードは削除する

@@ -104,6 +104,7 @@ sub main {
 
     for (my $i = 0; $i < scalar(@$text); $i++) {
 	$text->[$i] = decode('utf8', $text->[$i]) unless (utf8::is_utf8($text->[$i]));
+	$text->[$i] =~ s/&\#160;/      /g;
 	$text->[$i] =~ s/&nbsp;/      /g;
 
 	# HTMLエンティティを変換し、差分の文字数を半角空白でつめる
@@ -250,6 +251,10 @@ sub alignment {
     my $ch_r = $chars_r->[$r];
     my $next_ch_h = $chars_h->[$h + 1];
     my $ch_h = &normalized($chars_h->[$h], $prev_ch_h);
+
+    if (ord($ch_h) == 160) {
+	print $ch_h . "\n";
+    }
 
     print "r:[$ch_r] cmp h:[$ch_h] next_h:[$next_ch_h] off=$offset ord:r=" . ord($ch_r) . " ord:h=" . ord($ch_h) . "\n" if ($opt{verbose});
 
