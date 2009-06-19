@@ -192,6 +192,7 @@ sub get_offset_and_length {
     my $offset = -1;
     my $miss = -1;
     my $prev_ch_h = undef;
+    my $loop = 0;
     while ($i < scalar(@chars_r)) {
 
 	# @chars_hを読みきった時の処理 length(@chars_r) > length(@chars_h)
@@ -207,6 +208,13 @@ sub get_offset_and_length {
 	}
 
 	($i, $j, $offset, $miss, $prev_ch_h) = &alignment(\@chars_r, \@chars_h, $i, $j, $offset, $property, $prev_ch_h);
+	$loop++;
+
+	# 10000万回以上のループは無限ループとみなす
+	if ($loop > 100000) {
+	    $miss = 1;
+	    last;
+	}
 
 	last if ($miss > 0);
     }
@@ -249,8 +257,8 @@ sub alignment {
     my ($chars_r, $chars_h, $r, $h, $offset, $property, $prev_ch_h) = @_;
 
     my $ch_r = $chars_r->[$r];
-    my $next_ch_h = $chars_h->[$h + 1];
     my $ch_h = &normalized($chars_h->[$h], $prev_ch_h);
+    my $next_ch_h = $chars_h->[$h + 1];
 
     if (ord($ch_h) == 160) {
 	print $ch_h . "\n";
