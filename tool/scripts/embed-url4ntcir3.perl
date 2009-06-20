@@ -45,7 +45,7 @@ sub main {
 
 	my $url = $cdb->get("NW$did");
 	print FILE "HTML $url\n";
-	print FILE "\x0D";
+	print FILE "\x0D\n";
 	print FILE $buf;
 	close (FILE);
     }
