@@ -8,26 +8,12 @@
 # 素の標準フォーマットにJUMAN/KNP/SYNGRAPHの解析結果を埋め込むスクリプト
 
 
-source $HOME/.bashrc
+source $HOME/.zshrc
 
+# 設定ファイルの読み込み
+confdir=`echo $0 | xargs dirname`/../conf
+. $confdir/configure
 
-# ★以下の環境変数を変更すること★
-
-workspace=/tmp
-perldir=$HOME/cvs/WWW2sf/tool/perl
-scriptdir=$HOME/cvs/WWW2sf/tool/scripts
-syngraph_pm=$HOME/cvs/SynGraph/perl
-syndb_path=$HOME/cvs/SynGraph/syndb/`uname -p`
-
-# 解析に用いるJUMAN/KNPのインストール先
-tooldir=$HOME/local/080813/bin
-# jumanrc/knprcが置いてあるディレクトリの設定
-rcdir=$HOME/local/080813/etc
-
-jmncmd=$tooldir/juman
-knpcmd=$tooldir/knp
-jmnrc=$rcdir/jumanrc
-knprc=$rcdir/knprc
 
 # 解析に用いるツールの指定
 command_opt="-jmncmd $jmncmd -knpcmd $knpcmd -jmnrc $jmnrc -knprc $knprc"
@@ -40,9 +26,10 @@ recycle=0
 # -regist_exclude_semi_contentwordオプションを有効にするかどうかを指定する
 # 旧バージョンとの調整用オプション。有効にすると名詞的形容詞語幹（「多量摂
 # 取」の多量）に対してSYNノードを付与しなくなる。通常はオフ。
-# 
+#
 no_regist_adjective_stem=
-while getopts jksRNTOIDKS OPT
+distflg=0
+while getopts jksRNTOIDKSw:d: OPT
 do
     case $OPT in
 	j)  tool="-jmn"
@@ -66,6 +53,11 @@ do
 	K)  command_opt="$command_opt -keywords"
 	    ;;
 	S)  command_opt="$command_opt -sentence"
+	    ;;
+	w)  echo sleep `expr $RANDOM \% $OPTARG`
+	    ;;
+	d)  distdir=$OPTARG
+	    distflg=1
     esac
 done
 shift `expr $OPTIND - 1`
@@ -112,7 +104,6 @@ fi
 
 LOGFILE=$workspace/$id.log
 command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt -logfile $LOGFILE"
-
 
 
 mkdir -p $workspace 2> /dev/null
@@ -166,3 +157,9 @@ rm -r $outdir
 
 
 mv $outdir.tgz $workspace/finish/
+
+if [ $distflg -eq 1 ]
+then
+    scp $workspace/finish/$outdir.tgz $distdir
+    rm $workspace/finish/$outdir.tgz
+fi
