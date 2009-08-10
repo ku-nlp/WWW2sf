@@ -1,0 +1,18 @@
+# $Id$
+
+workspace=${HOME}/workspace
+perldir=${HOME}/cvs/WWW2sf/tool/perl
+scriptdir=${HOME}/cvs/WWW2sf/tool/scripts
+syngraph_pm=${HOME}/cvs/SynGraph/perl
+syndb_path=${HOME}/cvs/SynGraph/syndb/`uname -p`
+
+# 解析に用いるJUMAN/KNPのインストール先
+tooldir=$HOME/bin
+# jumanrc/knprcが置いてあるディレクトリの設定
+rcdir=$HOME/etc
+
+
+jmncmd=$tooldir/juman
+knpcmd=$tooldir/knp
+jmnrc=$rcdir/jumanrc
+knprc=$rcdir/knprc
