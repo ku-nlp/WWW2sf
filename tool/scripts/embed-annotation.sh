@@ -117,7 +117,7 @@ scp $filepath ./
 
 echo tar xzf $sfdir.tgz
 tar xzf $sfdir.tgz
-rm -r $sfdir.tgz
+rm -rf $sfdir.tgz
 
 mkdir -p $outdir 2> /dev/null
 
@@ -136,7 +136,7 @@ done
 
 
 
-rm -r $sfdir
+rm -rf $sfdir
 
 if [ $recycle -eq 1 ]
 then
@@ -152,8 +152,8 @@ cd $outdir ; for f in `ls | grep -v gz` ; do gzip -f $f ; done ; cd ..
 echo tar czf $outdir.tgz $outdir
 tar czf $outdir.tgz $outdir
 
-echo rm -r $outdir
-rm -r $outdir
+echo rm -rf $outdir
+rm -rf $outdir
 
 
 mv $outdir.tgz $workspace/finish/
@@ -161,5 +161,5 @@ mv $outdir.tgz $workspace/finish/
 if [ $distflg -eq 1 ]
 then
     scp $workspace/finish/$outdir.tgz $distdir
-    rm $workspace/finish/$outdir.tgz
+    rm -f $workspace/finish/$outdir.tgz
 fi
