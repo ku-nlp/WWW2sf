@@ -6,6 +6,8 @@ use strict;
 use utf8;
 use XML::LibXML;
 
+binmode (STDOUT, ':utf8');
+
 &main();
 
 sub main {
