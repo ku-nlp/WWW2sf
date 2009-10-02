@@ -307,9 +307,6 @@ sub print_page_header {
 	    }
 	}
 
-	# アウトリンク情報を出力
-	&print_outlinks($url, $parsed->{OUTLINKS});
-
 	$writer->endTag('Header');
 	$writer->startTag('Text', Type => 'default');
     }
