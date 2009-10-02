@@ -99,7 +99,7 @@ my $dir = `dirname $htmlfile`; chop $dir;
 
 open (HTML, $htmlfile) or die "$!";
 while (<HTML>) {
-    if (/^HTML (.+)[\r|\n]$/ && $flag < 0) { # 1行目からURLを取得(read-zaodataが出力している)
+    if (/^HTML (.+?)[\r|\n]+$/ && $flag < 0) { # 1行目からURLを取得(read-zaodataが出力している)
 	my @args = split (/ /, $1);
 	my $next_url = shift @args;
 	my $option = join (' ', @args);
