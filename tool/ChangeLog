@@ -1,4 +1,41 @@
+2009-10-02  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl:
+	標準フォーマットにアウトリンク情報を埋め込まないようにした（リンク情報は別管理になったため）
+
+2009-09-14  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/sample-for-sf-access.perl: small change.
+
+2009-08-26  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* conf/configure: bug fixed (unameのオプションを修正)
+
+2009-08-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-annotation.sh: rmコマンドに-fオプションを追加.
+
+2009-08-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-annotation.sh:
+	../conf/configureを読み込むように, 実行前にsleepさせるオプションの追加, 出力結果をコピーするオプションの追加.
+
+2009-06-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-url4ntcir3.perl: small change.
+
+2009-06-19  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl: bug fixed.
+
+2009-06-16  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm, scripts/set-offset-and-length.perl:
+	&#160;を半角空白に変換するように.
+
 2009-06-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl: HTMLエンティティの誤表記に対応.
 
 	* perl/SentenceExtractor.pm:
 	bug fixed (丸括弧で囲まれた文の扱いを修正)
