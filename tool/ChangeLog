@@ -1,5 +1,7 @@
 2009-10-02  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
+	* scripts/extract-sentences.perl: URLの末尾が\r,\n,\r\nの場合に対応.
+
 	* scripts/extract-sentences.perl:
 	標準フォーマットにアウトリンク情報を埋め込まないようにした（リンク情報は別管理になったため）
 
