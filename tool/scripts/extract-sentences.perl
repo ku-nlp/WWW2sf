@@ -411,7 +411,7 @@ sub print_extract_sentences {
 	    $para++ if ($prev_para < -1 || $prev_para != $parsed->{PROPERTY}[$i]{paragraph});
 	    $prev_para = $parsed->{PROPERTY}[$i]{paragraph};
 
-	    $writer->startTag('S', Paragraph => $para);
+	    $writer->startTag('S', Paragraph => $para, BlockType => $parsed->{PROPERTY}[$i]{blockType});
 	    $writer->startTag('RawString');
 	    $writer->characters($line);
 	    $writer->endTag('RawString');
