@@ -22,9 +22,14 @@ GetOptions(\%opt, 'include_paren', 'divide_paren', 'save_all');
 
 $opt{'include_paren'} = 1 if $opt{'divide_paren'};
 
-my ($buf);
+my ($flag, $buf);
 while (<STDIN>) {
-    $buf .= $_;
+    my $line = $_;
+    if ($line =~ /^<\?xml / && !$flag) {
+	$flag = 1;
+	$buf = '';
+    }
+    $buf .= $line;
 }
 
 my $formatter = new SentenceFormatter(\%opt);
