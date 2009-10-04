@@ -3,7 +3,7 @@
 
 package TextExtractor;
 use ModifiedTokeParser;
-use HTML::Entities;
+use HTML::Entities qq(decode_entities);
 use SentenceExtractor;
 use HankakuZenkaku qw(ascii_h2z h2z4japanese_utf8);
 use ConvertCode qw(convert_code);
@@ -184,6 +184,9 @@ sub detag {
     # テキスト要素直前のタグ
     my $immediately_before_tag = '';
 
+    # 領域のタイプ
+    my $blockType;
+
     # HTML::TokeParserでparseする
     # HTML::TokeParserを、offsetとlengthを返させるように修正したModifiedTokeParserを使う
     my $parser = ModifiedTokeParser->new($raw_html) or die $!;
@@ -193,11 +196,11 @@ sub detag {
         my $type = $token->[0];
 	my $offset = $token->[3] + $this->{opt}{offset};
 	my $length = $token->[4];
-
 	# 開始タグ
 	if ($type eq 'S') {
             my $tag = $token->[1];
 	    $immediately_before_tag = $tag;
+	    $blockType = ($token->[2]->{myblocktype}) ? $token->[2]->{myblocktype} : 'unknown_block';
             if (defined $DELIMITER_TAGS{$tag}) {
 		# link_bufがある場合、直前に連結
 		if ($link_buf) {
@@ -390,6 +393,7 @@ sub detag {
 		$property[$count]->{list} = $mode{list};
 		$property[$count]->{table} = $mode{table};
 		$property[$count]->{pre} = $mode{pre};
+		$property[$count]->{blockType} = $blockType;
 	    }
         }
     }
