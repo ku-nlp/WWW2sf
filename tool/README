@@ -23,13 +23,14 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
     - Error
     - HTTP::Date (libwww-perl-5.805にある)
     - Text::Darts
+    - DetectBlocks
 
 処理
 ----
 
 # sample.htmlを標準フォーマットに変換
 
-./html2sf.sh [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] sample.html > sample.sf
+./html2sf.sh [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-T] sample.html > sample.sf
 
  - 複合名詞データベースcns.cdbについては、../READMEを参照。
 
