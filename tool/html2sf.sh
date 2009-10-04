@@ -21,8 +21,10 @@ usage() {
 # -u: utf8に変換したHTML文書を保存する
 # -U: 入力がすでにutf8に変換済みの場合
 # -O: アウトリンク情報を抽出する
+# -T: 領域のタイプを判定する
 
 # Change this for SynGraph annotation
+CVS_DIR=$HOME/cvs
 syngraph_home=$HOME/cvs/SynGraph
 syndb_path=$syngraph_home/syndb/`uname -m`
 
@@ -36,9 +38,10 @@ save_utf8file=0
 use_module=1
 annotation=
 input_utf8html=0
+annotate_blocktype=0
 
-while getopts bfjkspPhBwc:umMUO OPT
-do  
+while getopts bfjkspPhBwc:umMUOT OPT
+do
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
 	    ;;
@@ -72,6 +75,8 @@ do
         U)  input_utf8html=1
             ;;
 	O)  extract_args="-make_urldb $extract_args"
+	    ;;
+	T)  annotate_blocktype=1
 	    ;;
         h)  usage
             ;;
@@ -131,6 +136,15 @@ if [ $? -ne 0 ]; then
     echo "$f - UTF-8 変換で失敗しました" 1>&2
     rm -f $utf8file
     exit
+fi
+
+# 領域のタイプを判定し、その結果を埋め込む
+if [ $annotate_blocktype -eq 1 ]
+then
+    output=$utf8file.out
+    OPTION="-add_class2html -add_blockname2alltag"
+    perl -I $CVS_DIR/DetectBlocks/perl $base_dir/scripts/embed-region-info.perl $OPTION < $utf8file > $output
+    mv $output $utf8file
 fi
 
 # 簡素な標準フォーマットを生成
