@@ -54,7 +54,7 @@ do
 	    ;;
 	S)  command_opt="$command_opt -sentence"
 	    ;;
-	w)  echo sleep `expr $RANDOM \% $OPTARG`
+	w)  sleep `expr $RANDOM \% $OPTARG`
 	    ;;
 	d)  distdir=$OPTARG
 	    distflg=1
