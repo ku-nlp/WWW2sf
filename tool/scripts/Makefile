@@ -2,30 +2,65 @@
 
 SHELL = sh
 CONFIG = ${HOME}/cvs/WWW2sf/conf/configure
-sflist = $(HOME)/data/sflist
-host_file = $(HOME)/data/hosts
+HTMLDIR = /vine4/skeiji/ipsj/tgzs
+host_file = hosts
+
+WORKSPACE = $(HOME)/ipsj/tsubaki/mksfs
+htmllist = $(WORKSPACE)/htmllist
+sflist = $(WORKSPACE)/sflist
+
+DIST_HOST_OF_SF  = orchid01
+DIST_DIR_OF_SF   = /data/skeiji/ipsj-mksf
+DIST_DIR_OF_MKSF = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF)
+
 
 include $(CONFIG)
 
+NODE_PREFIX = orchid
 ACCESS_METHOD = ssh
-WORKSPACE = $(HOME)/work/mksfs
-OPTION = -s
+OUTPUT_DIR_PREFIX = /data/skeiji/mksf-ipsj
+OPTION = -s -w 300
 
-start: mk_tasks run_tasks
+start: mk_tasks run_tasks mk_tasks4embed run_tasks4embed
+
 
 mk_tasks:
 	mkdir -p $(WORKSPACE) 2> /dev/null
-	cat $(sflist) | awk '{print "task"NR, "sh $(scriptdir)/embed-annotation.sh $(OPTION)", $$0}' > $(WORKSPACE)/tasks
+	ls $(HTMLDIR)/*tgz > $(htmllist)
+	cat $(htmllist) | awk '{print "task"NR, "sh $(scriptdir)/make-standard-format.sh", $$0, "$(DIST_DIR_OF_MKSF)"}' > $(WORKSPACE)/tasks
+	ssh $(DIST_HOST_OF_SF) rm -rf $(DIST_DIR_OF_SF) 2> /dev/null
+	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF)
 
-run_tasks: connect_node
-	gxpc cd $(WORKSPACE)
-	gxpc e pwd
+run_tasks: connect_node1
+	gxpc e rm -r $(OUTPUT_DIR_PREFIX) 2> /dev/null
+	gxpc e mkdir -p $(OUTPUT_DIR_PREFIX) 2> /dev/null
+	gxpc cd $(OUTPUT_DIR_PREFIX)
 	gxpc ep $(WORKSPACE)/tasks
 	gxpc quit
+	mv status $(WORKSPACE)/
+
+connect_node1:
+	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
+	gxpc explore --children_hard_limit 1000 -t $(host_file)
+	gxpc e "hostname | grep -v $(HOSTNAME)\\$$"
+	gxpc smask
+	echo "*** USED HOSTS ***"
+	gxpc e hostname | sort
 
 
-connect_node:
-	gxpc use $(ACCESS_METHOD) $$HOSTNAME orchid
+mk_tasks4embed:
+	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF)/"$$0}' > $(sflist)
+	cat $(sflist) | awk '{print "task"NR, "sh $(scriptdir)/embed-annotation.sh $(OPTION)", $$0}' > $(WORKSPACE)/tasks4embed
+
+run_tasks4embed: connect_node2
+	gxpc e mkdir -p $(OUTPUT_DIR_PREFIX) 2> /dev/null
+	gxpc cd $(OUTPUT_DIR_PREFIX)
+	gxpc e mv output output.bak 2> /dev/null
+	gxpc ep $(WORKSPACE)/tasks4embed
+	gxpc quit
+
+connect_node2:
+	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
 	gxpc explore --children_hard_limit 1000 -t $(host_file)
 	gxpc e "hostname | grep -v $(HOSTNAME)\\$$"
 	gxpc smask
