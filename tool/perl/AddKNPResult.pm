@@ -6,24 +6,74 @@ package AddKNPResult;
 
 use utf8;
 use strict;
+use SynGraph;
 use Error qw(:try);
-
+use Data::Dumper;
 
 binmode(STDERR, ':encoding(euc-jp)');
 
 sub new {
-    my ($this, $juman, $knp, $knp_w_case, $syngraph, $opt) = @_;
+    my ($clazz, $opt) = @_;
 
-    $this = {
-	juman => $juman,
-	knp => $knp,
-	knp_w_case => $knp_w_case,
-	syngraph => $syngraph,
-	opt => $opt
-	};
+    my $this = ();
+    # th_of_knp_use 回ごとに KNP を new しなおす（デットロックに陥るため）
+    $this->{th_of_knp_use} = $opt->{th_of_knp_use};
+    $this->{num_of_knp_use} = 0;
+    $this->{opt} = $opt;
+
+    # ツールのモジュールを new する
+    &createJumanObject($this);
+    &createKnpObject($this);
+    &createSynGraphObject($this);
 
     bless $this;
 }
+
+sub createJumanObject {
+    my ($this) = @_;
+
+    if ($this->{opt}{jmn}) {
+	$this->{juman} = new Juman (-Command => $this->{opt}{jmncmd},
+				    -Rcfile => $this->{opt}{jmnrc},
+				    -Option => '-i \#');
+    }
+}
+
+sub createKnpObject {
+    my ($this) = @_;
+
+    if ($this->{opt}{case}) {
+	if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
+	    my $knp = new KNP (-Command => $this->{opt}{knpcmd},
+			       -Rcfile => $this->{opt}{knprc},
+			       -JumanCommand => $this->{opt}{jmncmd},
+			       -JumanRcfile => $this->{opt}{jmnrc},
+			       -JumanOption => '-i \#',
+			       -Option => '-tab -postprocess');
+	    $this->{knp_w_case} = $knp;
+	}
+    } else {
+	if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
+	    my $knp = new KNP (-Command => $this->{opt}{knpcmd},
+			       -Rcfile => $this->{opt}{knprc},
+			       -JumanCommand => $this->{opt}{jmncmd},
+			       -JumanRcfile => $this->{opt}{jmnrc},
+			       -JumanOption => '-i \#',
+			       -Option => '-tab -dpnd -postprocess');
+	    $this->{knp} = $knp;
+	}
+    }
+}
+
+sub createSynGraphObject {
+    my ($this) = @_;
+
+    if ($this->{opt}{syngraph}) {
+	my $syngraph = new SynGraph($this->{opt}{syndbdir}, undef, $this->{opt}{syngraph_option});
+	$this->{syngraph} = $syngraph;
+    }
+}
+
 
 sub DESTROY {
     my ($this) = @_;
@@ -149,6 +199,12 @@ sub AppendNode {
 		    # 格解析オプションが指定されていない場合, もしくは日本語文でない場合
 		    $result = $this->{knp}->parse_mlist($this->{knp}->juman($text));
 		}
+		$this->{num_of_knp_use}++;
+		if ($this->{num_of_knp_use} > $this->{th_of_knp_use}) {
+		    # KNP を new し直す
+		    $this->{num_of_knp_use} = 0;
+		    $this->createKnpObject();
+		}
 	    }
 
 	    return unless $result;
@@ -162,7 +218,7 @@ sub AppendNode {
 	    }
 	} catch Error with {
 	    my $err = shift;
-	    print STDERR "Exception at line ",$err->{-line}," in ",$err->{-file},"\n";
+	    print STDERR "Exception at line ",$err->{-line}," in ",$err->{-file}," msg=[",$err->{-text},"]\n";
 	    return;
 	};
     }
