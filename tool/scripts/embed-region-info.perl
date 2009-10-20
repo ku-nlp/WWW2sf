@@ -22,7 +22,8 @@ GetOptions(\%opt,
 	   'printtree',
 	   'get_more_block',
 	   'rel2abs',
-	   'add_blockname2alltag'
+	   'add_blockname2alltag',
+	   'juman=s'
 	   );
 
 
