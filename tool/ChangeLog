@@ -1,3 +1,28 @@
+2009-10-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl, scripts/add-knp-result-dir.perl:
+	JUMAN, KNP, SynGraph オブジェクトの作成を AddKNPResult に任せた, th_of_knp_use オプションの追加.
+
+	* perl/AddKNPResult.pm:
+	JUMAN, KNP, SynGraph オブジェクトの作成を行うように.
+
+2009-10-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/make-standard-format.sh:
+	出力結果を特定のホストにコピーするように.
+
+	* scripts/Makefile: 解析結果を埋め込む処理を追加.
+
+2009-10-04  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/format-www-xml.perl: XML宣言以前のデータは読み込まないように.
+
+	* scripts/extract-sentences.perl: 領域判定の結果を出力するように.
+
+	* perl/TextExtractor.pm: 領域判定結果を保持するように.
+
+	* html2sf.sh, www2sf.sh: 領域の判定結果を埋め込むオプション -T を追加.
+
 2009-10-02  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl: URLの末尾が\r,\n,\r\nの場合に対応.
