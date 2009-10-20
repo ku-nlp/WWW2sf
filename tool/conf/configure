@@ -23,7 +23,7 @@ cndb_path=${HOME}/local/data/cns.10M.gen.df10.cdb
 option4mksfs="-z -c $cndb_path"
 
 # embed-annotation.sh 実行時のオプション
-option4embed_annotation = "-s -w 300"
+option4embed_annotation = -z -s -w 300
 
 
 # 解析に用いるJUMAN/KNPのインストール先
