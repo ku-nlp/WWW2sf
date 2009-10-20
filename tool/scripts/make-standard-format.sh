@@ -5,13 +5,16 @@
 # ディレクトリ中のHTML文書を標準フォーマットに変換するスクリプト
 
 # ★以下の変数の値を変更すること
-workspace=/data/skeiji/mksf
-# このスクリプトの一つ上
-# scriptdir=`echo $PWD/$0 | xargs dirname | xargs dirname`
-scriptdir=/home/skeiji/ipsj/WWW2sf/tool
-# オプション
-CNDB=/home/skeiji/public_html/data/cns.cdb
-OPTION="-U -c $CNDB"
+
+# 設定ファイルの読み込み
+confdir=`echo $0 | xargs dirname`/../conf
+. $confdir/configure
+
+workspace=$workspace4mksfs
+
+# オプションの設定
+CNDB=$cndb_path
+OPTION=$option4mksfs
 
 
 . $HOME/.zshrc
@@ -37,8 +40,8 @@ echo mkdir $workspace/$xdir
 mkdir $workspace/$xdir
 
 cd $workspace
-echo sh $scriptdir/www2sf.sh $hdir $xdir
-sh $scriptdir/www2sf.sh $OPTION $hdir $xdir
+echo sh $www2sfdir/tool/www2sf.sh $OPTION $hdir $xdir
+sh $www2sfdir/tool/www2sf.sh $OPTION $hdir $xdir
 
 echo rm -r $hdir
 rm -r $hdir
