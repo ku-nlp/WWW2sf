@@ -53,6 +53,7 @@ GetOptions(\%opt,
 	   'description',
 	   'sentence',
 	   'timeout=s',
+	   'th_of_knp_use=s',
 	   'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
@@ -60,7 +61,10 @@ if (!$opt{indir} || !$opt{outdir}) {
     exit;
 }
 
+# 処理全体の timeout 時間
 $opt{timeout} = 60 unless ($opt{timeout});
+# th_of_knp_use文ごとに KNP を new する
+$opt{th_of_knp_use} = 100 unless ($opt{th_of_knp_use});
 
 $opt{usemodule} = 1;
 
@@ -77,9 +81,12 @@ if (! -d $opt{outdir}) {
     mkdir $opt{outdir};
 }
 
-my ($regnode_option, $syngraph_option);
+# SynGraphの設定
 if ($opt{syngraph}) {
     require SynGraph;
+
+    # SynGraphのオプション
+    my ($regnode_option, $syngraph_option);
 
     if (!$opt{syndbdir}) {
 	print STDERR "Please specify 'syndbdir'!\n";
@@ -94,36 +101,16 @@ if ($opt{syngraph}) {
     # 準内容語を除いたものもノードに登録するオプション(ネットワーク化 -> ネットワーク, 深み -> 深い)
     $syngraph_option = {
 	regist_exclude_semi_contentword => 1,
-	no_regist_adjective_stem => $opt{no_regist_adjective_stem}
+	no_regist_adjective_stem => $opt{no_regist_adjective_stem},
+	db_on_memory => $opt{syndb_on_memory}
     };
 
     $opt{regnode_option} = $regnode_option;
     $opt{syngraph_option} = $syngraph_option;
 }
 
-my ($juman, $knp, $knp_w_case, $syngraph);
-$juman = new Juman (-Command => $opt{jmncmd},
-		    -Rcfile => $opt{jmnrc},
-		    -Option => '-i \#') if $opt{jmn};
-$knp = new KNP (-Command => $opt{knpcmd},
-		-Rcfile => $opt{knprc},
-		-JumanCommand => $opt{jmncmd},
-		-JumanRcfile => $opt{jmnrc},
-		-JumanOption => '-i \#',
-		-Option => '-tab -dpnd -postprocess') if $opt{knp} || $opt{syngraph};
 
-$knp_w_case = new KNP (-Command => $opt{knpcmd},
-		       -Rcfile => $opt{knprc},
-		       -JumanCommand => $opt{jmncmd},
-		       -JumanRcfile => $opt{jmnrc},
-		       -JumanOption => '-i \#',
-		       -Option => '-tab -postprocess') if (($opt{knp} || $opt{syngraph}) && $opt{case});
-
-$syngraph_option->{db_on_memory} = 1 if $opt{syndb_on_memory};
-$syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngraph};
-
-
-my $addknpresult = new AddKNPResult($juman, $knp, $knp_w_case, $syngraph, \%opt);
+my $addknpresult = new AddKNPResult(\%opt);
 
 # -logfile が指定されていない場合は終了
 unless (defined $opt{logfile} || $opt{nologfile}) {
