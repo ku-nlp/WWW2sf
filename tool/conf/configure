@@ -1,15 +1,32 @@
 # $Id$
 
-workspace=${HOME}/workspace
-perldir=${HOME}/cvs/WWW2sf/tool/perl
-scriptdir=${HOME}/cvs/WWW2sf/tool/scripts
-syngraph_pm=${HOME}/cvs/SynGraph/perl
-syndb_path=${HOME}/cvs/SynGraph/syndb/`uname -m`
+# 解析結果を保存するディレクトリ
+workspace=/data/${USER}/tsubaki
+workspace4mksfs=${workspace}/mksfs
+workspace4embed=${workspace}/embed
+
+# WWW2sf が置いてあるディレクトリ
+www2sfdir=${HOME}/cvs/WWW2sf
+perldir=${www2sfdir}/tool/perl
+scriptdir=${www2sfdir}/tool/scripts
+
+# SynGraph が置いてあるディレクトリ
+syngraphdir=${HOME}/cvs/SynGraph
+syngraph_pm=${syngraphdir}/perl
+syndb_path=${syngraphdir}/syndb/`uname -m`
+
+# 複合名詞DBのパス
+cndb_path=${HOME}/local/data/cns.10M.gen.df10.cdb
+
+
+# www2sf.sh 実行時のオプション
+option4mksfs="-z -c $cndb_path"
+
 
 # 解析に用いるJUMAN/KNPのインストール先
-tooldir=$HOME/bin
+tooldir=$HOME/local/bin
 # jumanrc/knprcが置いてあるディレクトリの設定
-rcdir=$HOME/etc
+rcdir=$HOME/local/etc
 
 
 jmncmd=$tooldir/juman
