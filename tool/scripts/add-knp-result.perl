@@ -5,6 +5,8 @@
 # Input : XML (utf8)
 # Output: XML (utf8)
 
+# Usage: zcat IPSJ-TOM4815001.xml.gz | perl -I ../perl -I ~/ipsj/SynGraph/perl  ./add-knp-result.perl -knp -syndbdir ~/ipsj/SynGraph/syndb/x86_64 -antonymy -sentence_length_max 130 -all -syndb_on_memory -usemodule
+
 # $Id$
 
 use XML::LibXML;
@@ -51,6 +53,7 @@ GetOptions(\%opt,
 	   'description',
 	   'sentence',
 	   'timeout=s',
+	   'th_of_knp_use=s',
 	   'debug');
 
 if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{description} && !$opt{sentence}) {
@@ -62,11 +65,17 @@ if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{
     $opt{sentence} = 1;
 }
 
+# 処理全体の timeout 時間
 $opt{timeout} = 60 unless ($opt{timeout});
+# th_of_knp_use文ごとに KNP を new する
+$opt{th_of_knp_use} = 100 unless ($opt{th_of_knp_use});
 
-my ($regnode_option, $syngraph_option);
+# SynGraphの設定
 if ($opt{syngraph}) {
     require SynGraph;
+
+    # SynGraphのオプション
+    my ($regnode_option, $syngraph_option);
 
     if (!$opt{syndbdir}) {
 	print STDERR "Please specify 'syndbdir'!\n";
@@ -90,28 +99,8 @@ if ($opt{syngraph}) {
     $syngraph_option->{db_on_memory} = 1 if $opt{syndb_on_memory};
 }
 
-my ($juman, $knp, $knp_w_case, $syngraph);
-$juman = new Juman (-Command => $opt{jmncmd},
-		    -Rcfile => $opt{jmnrc},
-		    -Option => '-i \#') if $opt{jmn};
 
-$knp = new KNP (-Command => $opt{knpcmd},
-		-Rcfile => $opt{knprc},
-		-JumanCommand => $opt{jmncmd},
-		-JumanRcfile => $opt{jmnrc},
-		-JumanOption => '-i \#',
-		-Option => '-tab -dpnd -postprocess') if $opt{knp} || $opt{syngraph};
-
-$knp_w_case = new KNP (-Command => $opt{knpcmd},
-		       -Rcfile => $opt{knprc},
-		       -JumanCommand => $opt{jmncmd},
-		       -JumanRcfile => $opt{jmnrc},
-		       -JumanOption => '-i \#',
-		       -Option => '-tab -postprocess') if (($opt{knp} || $opt{syngraph}) && $opt{case});
-
-$syngraph = new SynGraph($opt{syndbdir}, undef, $syngraph_option) if $opt{syngraph};
-
-my $addknpresult = new AddKNPResult($juman, $knp, $knp_w_case, $syngraph, \%opt);
+my $addknpresult = new AddKNPResult(\%opt);
 
 my ($buf);
 while (<STDIN>) {
