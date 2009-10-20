@@ -102,6 +102,7 @@ else
     recycle_opt=
 fi
 
+workspace=$workspace4embed
 LOGFILE=$workspace/$id.log
 command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt -logfile $LOGFILE"
 
