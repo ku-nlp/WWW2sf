@@ -39,8 +39,9 @@ use_module=1
 annotation=
 input_utf8html=0
 annotate_blocktype=0
+file_cmd_filter=0
 
-while getopts bfjkspPhBwc:umMUOT OPT
+while getopts bfjkspPhBwc:umMUOTF OPT
 do
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -78,6 +79,8 @@ do
 	    ;;
 	T)  annotate_blocktype=1
 	    ;;
+	F)  file_cmd_filter=1
+	    ;;
         h)  usage
             ;;
     esac
@@ -109,10 +112,12 @@ trap 'clean_tmpfiles; exit 1' 1 2 3 15
 base_dir=`dirname $0`
 
 # 入力がテキストファイルかどうかのチェック
-file $f | grep text > /dev/null
-if [ $? -eq 1 ]; then
-    echo "ERROR: $f is *NOT* a text file." 1>&2
-    exit
+if [ $file_cmd_filter -eq 1 ]; then
+    file $f | grep text > /dev/null
+    if [ $? -eq 1 ]; then
+	echo "ERROR: $f is *NOT* a text file." 1>&2
+	exit
+    fi
 fi
 
 
