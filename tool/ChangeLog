@@ -1,4 +1,27 @@
+2009-11-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* html2sf.sh, www2sf.sh:
+	file コマンドによるフィルタをオプション化（-Fオプションで有効）
+
 2009-10-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/Makefile: コメントを追加.
+
+	* conf/configure: option4embed_annotation のデフォルト値を変更.
+
+	* conf/configure: 変数の追加.
+
+	* scripts/Makefile: torque で利用する場合のコードを追加.
+
+	* scripts/make-standard-format.sh:
+	configure ファイル内で指定された値を利用するように (www2sf.sh のオプション, 複合名詞DB の場所).
+
+	* scripts/embed-region-info.perl: -juman オプションの追加.
+
+	* scripts/embed-annotation.sh:
+	作業領域として configure 内の $workspace4embed で指定されたディレクトリを利用するように.
+
+	* conf/configure: 変数の追加.
 
 	* scripts/add-knp-result.perl, scripts/add-knp-result-dir.perl:
 	JUMAN, KNP, SynGraph オブジェクトの作成を AddKNPResult に任せた, th_of_knp_use オプションの追加.
