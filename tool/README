@@ -13,10 +13,17 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
 
   o perl module
 
+    - URI
+    - libwww-perl
+    - HTML::Tagset
     - HTML::Parser
     - XML::Parser
-    - XML::DOM
+    - XML::NamespaceSupport
+    - XML::SAX
     - XML::LibXML
+    - libxml-perl
+    - XML::RegExp
+    - XML::DOM
     - KNP
     - ShiftJIS::CP932::MapUTF
     - Unicode::Japanese
