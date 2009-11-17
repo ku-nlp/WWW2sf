@@ -1,3 +1,16 @@
+2009-11-17  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/parse-english.sh, scripts/add-sid-conll.perl, scripts/lemmatize-conll.perl, scripts/tagger-out2conll.perl: added.
+
+	* perl/AddKNPResult.pm, scripts/add-knp-result.perl:
+	Added conll scheme.
+
+	* html2sf.sh:
+	Added an English mode.
+
+	* README:
+	Updated the description of necessary modules.
+
 2009-11-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2sf.sh, www2sf.sh:
