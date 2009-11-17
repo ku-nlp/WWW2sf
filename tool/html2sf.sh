@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] input.html > output.xml"
     exit 1
 }
 
@@ -22,6 +22,7 @@ usage() {
 # -U: 入力がすでにutf8に変換済みの場合
 # -O: アウトリンク情報を抽出する
 # -T: 領域のタイプを判定する
+# -e: 英語モード
 
 # Change this for SynGraph annotation
 CVS_DIR=$HOME/cvs
@@ -40,8 +41,9 @@ annotation=
 input_utf8html=0
 annotate_blocktype=0
 file_cmd_filter=0
+language=japanese
 
-while getopts bfjkspPhBwc:umMUOTF OPT
+while getopts bfejkspPhBwc:umMUOTF OPT
 do
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -49,6 +51,13 @@ do
 	c)  extract_args="--cndbfile $OPTARG $extract_args"
 	    ;;
 	B)  extract_args="--blog mt $extract_args"
+	    ;;
+	e)  language=english
+	    addknp_args="--conll --all"
+	    annotation=conll
+	    use_module=0
+	    extract_std_args=""
+	    extract_args="--language english $extract_args"
 	    ;;
 	f)  extract_std_args=""
 	    ;;
@@ -178,16 +187,20 @@ if [ -n "$annotation" ]; then
 	# 文の抽出
 	cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
 
-	# Juman/Knp
-	cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
+	if [ $annotation = "conll" ]; then # currently English only
+	    $base_dir/scripts/parse-english.sh $sentencesfile > $jmnfile 2> /dev/null
+	else
+	    # Juman/Knp
+	    cat $sentencesfile | nkf -e -d | juman -e2 -B -i \# > $jmnfile
 
-	if [ $annotation = "knp" ]; then
-	    $base_dir/scripts/parse-comp.sh $jmnfile > /dev/null
-	    mv -f $knpfile $jmnfile
+	    if [ $annotation = "knp" ]; then
+		$base_dir/scripts/parse-comp.sh $jmnfile > /dev/null
+		mv -f $knpfile $jmnfile
+	    fi
 	fi
 
 	# merge
-	cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/add-knp-result.perl $addknp_args $jmnfile
+	cat $rawfile | perl -I $base_dir/perl -I $syngraph_home/perl $base_dir/scripts/add-knp-result.perl $addknp_args $jmnfile
     fi
 else
     cat $rawfile
