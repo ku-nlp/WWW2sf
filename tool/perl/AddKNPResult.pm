@@ -238,7 +238,26 @@ sub ReadResult {
     unshift(@sentences, $title[0]) if (defined(@title));
     my $start_sent = 0;
 
-    open (F, "<:encoding(euc-jp)", $inputfile) or die;
+    my $scheme;
+    if ($this->{opt}{syngraph}) {
+	$scheme = 'SynGraph';
+    }
+    elsif ($this->{opt}{jmn}) {
+	$scheme = 'Juman';
+    }
+    elsif ($this->{opt}{knp}) {
+	$scheme = 'Knp';
+    }
+    elsif ($this->{opt}{conll}) {
+	$scheme = 'CoNLL';
+    }
+
+    if ($this->{opt}{jmn} or $this->{opt}{knp} or $this->{opt}{syngraph}) {
+	open (F, "<:encoding(euc-jp)", $inputfile) or die; # use 'euc-jp' for Japanese
+    }
+    else {
+	open (F, $inputfile) or die;
+    }
 
     my ($sid, $result);
     while (<F>) {
@@ -251,18 +270,8 @@ sub ReadResult {
 		my $sentence = $sentences[$i];
 		my $xml_sid = $sentence->getAttribute('Id');
 		if ($sid eq $xml_sid) {
-		    my $type;
-		    if ($this->{opt}{syngraph}) {
-			$type = 'SynGraph';
-		    }
-		    elsif ($this->{opt}{jmn}) {
-			$type = 'Juman';
-		    }
-		    elsif ($this->{opt}{knp}) {
-			$type = 'Knp';
-		    }
 		    my $newchild = $doc->createElement('Annotation');
-		    $newchild->setAttribute('Scheme', $type);
+		    $newchild->setAttribute('Scheme', $scheme);
 		    my $cdata = $doc->createCDATASection($result);
 		    $newchild->appendChild($cdata);
 
