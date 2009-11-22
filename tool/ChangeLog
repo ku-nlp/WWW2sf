@@ -1,15 +1,18 @@
-2009-11-17  Daisuke Kawahara  <dk@nict.go.jp>
+2009-11-22  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/parse-english.sh, scripts/add-sid-conll.perl, scripts/lemmatize-conll.perl, scripts/tagger-out2conll.perl: added.
+	* perl/AddKNPResult.pm: caseオプション指定時も通常のKNPをnewするように.
+
+2009-11-17  Daisuke Kawahara  <kawahara@reed.kuee.kyoto-u.ac.jp>
+
+	* README: Updated the description of necessary modules.
+
+	* html2sf.sh: Added an English mode.
 
 	* perl/AddKNPResult.pm, scripts/add-knp-result.perl:
 	Added conll scheme.
 
-	* html2sf.sh:
-	Added an English mode.
-
-	* README:
-	Updated the description of necessary modules.
+	* scripts/parse-english.sh, scripts/add-sid-conll.perl, scripts/lemmatize-conll.perl, scripts/tagger-out2conll.perl:
+	added.
 
 2009-11-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
