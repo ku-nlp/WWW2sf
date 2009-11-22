@@ -52,16 +52,16 @@ sub createKnpObject {
 			       -Option => '-tab -postprocess');
 	    $this->{knp_w_case} = $knp;
 	}
-    } else {
-	if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
-	    my $knp = new KNP (-Command => $this->{opt}{knpcmd},
-			       -Rcfile => $this->{opt}{knprc},
-			       -JumanCommand => $this->{opt}{jmncmd},
-			       -JumanRcfile => $this->{opt}{jmnrc},
-			       -JumanOption => '-i \#',
-			       -Option => '-tab -dpnd -postprocess');
-	    $this->{knp} = $knp;
-	}
+    }
+
+    if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
+	my $knp = new KNP (-Command => $this->{opt}{knpcmd},
+			   -Rcfile => $this->{opt}{knprc},
+			   -JumanCommand => $this->{opt}{jmncmd},
+			   -JumanRcfile => $this->{opt}{jmnrc},
+			   -JumanOption => '-i \#',
+			   -Option => '-tab -dpnd -postprocess');
+	$this->{knp} = $knp;
     }
 }
 
