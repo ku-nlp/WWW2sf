@@ -88,11 +88,7 @@ sub AddKnpResult {
 	next if !$this->{opt}{all} and !$jap_sent_flag; # not Japanese
 
 	if ($this->{opt}{remove_annotation}) {
-	    for my $s_child_node ($sentence->getChildNodes) {
-		if ($s_child_node->nodeName eq 'Annotation') {
-		    $sentence->removeChild($s_child_node);
-		}
-	    }
+	    &remove_annotation_node($sentence);
 	}
 
 	my $rawstring;
@@ -275,12 +271,12 @@ sub ReadResult {
 		    my $cdata = $doc->createCDATASection($result);
 		    $newchild->appendChild($cdata);
 
-		    if ($this->{opt}{replace}) {
-			my $oldchild = shift(@{$sentence->getElementsByTagName('Annotation')});
-			$sentence->replaceChild($newchild, $oldchild);
-		    } else {
-			$sentence->appendChild($newchild);
+		    if ($this->{opt}{remove_annotation}) {
+			&remove_annotation_node($sentence);
 		    }
+
+		    $sentence->appendChild($newchild);
+
 		    $start_sent = $i + 1;
 		    last;
 		}
@@ -292,6 +288,16 @@ sub ReadResult {
 	}
     }
     close F;
+}
+
+sub remove_annotation_node {
+    my ($sentence) = @_;
+
+    for my $s_child_node ($sentence->getChildNodes) {
+	if ($s_child_node->nodeName eq 'Annotation') {
+	    $sentence->removeChild($s_child_node);
+	}
+    }
 }
 
 1;
