@@ -1,3 +1,11 @@
+2009-11-23  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl:
+	replaceオプションを廃止して、remove_annotationオプションを追加
+
+	* perl/AddKNPResult.pm:
+	replaceオプションを廃止して、remove_annotationオプションと共通に
+
 2009-11-22  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/AddKNPResult.pm: caseオプション指定時も通常のKNPをnewするように.
