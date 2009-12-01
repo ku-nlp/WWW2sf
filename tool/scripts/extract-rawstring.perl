@@ -20,7 +20,7 @@ use Getopt::Long;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'all', 'title', 'text-only', 'sid-head=s');
+GetOptions(\%opt, 'all', 'title', 'text-only', 'sid-head=s', 'delete-space');
 
 my ($buf);
 while (<STDIN>) {
@@ -49,6 +49,8 @@ sub extract_rawstring {
 	    if ($s_child_node->nodeName eq 'RawString') { # one of the children of S is Text
 		for my $node ($s_child_node->getChildNodes) {
 		    my $text = $node->string_value;
+
+		    $text =~ s/\s+//g if $opt{'delete-space'};
 
 		    printf "\# S-ID:%s%s\n", $opt{'sid-head'}, $sid unless $opt{'text-only'};
 		    print $text, "\n";
