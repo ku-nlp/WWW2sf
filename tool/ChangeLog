@@ -1,3 +1,9 @@
+2009-12-15  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm: ルビ問題に対応.
+
+	* scripts/embed-region-info.perl: DetectBlocks2からDetectBlocksに変更
+
 2009-12-01  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-rawstring.perl:
