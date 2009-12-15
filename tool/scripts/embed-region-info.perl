@@ -7,7 +7,7 @@
 use utf8;
 use strict;
 use RepeatCheck;
-use DetectBlocks2;
+use DetectBlocks;
 use Getopt::Long;
 
 binmode (STDIN, ':utf8');
@@ -66,7 +66,7 @@ close (HTML);
 # 領域情報の埋め込み
 ########################
 
-my $DetectBlocks = new DetectBlocks2(\%opt);
+my $DetectBlocks = new DetectBlocks(\%opt);
 
 # 領域情報の検出
 $DetectBlocks->maketree($content, $url);
