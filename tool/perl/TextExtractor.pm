@@ -96,6 +96,13 @@ $VERSION = sprintf("%d.%d", q$Revision$ =~ /(\d+)\.(\d+)/);
       dl         => 1,
     );
 
+# 要素となっているテキストを抽出しないタグ
+my %SKIP_ELEMENT_TAGS = ();
+#     ( rp         => 1,
+#       rt         => 1
+#     );
+
+
 my $ITEMIZE__HEADER = qr/\p{alphabet_or_number}．/;
 my $CHARS_OF_BEGINNING_OF_ITEMIZATION = qr/、|，|：/;
 
@@ -187,6 +194,9 @@ sub detag {
     # 領域のタイプ
     my $blockType;
 
+    # テキスト要素をスキップするタグの中身かどうかのフラグ
+    my $flag_of_skip_element_flag = 0;
+
     # HTML::TokeParserでparseする
     # HTML::TokeParserを、offsetとlengthを返させるように修正したModifiedTokeParserを使う
     my $parser = ModifiedTokeParser->new($raw_html) or die $!;
@@ -221,6 +231,9 @@ sub detag {
 
 		$text[$count] .= "\n";
 	    }
+
+
+	    $flag_of_skip_element_flag = 1 if (exists $SKIP_ELEMENT_TAGS{$tag});
 
 	    if ($tag eq 'title' && $title eq '') {
 		$mode{title} = 1;
@@ -286,6 +299,7 @@ sub detag {
 	# 終了タグ
 	elsif ($type eq 'E') {
             my $tag = $token->[1];
+	    $flag_of_skip_element_flag = 0 if (exists $SKIP_ELEMENT_TAGS{$tag});
 
             if (defined $DELIMITER_TAGS{$tag}) {
 		# link_bufがある場合、直前に連結
@@ -339,6 +353,10 @@ sub detag {
 
 #           my $text = NFKC($token->[1]);
             my $text = $token->[1];
+
+	    # テキスト要素をスキップするタグならテキストは取得しない
+	    next if ($flag_of_skip_element_flag);
+
 
 	    # "<BR>\n", "<P>\n" を一つの改行と思う
 	    if ($immediately_before_tag =~ /br|p/ && $this->{opt}{uniq_br_and_linebreak}) {
