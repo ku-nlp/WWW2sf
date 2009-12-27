@@ -393,7 +393,7 @@ sub print_extract_sentences {
 		     defined $parsed->{PROPERTY}[$i]{description});
 
 	    if (length($line) > 200) {
-		print STDERR "The following sentence has too much chars: $line\n";
+		print STDERR "The following sentence in file $id has too much chars: $line\n";
 		next;
 	    }
 
