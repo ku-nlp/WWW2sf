@@ -20,7 +20,15 @@ use Getopt::Long;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'all', 'title', 'text-only', 'sid-head=s', 'delete-space');
+GetOptions(\%opt, 'all', 'title', 'text-only', 'sid-head=s', 'delete-space', 'specified-sids=s');
+
+# 特定のsidの文のみを抽出するオプション
+my %specified_sid;
+if ($opt{'specified-sids'}) {
+    for my $sid (split (':', $opt{'specified-sids'})) {
+	$specified_sid{$sid} = 1;
+    }
+}
 
 my ($buf);
 while (<STDIN>) {
@@ -44,6 +52,8 @@ sub extract_rawstring {
 	next if !$opt{all} and !($opt{title} and $tagName eq 'Title') and !$jap_sent_flag; # not Japanese
 	my $sid = $sentence->getAttribute('Id'); # the title string has 0 as its Id.
 	$sid = 0 if $tagName eq 'Title' and !defined($sid); # set the sid of title to 0
+
+	next if $opt{'specified-sids'} && !defined $specified_sid{$sid};
 
 	for my $s_child_node ($sentence->getChildNodes) {
 	    if ($s_child_node->nodeName eq 'RawString') { # one of the children of S is Text
