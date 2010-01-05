@@ -21,10 +21,12 @@ sub new {
     $this->{num_of_knp_use} = 0;
     $this->{opt} = $opt;
 
-    # ツールのモジュールを new する
-    &createJumanObject($this);
-    &createKnpObject($this);
-    &createSynGraphObject($this);
+    if ($this->{opt}{usemodule}) {
+	# ツールのモジュールを new する
+	&createJumanObject($this);
+	&createKnpObject($this);
+	&createSynGraphObject($this);
+    }
 
     bless $this;
 }
