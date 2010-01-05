@@ -72,7 +72,7 @@ $opt{timeout} = 60 unless ($opt{timeout});
 $opt{th_of_knp_use} = 100 unless ($opt{th_of_knp_use});
 
 # SynGraphの設定
-if ($opt{syngraph}) {
+if ($opt{usemodule} && $opt{syngraph}) {
     require SynGraph;
 
     # SynGraphのオプション
