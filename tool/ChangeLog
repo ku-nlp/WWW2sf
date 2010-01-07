@@ -1,3 +1,24 @@
+2010-01-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/set-offset-and-length.perl:
+	verbose指定時に読み今度HTML文書を表示するように.
+
+	* perl/TextExtractor.pm:
+	<title>タグの要素を改行の連続で区切らないようにした.
+
+2010-01-05  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-rawstring.perl:
+	特定のsidの文のみを抽出するオプションを追加
+
+	* perl/AddKNPResult.pm:
+	usemoduleオプションが指定されたときのみ、オブジェクトをnewするように変更
+
+2009-12-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl:
+	エラーを出力したファイルのIDを出力するように.
+
 2009-12-15  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm: ルビ問題に対応.
