@@ -454,7 +454,7 @@ sub extract_text {
     my $paraID = 1;
     my $num_before = 0;
 
-    for (my $i = 0; $i < scalar(@$text); $i++) {
+    for (my $i = 0, my $size = scalar(@$text); $i < $size ; $i++) {
 	next if (!defined $text->[$i] || $text->[$i] eq '');
 	next if ($text->[$i] =~ /^(?:　|\s)*$/);   # 空白は無視する
 
@@ -473,6 +473,9 @@ sub extract_text {
  	$buf =~ s/([^\x0a])\x0a+$/$1/; # 最後の改行を削除
  	$buf =~ s/^\x0a+([^\x0a])/$1/; # 頭の改行を削除
 	$buf =~ s/([^\x0a])\x0a([^\x0a])/$1 $2/g; # 単独の改行をスペースに (後でまわりをみて処理)
+
+	# <title>タグの要素は区切られないように
+	$buf =~ s/\n{2,}/ /g if (defined $property->[$i]{title});
 
 	# 整形処理
 	my @buf;
