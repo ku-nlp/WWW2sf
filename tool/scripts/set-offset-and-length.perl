@@ -98,6 +98,12 @@ sub main {
 	}
     }
 
+    if ($opt{verbose}) {
+	print "----- LOADED HTML DOC -----\n";
+	print $htmldat . "\n";
+	print "----- LOADED HTML DOC -----\n";
+    }
+
     # HTML文書からテキストを取得
     my $ext = new TextExtractor({language => 'japanese', offset => length($ignored_chars)});
     my ($text, $property) = $ext->detag(\$htmldat, {always_countup => 1});
