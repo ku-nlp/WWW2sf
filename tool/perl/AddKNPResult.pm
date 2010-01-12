@@ -6,7 +6,6 @@ package AddKNPResult;
 
 use utf8;
 use strict;
-use SynGraph;
 use Error qw(:try);
 use Data::Dumper;
 
@@ -71,6 +70,7 @@ sub createSynGraphObject {
     my ($this) = @_;
 
     if ($this->{opt}{syngraph}) {
+	require SynGraph;
 	my $syngraph = new SynGraph($this->{opt}{syndbdir}, undef, $this->{opt}{syngraph_option});
 	$this->{syngraph} = $syngraph;
     }
