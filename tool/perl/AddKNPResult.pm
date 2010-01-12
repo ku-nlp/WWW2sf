@@ -27,6 +27,13 @@ sub new {
 	&createSynGraphObject($this);
     }
 
+    if ($this->{opt}{use_knpresult_cache}) {
+	require CDB_Reader;
+	$this->{knpresult_reader} = new CDB_Reader($opt->{knpresult_keymap});
+
+	require IO::Uncompress::Gunzip;
+    }
+
     bless $this;
 }
 
@@ -102,6 +109,18 @@ sub AddKnpResult {
 
 			next if $text eq '';
 			$text =~ s/(?:\n|\r)/ /g;
+
+			# キャッシュをひく
+			if ($this->{opt}{use_knpresult_cache}) {
+			    my $value = $this->{knpresult_reader}->get($text);
+
+			    # キャッシュがひけた
+			    if ($value) {
+				my ($file, $address) = split(':', $value);
+
+				$text = &get_knpresult_cache($file, $address);
+			    }
+			}
 
 			if (defined $this->{opt}{sentence_length_max} && length($text) > $this->{opt}{sentence_length_max}) {
 			    print STDERR "Too Long Sentence: $text\n" if ($this->{opt}{verbose});
@@ -300,6 +319,24 @@ sub remove_annotation_node {
 	    $sentence->removeChild($s_child_node);
 	}
     }
+}
+
+sub get_knpresult_cache {
+    my ($file, $address) = @_;
+
+    my $z = new IO::Uncompress::Gunzip $file;
+
+    $z->seek($address, 0);
+
+    my $buf;
+    while (my $line = $z->getline) {
+	$buf .= $line;
+
+	last if ($line =~ /EOS/);
+    }
+    $z->close;
+
+    return new KNP::Result(Encode::decode('euc-jp', $buf));
 }
 
 1;

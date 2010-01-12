@@ -55,6 +55,8 @@ GetOptions(\%opt,
 	   'sentence',
 	   'timeout=s',
 	   'th_of_knp_use=s',
+	   'use_knpresult_cache',
+	   'knpresult_keymap=s',
 	   'debug');
 
 if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{description} && !$opt{sentence}) {
