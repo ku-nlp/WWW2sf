@@ -156,7 +156,7 @@ fi
 if [ $annotate_blocktype -eq 1 ]
 then
     output=$utf8file.out
-    OPTION="-add_class2html -add_blockname2alltag"
+    OPTION="-add_class2html -add_blockname2alltag -without_juman"
     perl -I $CVS_DIR/DetectBlocks/perl $base_dir/scripts/embed-region-info.perl $OPTION < $utf8file > $output
     mv $output $utf8file
 fi

@@ -23,6 +23,7 @@ GetOptions(\%opt,
 	   'get_more_block',
 	   'rel2abs',
 	   'add_blockname2alltag',
+	   'without_juman',
 	   'juman=s'
 	   );
 
