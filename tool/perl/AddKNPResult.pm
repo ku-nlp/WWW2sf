@@ -96,6 +96,11 @@ sub AddKnpResult {
 	$jap_sent_flag = 1 if ($tagName ne 'S');
 	next if !$this->{opt}{all} and !$jap_sent_flag; # not Japanese
 
+	if ($this->{opt}{blocktype}) {
+	    my $BlockType = $sentence->getAttribute('BlockType');
+
+	    next if $BlockType ne $this->{opt}{blocktype};
+	}
 	if ($this->{opt}{remove_annotation}) {
 	    &remove_annotation_node($sentence);
 	}

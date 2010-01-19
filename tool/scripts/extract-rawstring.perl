@@ -20,7 +20,7 @@ use Getopt::Long;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'all', 'title', 'text-only', 'sid-head=s', 'delete-space', 'specified-sids=s');
+GetOptions(\%opt, 'all', 'title', 'text-only', 'sid-head=s', 'delete-space', 'specified-sids=s', 'blocktype=s');
 
 # 特定のsidの文のみを抽出するオプション
 my %specified_sid;
@@ -54,6 +54,8 @@ sub extract_rawstring {
 	$sid = 0 if $tagName eq 'Title' and !defined($sid); # set the sid of title to 0
 
 	next if $opt{'specified-sids'} && !defined $specified_sid{$sid};
+
+	next if $opt{blocktype} && $sentence->getAttribute('BlockType') ne $opt{blocktype};
 
 	for my $s_child_node ($sentence->getChildNodes) {
 	    if ($s_child_node->nodeName eq 'RawString') { # one of the children of S is Text

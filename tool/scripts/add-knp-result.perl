@@ -57,6 +57,7 @@ GetOptions(\%opt,
 	   'th_of_knp_use=s',
 	   'use_knpresult_cache',
 	   'knpresult_keymap=s',
+	   'blocktype=s',
 	   'debug');
 
 if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{description} && !$opt{sentence}) {
