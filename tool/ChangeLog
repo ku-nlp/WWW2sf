@@ -1,3 +1,16 @@
+2010-01-19  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/embed-region-info.perl, html2sf.sh:
+	DetectBlocks.pm の高速化に対応.
+
+2010-01-12  Tomohide Shibata  <shibata@reed.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl, perl/AddKNPResult.pm:
+	KNP解析結果のキャッシュをひくオプションを追加
+
+	* perl/AddKNPResult.pm:
+	syngraphオプションが与えられた時のみ、require SynGraphするように
+
 2010-01-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
