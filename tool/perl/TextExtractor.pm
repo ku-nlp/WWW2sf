@@ -216,6 +216,14 @@ sub detag {
 		if ($link_buf) {
 		    $text[$count] .= $link_buf;
 		    $link_buf = '';
+
+		    # propertyをセット
+		    $property[$count]->{heading} = $mode{heading};
+		    $property[$count]->{center} = $mode{center};
+		    $property[$count]->{list} = $mode{list};
+		    $property[$count]->{table} = $mode{table};
+		    $property[$count]->{pre} = $mode{pre};
+		    $property[$count]->{blockType} = $blockType;
 		}
 
                 $count++;
@@ -306,6 +314,14 @@ sub detag {
 		if ($link_buf) {
 		    $text[$count] .= $link_buf;
 		    $link_buf = '';
+
+		    # propertyをセット
+		    $property[$count]->{heading} = $mode{heading};
+		    $property[$count]->{center} = $mode{center};
+		    $property[$count]->{list} = $mode{list};
+		    $property[$count]->{table} = $mode{table};
+		    $property[$count]->{pre} = $mode{pre};
+		    $property[$count]->{blockType} = $blockType;
 		}
 
                 $count++;
