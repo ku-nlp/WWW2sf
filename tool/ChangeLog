@@ -1,4 +1,12 @@
-2010-01-19  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+2010-02-03  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm:
+	link_bufの内容が追加される際、propertyデータを書き込むように.
+
+2010-01-19  Tomohide Shibata  <shibata@reed.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result.perl, scripts/extract-rawstring.perl, perl/AddKNPResult.pm:
+	指定されたBlocktypeのみを解析対象とするオプションを追加
 
 	* scripts/embed-region-info.perl, html2sf.sh:
 	DetectBlocks.pm の高速化に対応.
