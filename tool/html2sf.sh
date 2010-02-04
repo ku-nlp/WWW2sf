@@ -103,6 +103,7 @@ fi
 f=$1
 base_f=`expr $f : "\(.*\)\.[^\.]*$"`
 utf8file="$base_f.$$.utf8.html"
+utf8file_w_annotate_blocktype="$utf8file.w.block"
 sentencesfile="$base_f.sentences"
 rawfile="$base_f.$$.raw"
 jmnfile="$base_f.$$.jmn"
@@ -111,7 +112,7 @@ xmlfile0="$base_f.$$.xml0"
 xmlfile1="$base_f.$$.xml1"
 
 clean_tmpfiles() {
-    rm -f $sentencesfile $rawfile $xmlfile0 $xmlfile1 $jmnfile
+    rm -f $sentencesfile $rawfile $xmlfile0 $xmlfile1 $jmnfile $utf8file_w_annotate_blocktype
     if [ ! $save_utf8file -eq 1 ]; then
 	rm -f $utf8file
     fi
@@ -155,14 +156,14 @@ fi
 # 領域のタイプを判定し、その結果を埋め込む
 if [ $annotate_blocktype -eq 1 ]
 then
-    output=$utf8file.out
     OPTION="-add_class2html -add_blockname2alltag -without_juman"
-    perl -I $CVS_DIR/DetectBlocks/perl $base_dir/scripts/embed-region-info.perl $OPTION < $utf8file > $output
-    mv $output $utf8file
+    perl -I $CVS_DIR/DetectBlocks/perl $base_dir/scripts/embed-region-info.perl $OPTION < $utf8file > $utf8file_w_annotate_blocktype
+else
+    cat $utf8file > $utf8file_w_annotate_blocktype
 fi
 
 # 簡素な標準フォーマットを生成
-perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $utf8file > $xmlfile0
+perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $utf8file_w_annotate_blocktype > $xmlfile0
 
 # OffsetとLengthを埋め込み
 perl -I $base_dir/perl $base_dir/scripts/set-offset-and-length.perl -html $utf8file -xml $xmlfile0 > $xmlfile1
