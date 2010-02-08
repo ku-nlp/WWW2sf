@@ -1,6 +1,6 @@
 # $Id$
 
-# Example: make htmllist=/home/skeiji/ipsj/WWW2sf/tool/htmlfiles CONFIG=../conf/configure host_file=/home/skeiji/ipsj/WWW2sf/tool/scripts/hosts.orchids NODE_PREFIX=orchid start
+# Example: make htmllist=/home/skeiji/ipsj/WWW2sf/tool/htmlfiles CONFIG=../conf/configure HOST_FILE=/home/skeiji/ipsj/WWW2sf/tool/scripts/hosts.orchids NODE_PREFIX=orchid start
 
 SHELL = sh
 
@@ -13,19 +13,26 @@ htmllist = $(HOME)/data/htmllist
 
 # gxp を使って並列に処理する際に利用するホスト
 # 書式は以下の付録2を参照
-host_file = $(HOME)/data/hosts
+HOST_FILE = $(HOME)/data/hosts
 
 # tasks ファイル、status ファイルを出力する場所
-WORKSPACE = $(HOME)/work/tsubaki/mksfs
+LOG_OUT_DIR = $(log_out_dir)
 
-# 素の標準フォーマットが出力されるノード、ディレクトリの指定
-# 各ノードで作成された素の標準フォーマットは $(DIST_DIR_OF_MKSF) へ scp される
-DIST_HOST_OF_SF  = orchid01
-DIST_DIR_OF_SF   = /data/$(USER)/tsubaki/mksfs
-DIST_DIR_OF_MKSF = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF)
 
+FLAG_OF_MKHTML = 0
 
 include $(CONFIG)
+
+
+# 各ノードで作成された標準フォーマットは $(DIST_DIR_OF_MKSF) へ scp される
+DIST_HOST_OF_SF   = $(dist_host_of_sf)
+DIST_DIR_OF_SF0   = $(dist_dir_of_sf0)
+DIST_DIR_OF_SF1   = $(dist_dir_of_sf1)
+DIST_DIR_OF_SF2   = $(dist_dir_of_sf2)
+DIST_DIR_OF_MKSF0 = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF0)
+DIST_DIR_OF_MKSF1 = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF1)
+DIST_DIR_OF_MKSF2 = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF2)
+
 
 # Makefile を実行するノードのprefix
 NODE_PREFIX = orchid
@@ -33,7 +40,9 @@ ACCESS_METHOD = ssh
 OUTPUT_DIR_PREFIX = $(workspace4mksfs)
 
 # 素の標準フォーマットのリストを保存するファイル
-sflist = $(HOME)/data/sflist
+sflist0 = $(LOG_OUT_DIR)/sflist0
+sflist1 = $(LOG_OUT_DIR)/sflist1
+sflist2 = $(LOG_OUT_DIR)/sflist2
 
 # embed-annotation.sh のオプション
 OPTION_OF_EMBED_ANNOTATION = $(option4embed_annotation)
@@ -43,36 +52,45 @@ NUM_OF_USE_NODE = 100
 
 
 # start で行う処理
-start: mk_tasks run_tasks mk_tasks4embed run_tasks4embed
+start: mk_htmlfiles mk_tasks run_tasks mk_tasks4embed run_tasks4embed
 
 
 
+mk_htmlfiles:
+	if [ $(FLAG_OF_MKHTML) -eq 1 ]; then sh $(scriptdir)/make-htmlfile.sh $(option4mkhtmls) ; fi
 
-# 素の標準フォーマットを作成する tasks ファイルを $(WORKSPACE) 以下に出力
+
+
+mk_tasks4region:
+	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF1) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF1)/"$$0}' | grep tgz > $(sflist1)
+	cat $(sflist1) | awk '{print "task"NR, "sh $(scriptdir)/embed-annotation.sh $(OPTION_OF_EMBED_ANNOTATION)", $$0}' > $(LOG_OUT_DIR)/tasks4region
+
+
+
+# 素の標準フォーマットを作成する tasks ファイルを $(LOG_OUT_DIR) 以下に出力
 mk_tasks:
-	mkdir -p $(WORKSPACE) 2> /dev/null
-	cat $(htmllist) | awk '{print "task"NR, "sh $(scriptdir)/make-standard-format.sh", $$0, "$(DIST_DIR_OF_MKSF)"}' > $(WORKSPACE)/tasks
-	ssh $(DIST_HOST_OF_SF) rm -rf $(DIST_DIR_OF_SF) 2> /dev/null
-	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF)
+	mkdir -p $(LOG_OUT_DIR) 2> /dev/null
+	cat $(htmllist) | awk '{print "task"NR, "sh $(scriptdir)/make-standard-format.sh", $$0, "$(DIST_DIR_OF_MKSF0)"}' > $(LOG_OUT_DIR)/tasks
+	ssh $(DIST_HOST_OF_SF) rm -rf $(DIST_DIR_OF_SF0) 2> /dev/null
+	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF0)
 
 
-# $(WORKSPACE)/tasks を gxpc ep する
-# $(host_file)で指定されているノードを利用
-
+# $(LOG_OUT_DIR)/tasks を gxpc ep する
+# $(HOST_FILE)で指定されているノードを利用
 # run_tasks: connect_node_by_torque
 run_tasks: connect_node1
 	gxpc e rm -r $(OUTPUT_DIR_PREFIX) 2> /dev/null
 	gxpc e mkdir -p $(OUTPUT_DIR_PREFIX) 2> /dev/null
 	gxpc cd $(OUTPUT_DIR_PREFIX)
-	gxpc ep $(WORKSPACE)/tasks
+	gxpc ep $(LOG_OUT_DIR)/tasks
 	gxpc quit
-	mv status $(WORKSPACE)/
+	mv status $(LOG_OUT_DIR)/
 
 
-# $(host_file)で指定されているノードを獲得
+# $(HOST_FILE)で指定されているノードを獲得
 connect_node1:
 	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
-	gxpc explore --children_hard_limit 1000 -t $(host_file)
+	gxpc explore --children_hard_limit 1000 -t $(HOST_FILE)
 	gxpc e "hostname | grep -v $$HOSTNAME\\$$ | grep -v $(DIST_HOST_OF_SF)"
 	gxpc smask
 	echo "*** USED HOSTS ***"
@@ -87,29 +105,32 @@ connect_node_by_torque:
 	gxpc e hostname | sort
 
 
-# 素の標準フォーマットに解析結果を埋め込む tasks ファイル（tasks4embed）を $(WORKSPACE) 以下に出力
+# 素の標準フォーマットに解析結果を埋め込む tasks ファイル（tasks4embed）を $(LOG_OUT_DIR) 以下に出力
 mk_tasks4embed:
-	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF)/"$$0}' > $(sflist)
-	cat $(sflist) | awk '{print "task"NR, "sh $(scriptdir)/embed-annotation.sh $(OPTION_OF_EMBED_ANNOTATION)", $$0}' > $(WORKSPACE)/tasks4embed
+	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF0) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF0)/"$$0}' | grep tgz > $(sflist0)
+	cat $(sflist0) | awk '{print "task"NR, "sh $(scriptdir)/embed-annotation.sh $(OPTION_OF_EMBED_ANNOTATION)", $$0}' > $(LOG_OUT_DIR)/tasks4embed
+	ssh $(DIST_HOST_OF_SF) rm -rf $(DIST_DIR_OF_SF1) 2> /dev/null
+	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF1)
 
 
-# $(WORKSPACE)/tasks4embed を gxpc ep する
-# $(host_file)で指定されているノードを利用
+# $(LOG_OUT_DIR)/tasks4embed を gxpc ep する
+# $(HOST_FILE)で指定されているノードを利用
 
-# run_tasks4embed:
 run_tasks4embed: connect_node2
 	gxpc e mkdir -p $(OUTPUT_DIR_PREFIX) 2> /dev/null
 	gxpc cd $(OUTPUT_DIR_PREFIX)
 	gxpc e mv output output.bak 2> /dev/null
-	gxpc ep $(WORKSPACE)/tasks4embed
+	gxpc ep $(LOG_OUT_DIR)/tasks4embed
 	gxpc quit
-	mv status $(WORKSPACE)/status4embed
+	mv status $(LOG_OUT_DIR)/status4embed
+
+	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF1) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF1)/"$$0}' | grep tgz > $(sflist1)
 
 
-# $(host_file)で指定されているノードを獲得
+# $(HOST_FILE)で指定されているノードを獲得
 connect_node2:
 	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
-	gxpc explore --children_hard_limit 1000 -t $(host_file)
+	gxpc explore --children_hard_limit 1000 -t $(HOST_FILE)
 	gxpc e "hostname | grep -v $$HOSTNAME\\$$"
 	gxpc smask
 	echo "*** USED HOSTS ***"
@@ -148,7 +169,7 @@ connect_node2:
 
 
 ############################################################################
-# 付録2 $(host_file)で指定するファイルの書式
+# 付録2 $(HOST_FILE)で指定するファイルの書式
 ############################################################################
 
 # % head hosts
