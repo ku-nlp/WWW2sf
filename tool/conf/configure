@@ -1,16 +1,34 @@
 # $Id$
 
 # 解析結果を保存するディレクトリ
+# ★要変更
 workspace=/data/${USER}/tsubaki
 workspace4mksfs=${workspace}/mksfs
 workspace4embed=${workspace}/embed
 
+# tasks, status, sflist ファイルをを保存するディレクトリ
+# ★要変更
+log_out_dir=${HOME}/data/tsubaki
+
+
+# 標準フォーマットが出力されるノード、ディレクトリの指定
+# ★要変更
+dist_host_of_sf=orchid01
+# 標準フォーマットデータ（文抽出のみ）
+dist_dir_of_sf0=${workspace}/sfs0
+# 標準フォーマットデータ（＋言語解析）
+dist_dir_of_sf1=${workspace}/sfs1
+# 標準フォーマットデータ（＋領域情報）
+dist_dir_of_sf2=${workspace}/sfs2
+
 # WWW2sf が置いてあるディレクトリ
+# ★要変更
 www2sfdir=${HOME}/cvs/WWW2sf
 perldir=${www2sfdir}/tool/perl
 scriptdir=${www2sfdir}/tool/scripts
 
 # SynGraph が置いてあるディレクトリ
+# ★要変更
 syngraphdir=${HOME}/cvs/SynGraph
 syngraph_pm=${syngraphdir}/perl
 syndb_path=${syngraphdir}/syndb/`uname -m`
@@ -23,7 +41,7 @@ cndb_path=${HOME}/local/data/cns.10M.gen.df10.cdb
 option4mksfs="-z -c $cndb_path"
 
 # embed-annotation.sh 実行時のオプション
-option4embed_annotation = -z -s -w 300
+option4embed_annotation = -z -s -w 300 -d ${DIST_HOST_OF_SF}:${DIST_DIR_OF_SF1}
 
 
 # 解析に用いるJUMAN/KNPのインストール先
@@ -36,3 +54,7 @@ jmncmd=$tooldir/juman
 knpcmd=$tooldir/knp
 jmnrc=$rcdir/jumanrc
 knprc=$rcdir/knprc
+
+
+# make-htmlfiles.sh のオプション(kuhp)
+option4mkhtmls = -h -T /data/${USER}/kuhp/dat.test -z -N 50 -F ${htmllist} ${HOME}/work/kuhp/CT-20080207-.txt.utf8
