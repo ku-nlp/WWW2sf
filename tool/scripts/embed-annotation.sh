@@ -29,6 +29,7 @@ recycle=0
 #
 no_regist_adjective_stem=
 distflg=0
+
 while getopts jksRNTOIDKSw:d: OPT
 do
     case $OPT in
@@ -158,6 +159,7 @@ rm -rf $outdir
 
 
 mv $outdir.tgz $workspace/finish/
+mv $LOGFILE $workspace/finish/
 
 if [ $distflg -eq 1 ]
 then
