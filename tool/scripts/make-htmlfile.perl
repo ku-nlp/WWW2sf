@@ -6,6 +6,7 @@ use strict;
 use utf8;
 use Getopt::Long;
 use PerlIO::gzip;
+use Error qw(:try);
 
 binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
@@ -24,6 +25,7 @@ sub main {
 	&make_htmlfile_kuhp(\@ARGV);
     }
     elsif ($opt{ipsj}) {
+	&make_htmlfile_ipsj(\@ARGV);
     }
 }
 
@@ -32,7 +34,6 @@ sub make_htmlfile_kuhp {
     my ($files) = @_;
 
     my %VERSION = ();
-    my $count = 0;
     foreach my $file (@$files) {
 	open (F, '<:utf8', $file) or die $!;
 	# skip attribute names
@@ -62,7 +63,7 @@ sub make_htmlfile_kuhp {
 
 	    if ($opt{z}) {
 		open (OUTF, '>:gzip', sprintf ("%s/%s%s.html.gz", $opt{outdir}, $fid, $version)) or die $!;
-		binmode(OUTF, ':utf8');
+		binmode (OUTF, ':utf8');
 	    } else {
 		open (OUTF, '>:utf8', sprintf ("%s/%s%s.html", $opt{outdir}, $fid, $version)) or die $!;
 	    }
@@ -75,9 +76,97 @@ sub make_htmlfile_kuhp {
 	    print  OUTF "</BODY>\n";
 	    print  OUTF "</HTML>\n";
 	    close (OUTF);
-
-	    last if ($count++ > 200);
 	}
 	close (F);
+    }
+}
+
+sub make_htmlfile_ipsj {
+    my ($dirs) = @_;
+
+    require DividePaper;
+
+    my $cite_keys = {
+	KEY1 => ["参考文献", "引用文献", "文献＋pp", "文献＋pages", "文献＋Proc"],
+	KEY2 => ["[Rr]eferences? 1", "[Rr]eferences? \\\[ 1", "[Rr]eference＋pp\\\.", "[Rr]eference＋Vol\\\.",
+		 "REFERENCES? 1", "REFERENCES? \\\[ 1", "REFERENCE＋pp\\\.", "REFERENCE＋Vol\\\."],
+	NEGL => "[ .,\'　]",
+	MISC => "[ <\[〔【]"};
+
+    my $ack_keys = {
+	KEY1 => [],
+	KEY2 => ["謝辞＋感謝", "謝辞＋謝意", "謝辞＋深謝", "謝辞＋本論文", "謝辞＋本研究", "謝辞＋援助", "謝辞＋協力",
+		 "[Aa]cknowledgement＋[Tt]hank", "[Aa]cknowledgement＋acknowledge", "[Aa]cknowledgement＋grateful",
+		 "ACKNOWLEDGEMENT＋[Tt]hank", "ACKNOWLEDGEMENT＋acknowledge", "ACKNOWLEDGEMENT＋grateful"],
+	NEGL => "",
+	MISC => "[ <\[〔【]"};
+
+    my $TIMEOUT = 30;
+    foreach my $dir (@$dirs) {
+	opendir (DIR, $dir) or die "$!";
+	foreach my $file (readdir(DIR)) {
+	    next if ($file eq '.' || $file eq '..');
+	    next if ($file =~ /html$/);
+
+	    my $filepath = $dir . "/" . $file;
+	    my $outfile = $file;
+	    $outfile =~ s/txt$/html/;
+	    print STDERR $filepath . "\n";
+
+	    open (FILE, "nkf -w $filepath |") or die "$!";
+	    binmode (FILE, ":utf8");
+	    my $buf;
+	    while (<FILE>) {
+		$buf .= $_;
+	    }
+	    close (FILE);
+
+	    $buf =~ s/>/&gt;/g;
+	    $buf =~ s/</&lt;/g;
+
+	    try {
+		local $SIG{ALRM} = sub {die sprintf (qq([WARNING] Time out occured! (time=%d [sec], file=%s)), $TIMEOUT, $filepath)};
+		alarm $TIMEOUT;
+
+		my $dp = new DividePaper;
+		my ($main, $cite) = $dp->DividePaper($buf, $cite_keys);
+		my ($main, $ack) = $dp->DividePaper($main, $ack_keys);
+
+		my $_main = $main;
+		# OCRの読み取り誤りに対処
+		$main =~ s/([^\p{Hiragana}|\p{Katakana}|\p{Han}]{10,})([\p{Hiragana}|\p{Katakana}|\p{Han}])([^\p{Hiragana}|\p{Katakana}|\p{Han}]{10,})/\1\3/g;
+
+		# ひらがな、カタカナ、漢字以外の文字が100字以上続いていれば、そこを英語のアブストラクトと思う
+		my ($buf2, $eabst) = ($main =~ /^((?:.|\n)+?)([^\p{Hiragana}|\p{Katakana}|\p{Han}]{100,})/);
+		my $content = "$'";
+		$content = $_main if (length($buf2) > 1000);
+
+
+
+		$content =~ s/(　)+//g;
+		$content =~ s/([a-z|A-Z|0-9|\,|\.|\-]) +([a-z|A-Z|0-9|\,|\.|\-])/$1&nbsp;$3/g;
+		$content =~ s/ +//g;
+		alarm 0;
+
+
+		if ($opt{z}) {
+		    open (WRITER, '>:gzip', sprintf ("%s/%s%s.html.gz", $opt{outdir}, $file)) or die $!;
+		    binmode (WRITER, ':utf8');
+		} else {
+		    open (WRITER, '>:utf8', sprintf ("%s/%s.html", $opt{outdir}, $file)) or die $!;
+		}
+
+		print WRITER "<HTML>\n";
+		print WRITER "<BODY>\n";
+		print WRITER qq(<DIV class="maintext">$content</DIV>\n);
+		print WRITER qq(<DIV class="acknowledgement">$ack</DIV>\n) if ($ack);
+		print WRITER qq(<DIV class="reference">$cite</DIV>\n) if ($cite);
+		print WRITER "</BODY>\n";
+		print WRITER "</HTML>\n";
+		close WRITER;
+	    } catch Error with {
+		print STDERR $filepath . "\n";
+	    };
+	}
     }
 }
