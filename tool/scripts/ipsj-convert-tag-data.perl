@@ -26,6 +26,15 @@ sub main {
 		my $ptn_type = $2;
 		my $string   = $3;
 
+		$mch_type =~ s/^ +//;
+		$mch_type =~ s/ +$//;
+
+		$ptn_type =~ s/^ +//;
+		$ptn_type =~ s/ +$//;
+
+		$string =~ s/^ +//;
+		$string =~ s/ +$//;
+
 		push (@{$buf{$fid}{$mch_type}{$ptn_type}}, $string);
 	    }
 
