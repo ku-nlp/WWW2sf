@@ -73,6 +73,8 @@ if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{
     $opt{outlink} = 1;
     $opt{inlink} = 1;
     $opt{keywords} = 1;
+    $opt{keyword} = 1;
+    $opt{author} = 1;
     $opt{description} = 1;
     $opt{sentence} = 1;
 }
@@ -195,6 +197,8 @@ for my $file (glob ("$opt{indir}/*")) {
  	$addknpresult->AddKnpResult($doc, 'OutLink') if ($opt{outlink});
  	$addknpresult->AddKnpResult($doc, 'InLink') if ($opt{inlink});
  	$addknpresult->AddKnpResult($doc, 'Keywords') if ($opt{keywords});
+ 	$addknpresult->AddKnpResult($doc, 'Keyword') if ($opt{keyword});
+ 	$addknpresult->AddKnpResult($doc, 'Author') if ($opt{author});
  	$addknpresult->AddKnpResult($doc, 'Description') if ($opt{description});
  	$addknpresult->AddKnpResult($doc, 'S') if ($opt{sentence});
 
