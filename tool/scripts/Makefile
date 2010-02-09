@@ -38,6 +38,8 @@ DIST_DIR_OF_MKSF2 = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF2)
 NODE_PREFIX = orchid
 ACCESS_METHOD = ssh
 OUTPUT_DIR_PREFIX = $(workspace4mksfs)
+OUTPUT_DIR_PREFIX_EMBED = $(workspace4embed)
+OUTPUT_DIR_PREFIX_TAG = $(workspace4tag)
 
 # 素の標準フォーマットのリストを保存するファイル
 sflist0 = $(LOG_OUT_DIR)/sflist0
@@ -50,6 +52,11 @@ OPTION_OF_EMBED_ANNOTATION = $(option4embed_annotation)
 # torque で獲得するノード数
 NUM_OF_USE_NODE = 100
 
+# mk_tasks4tag で利用
+RAW_TAG_DATA = $(raw_tag_data)
+TAG_DATA = $(tag_data)
+OPTION_OF_EMBED_TAG = $(option_of_embed_tag)
+
 
 # start で行う処理
 start: mk_htmlfiles mk_tasks run_tasks mk_tasks4embed run_tasks4embed
@@ -61,9 +68,24 @@ mk_htmlfiles:
 
 
 
-mk_tasks4region:
+mk_tasks4tag:
+	mkdir -p $(LOG_OUT_DIR) 2> /dev/null
+	perl $(scriptdir)/ipsj-convert-tag-data.perl $(RAW_TAG_DATA) > $(TAG_DATA)
 	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF1) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF1)/"$$0}' | grep tgz > $(sflist1)
-	cat $(sflist1) | awk '{print "task"NR, "sh $(scriptdir)/embed-annotation.sh $(OPTION_OF_EMBED_ANNOTATION)", $$0}' > $(LOG_OUT_DIR)/tasks4region
+	ssh $(DIST_HOST_OF_SF) rm -r $(DIST_DIR_OF_SF2) > /dev/null
+	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF2)
+	cat $(sflist1) | awk '{print "task"NR, "sh $(scriptdir)/ipsj-embed-tag-data.sh", $$0, "$(OPTION_OF_EMBED_TAG) $(DIST_DIR_OF_MKSF2)"}' > $(LOG_OUT_DIR)/tasks4tag
+
+run_tasks4tag: connect_node3
+	gxpc e rm -r $(OUTPUT_DIR_PREFIX_TAG) 2> /dev/null
+	gxpc e mkdir -p $(OUTPUT_DIR_PREFIX_TAG) 2> /dev/null
+	gxpc cd $(OUTPUT_DIR_PREFIX_TAG)
+	gxpc e mv output output.bak 2> /dev/null
+	gxpc ep $(LOG_OUT_DIR)/tasks4tag
+	gxpc quit
+	mv status $(LOG_OUT_DIR)/status4tag
+
+	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF2) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF2)/"$$0}' | grep tgz > $(sflist2)
 
 
 
@@ -117,8 +139,9 @@ mk_tasks4embed:
 # $(HOST_FILE)で指定されているノードを利用
 
 run_tasks4embed: connect_node2
-	gxpc e mkdir -p $(OUTPUT_DIR_PREFIX) 2> /dev/null
-	gxpc cd $(OUTPUT_DIR_PREFIX)
+	gxpc e rm -r $(OUTPUT_DIR_PREFIX_EMBED) 2> /dev/null
+	gxpc e mkdir -p $(OUTPUT_DIR_PREFIX_EMBED) 2> /dev/null
+	gxpc cd $(OUTPUT_DIR_PREFIX_EMBED)
 	gxpc e mv output output.bak 2> /dev/null
 	gxpc ep $(LOG_OUT_DIR)/tasks4embed
 	gxpc quit
@@ -129,6 +152,14 @@ run_tasks4embed: connect_node2
 
 # $(HOST_FILE)で指定されているノードを獲得
 connect_node2:
+	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
+	gxpc explore --children_hard_limit 1000 -t $(HOST_FILE)
+	gxpc e "hostname | grep -v $$HOSTNAME\\$$"
+	gxpc smask
+	echo "*** USED HOSTS ***"
+	gxpc e hostname
+
+connect_node3:
 	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
 	gxpc explore --children_hard_limit 1000 -t $(HOST_FILE)
 	gxpc e "hostname | grep -v $$HOSTNAME\\$$"
