@@ -20,7 +20,7 @@ sdir=s$id
 outdir=ss$id
 
 
-workspace=$workspace4region
+workspace=$workspace4tag
 
 mkdir -p $workspace 2> /dev/null
 cd $workspace
