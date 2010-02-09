@@ -5,6 +5,7 @@
 workspace=/data/${USER}/tsubaki
 workspace4mksfs=${workspace}/mksfs
 workspace4embed=${workspace}/embed
+workspace4tag=${workspace}/tag
 
 # tasks, status, sflist ファイルをを保存するディレクトリ
 # ★要変更
@@ -41,7 +42,7 @@ cndb_path=${HOME}/local/data/cns.10M.gen.df10.cdb
 option4mksfs="-z -c $cndb_path"
 
 # embed-annotation.sh 実行時のオプション
-option4embed_annotation = -z -s -w 300 -d ${DIST_HOST_OF_SF}:${DIST_DIR_OF_SF1}
+option4embed_annotation='-z -s -w 300 -d ${DIST_HOST_OF_SF}:${DIST_DIR_OF_SF1}'
 
 
 # 解析に用いるJUMAN/KNPのインストール先
@@ -57,4 +58,11 @@ knprc=$rcdir/knprc
 
 
 # make-htmlfiles.sh のオプション(kuhp)
-option4mkhtmls = -h -T /data/${USER}/kuhp/dat.test -z -N 50 -F ${htmllist} ${HOME}/work/kuhp/CT-20080207-.txt.utf8
+option4mkhtmls='-h -T /data/${USER}/kuhp/dat.test -z -N 50 -F ${htmllist} ${HOME}/work/kuhp/CT-20080207-.txt.utf8'
+
+# embed-tag-data.sh で利用するデータ
+file2id=${HOME}/data/tsubaki/file2id
+tagdata=${HOME}/data/tsubaki/tagdata
+raw_tag_data=${HOME}/data/tsubaki/n0.res.0205-3.part1
+tag_data=${log_out_dir}/tagdata
+option_of_embed_tag=${file2id} ${TAG_DATA}
