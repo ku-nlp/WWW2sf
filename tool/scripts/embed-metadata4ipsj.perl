@@ -16,18 +16,45 @@ binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 
 my (%opt);
-GetOptions(\%opt, 'cdb=s', 'file=s');
+GetOptions(\%opt, 'cdb=s', 'file=s', 'file2id=s');
 
 
 &main();
 
 sub main {
+    my %ipsj2kj;
+    my %kj2ipsj;
+    if ($opt{file2id}) {
+	open (F, '<:encoding(utf8)', $opt{file2id}) or die "$!";
+	while (<F>) {
+	    chop;
+
+	    my @field = split (/\s/, $_);
+	    my $ipsj = $field[0];
+	    my $kj   = $field[2];
+
+	    $ipsj2kj{$ipsj} = $kj;
+	    $kj2ipsj{$kj} = $ipsj;
+	}
+	close (F);
+    }
+
+
     my $dbfp = $opt{cdb};
     tie my %cdb, 'CDB_File', $dbfp or die "$0: can't tie to $dbfp $!\n";
 
     my ($fid) = ($opt{file} =~ /([^\/]+?)\./);
 
     my $metadata = decode ('utf8', $cdb{$fid});
+    unless (defined $metadata) {
+	if ($fid =~ /KJ/) {
+	    $metadata = decode ('utf8', $cdb{$kj2ipsj{$fid}});
+	} else {
+	    $metadata = decode ('utf8', $cdb{$ipsj2kj{$fid}});
+	}
+
+	print $fid . "\n" if ($metadata);
+    }
 
     my $xmlbuf;
     if (-f $opt{file}) {
@@ -75,7 +102,7 @@ sub main {
     $writer->startTag('Header');
 
     if ($buf{'TITLE'}) {
-	$writer->startTag('Title', blockType => 'title');
+	$writer->startTag('Title', BlockType => 'title');
 	$writer->startTag('RawString');
 	$writer->characters($buf{'TITLE'});
 	$writer->endTag('RawString');
@@ -84,7 +111,7 @@ sub main {
 
 
     if ($buf{'AUTH'}) {
-	$writer->startTag('Authors', blockType => 'author');
+	$writer->startTag('Authors', BlockType => 'author');
 	foreach my $author (@{$buf{'AUTH'}}) {
 	    # 姓と名の間の空白を消す
 	    $author =~ s/([\p{Hiragana}|\p{Katakana}|\p{Han}])　([\p{Hiragana}|\p{Katakana}|\p{Han}])/\1\2/g;
@@ -99,7 +126,7 @@ sub main {
 
 
     if ($buf{'ABST'}) {
-	$writer->startTag('Abstract', blockType => 'abstract');
+	$writer->startTag('Abstract', BlockType => 'abstract');
 	foreach my $str (split (/[。|．]/, $buf{'ABST'})) {
 	    $writer->startTag('S');
 	    $writer->startTag('RawString');
@@ -113,7 +140,7 @@ sub main {
 
 
     if ($buf{KYWD}) {
-	$writer->startTag('Keywords', blockType => 'keyword');
+	$writer->startTag('Keywords', BlockType => 'keyword');
 	foreach my $keywd (split /[\t+|／|，|、]/, $buf{KYWD}) {
 	    $writer->startTag('Keyword');
 	    $writer->startTag('RawString');
