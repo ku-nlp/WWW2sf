@@ -69,7 +69,7 @@ sub main {
 	chop;
 
 	my $file = $_;
-	my ($fid) = ($file =~ /([^\/]+?).txt.xml/);
+	my ($fid) = ($file =~ /([^\/]+?).xml/);
 	my $outf = sprintf ("%s/%s.xml", $opt{outdir}, $fid);
 	if (-f $outf) {
 #	    print STDERR "[EXISTS] $outf\n";
