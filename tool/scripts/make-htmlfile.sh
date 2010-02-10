@@ -21,7 +21,7 @@ do
 	z)  option="-z $option"
 	    ;;
 	T)  tmpdir=$OPTARG
-	    option="-outdir $tmpdir/html $option"
+	    option="-outdir $tmpdir/htmls $option"
 	    ;;
 	N)  fnum=$OPTARG
 	    ;;
