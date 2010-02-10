@@ -42,8 +42,9 @@ input_utf8html=0
 annotate_blocktype=0
 file_cmd_filter=0
 language=japanese
+ipsj_metadb=
 
-while getopts bfejkspPhBwc:umMUOTF OPT
+while getopts bfejkspPhBwc:umMUOTFt: OPT
 do
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -87,6 +88,8 @@ do
 	O)  extract_args="-make_urldb $extract_args"
 	    ;;
 	T)  annotate_blocktype=1
+	    ;;
+	t)  ipsj_metadb=$OPTARG
 	    ;;
 	F)  file_cmd_filter=1
 	    ;;
@@ -165,6 +168,7 @@ fi
 # 簡素な標準フォーマットを生成
 perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $utf8file_w_annotate_blocktype > $xmlfile0
 
+
 # OffsetとLengthを埋め込み
 perl -I $base_dir/perl $base_dir/scripts/set-offset-and-length.perl -html $utf8file -xml $xmlfile0 > $xmlfile1
 
@@ -178,7 +182,11 @@ if [ ! -s $xmlfile1 ]; then
     exit
 fi
 
-cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
+if [ ! -s $ipsj_metadb ]; then
+    cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
+else
+    perl $base_dir/scripts/embed-metadata4ipsj.perl -cdb $ipsj_metadb -file $xmlfile1 -file2id $HOME/ipsj/istvan/file2id | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
+fi
 
 if [ -n "$annotation" ]; then
 
