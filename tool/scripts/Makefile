@@ -72,7 +72,8 @@ mk_tasks4tag:
 	mkdir -p $(LOG_OUT_DIR) 2> /dev/null
 	perl $(scriptdir)/ipsj-convert-tag-data.perl $(RAW_TAG_DATA) > $(TAG_DATA)
 	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF1) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF1)/"$$0}' | grep tgz > $(sflist1)
-	ssh $(DIST_HOST_OF_SF) rm -r $(DIST_DIR_OF_SF2) > /dev/null
+	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF2)
+	ssh $(DIST_HOST_OF_SF) "rm -r $(DIST_DIR_OF_SF2) 2> /dev/null"
 	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF2)
 	cat $(sflist1) | awk '{print "task"NR, "sh $(scriptdir)/ipsj-embed-tag-data.sh", $$0, "$(OPTION_OF_EMBED_TAG) $(DIST_DIR_OF_MKSF2)"}' > $(LOG_OUT_DIR)/tasks4tag
 
