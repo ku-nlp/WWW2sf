@@ -1,4 +1,39 @@
+2010-02-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/make-htmlfile.perl: timeoutオプションの追加.
+
+	* scripts/Makefile: small changes.
+
+2010-02-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* conf/configure: パラメータの追加.
+
+	* scripts/Makefile: mk_tasks4tag ターゲットを追加.
+
+	* scripts/add-knp-result-dir.perl: Keyword, Author 要素を解析の対象に.
+
+	* scripts/make-htmlfile.perl: make_htmlfile_ipsj 関数を追加.
+
+	* scripts/ipsj-embed-tag-data.sh: small changes.
+
+	* scripts/embed-metadata4ipsj.perl:
+	ipsj <-> kj 変換データを受け取るように.
+
+	* scripts/ipsj-convert-tag-data.perl: 元データの余分な空白を削除.
+
+2010-02-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* conf/configure: パラメータの追加.
+
+	* scripts/Makefile:
+	変数名の変更, 言語解析後、標準フォーマットデータを DIST_HOST_OF_SF にコピーするように.
+
+	* scripts/embed-annotation.sh:
+	logファイルを finish ディレクトリに移すように.
+
 2010-02-04  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* ChangeLog: updated.
 
 	* html2sf.sh: bug fixed.（領域情報を埋め込んだ際、オリジナルのファイルからオフセットを取得するように）
 
