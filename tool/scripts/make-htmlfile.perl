@@ -12,9 +12,10 @@ binmode (STDIN,  ':utf8');
 binmode (STDOUT, ':utf8');
 
 my (%opt);
-GetOptions(\%opt, 'outdir=s', 'kuhp', 'ipsj', 'z');
+GetOptions(\%opt, 'outdir=s', 'kuhp', 'ipsj', 'z', 'timeout=s');
 
 $opt{outdir} = './htmls' unless (defined $opt{outdir});
+$opt{timeout} = 60 unless (defined $opt{timeout});
 
 &main();
 
@@ -101,7 +102,7 @@ sub make_htmlfile_ipsj {
 	NEGL => "",
 	MISC => "[ <\[〔【]"};
 
-    my $TIMEOUT = 30;
+    my $TIMEOUT = $opt{timeout};
     foreach my $dir (@$dirs) {
 	opendir (DIR, $dir) or die "$!";
 	foreach my $file (readdir(DIR)) {
@@ -111,10 +112,8 @@ sub make_htmlfile_ipsj {
 	    my $filepath = $dir . "/" . $file;
 	    my $outfile = $file;
 	    $outfile =~ s/txt$/html/;
-	    print STDERR $filepath . "\n";
 
-	    open (FILE, "nkf -w $filepath |") or die "$!";
-	    binmode (FILE, ":utf8");
+	    open (FILE, '<:utf8', $filepath) or die "$!";
 	    my $buf;
 	    while (<FILE>) {
 		$buf .= $_;
@@ -150,10 +149,10 @@ sub make_htmlfile_ipsj {
 
 
 		if ($opt{z}) {
-		    open (WRITER, '>:gzip', sprintf ("%s/%s%s.html.gz", $opt{outdir}, $file)) or die $!;
+		    open (WRITER, '>:gzip', sprintf ("%s/%s%s.gz", $opt{outdir}, $outfile)) or die $!;
 		    binmode (WRITER, ':utf8');
 		} else {
-		    open (WRITER, '>:utf8', sprintf ("%s/%s.html", $opt{outdir}, $file)) or die $!;
+		    open (WRITER, '>:utf8', sprintf ("%s/%s", $opt{outdir}, $outfile)) or die $!;
 		}
 
 		print WRITER "<HTML>\n";
@@ -164,9 +163,9 @@ sub make_htmlfile_ipsj {
 		print WRITER "</BODY>\n";
 		print WRITER "</HTML>\n";
 		close WRITER;
-	    } catch Error with {
-		print STDERR $filepath . "\n";
-	    };
+ 	    } catch Error with {
+ 		print STDERR "[TIMEOUT] " . $filepath . "\n";
+ 	    };
 	}
     }
 }
