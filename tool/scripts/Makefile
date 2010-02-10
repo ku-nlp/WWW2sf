@@ -25,13 +25,16 @@ include $(CONFIG)
 
 
 # 各ノードで作成された標準フォーマットは $(DIST_DIR_OF_MKSF) へ scp される
-DIST_HOST_OF_SF   = $(dist_host_of_sf)
-DIST_DIR_OF_SF0   = $(dist_dir_of_sf0)
-DIST_DIR_OF_SF1   = $(dist_dir_of_sf1)
-DIST_DIR_OF_SF2   = $(dist_dir_of_sf2)
-DIST_DIR_OF_MKSF0 = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF0)
-DIST_DIR_OF_MKSF1 = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF1)
-DIST_DIR_OF_MKSF2 = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF2)
+DIST_HOST_OF_HTML  = $(dist_host_of_html)
+DIST_DIR_OF_HTML   = $(dist_dir_of_html)
+DIST_HOST_OF_SF    = $(dist_host_of_sf)
+DIST_DIR_OF_SF0    = $(dist_dir_of_sf0)
+DIST_DIR_OF_SF1    = $(dist_dir_of_sf1)
+DIST_DIR_OF_SF2    = $(dist_dir_of_sf2)
+DIST_DIR_OF_MKHTML = $(DIST_HOST_OF_HTML):$(DIST_DIR_OF_HTML)
+DIST_DIR_OF_MKSF0  = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF0)
+DIST_DIR_OF_MKSF1  = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF1)
+DIST_DIR_OF_MKSF2  = $(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF2)
 
 
 # Makefile を実行するノードのprefix
@@ -66,6 +69,14 @@ start: mk_htmlfiles mk_tasks run_tasks mk_tasks4embed run_tasks4embed
 mk_htmlfiles:
 	if [ $(FLAG_OF_MKHTML) -eq 1 ]; then sh $(scriptdir)/make-htmlfile.sh $(option4mkhtmls) ; fi
 
+
+mk_htmlfiles_ipsj: connect_node0
+	ssh $(DIST_HOST_OF_HTML) mkdir -p $(DIST_DIR_OF_HTML) 2> /dev/null
+	cat $(TXT_TGZS) | awk '{print "task"NR, "sh $(scriptdir)/ipsj-make-htmlfile.sh -f", $$0, "-D $(DIST_DIR_OF_MKHTML) -w 30"}' > $(LOG_OUT_DIR)/tasks4mkhtml
+	gxpc ep $(LOG_OUT_DIR)/tasks4mkhtml
+	gxpc quit
+	mv status $(LOG_OUT_DIR)/status4mkhtml
+	ssh $(DIST_HOST_OF_HTML) ls $(DIST_DIR_OF_HTML) | grep tgz | awk '{print "$(DIST_HOST_OF_HTML):$(DIST_DIR_OF_HTML)/"$$0}'> $(htmllist)
 
 
 mk_tasks4tag:
@@ -110,24 +121,6 @@ run_tasks: connect_node1
 	mv status $(LOG_OUT_DIR)/
 
 
-# $(HOST_FILE)で指定されているノードを獲得
-connect_node1:
-	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
-	gxpc explore --children_hard_limit 1000 -t $(HOST_FILE)
-	gxpc e "hostname | grep -v $$HOSTNAME\\$$ | grep -v $(DIST_HOST_OF_SF)"
-	gxpc smask
-	echo "*** USED HOSTS ***"
-	gxpc e hostname | sort
-
-connect_node_by_torque:
-	gxpc use torque $(NODE_PREFIX)
-	gxpc explore $(NODE_PREFIX) $(NUM_OF_USE_NODE)
-	gxpc e "hostname | grep -v $$HOSTNAME\\$$ | grep -v $(DIST_HOST_OF_SF)"
-	gxpc smask
-	echo "*** USED HOSTS ***"
-	gxpc e hostname | sort
-
-
 # 素の標準フォーマットに解析結果を埋め込む tasks ファイル（tasks4embed）を $(LOG_OUT_DIR) 以下に出力
 mk_tasks4embed:
 	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF0) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF0)/"$$0}' | grep tgz > $(sflist0)
@@ -151,7 +144,25 @@ run_tasks4embed: connect_node2
 	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF1) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF1)/"$$0}' | grep tgz > $(sflist1)
 
 
+
+
 # $(HOST_FILE)で指定されているノードを獲得
+connect_node0:
+	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
+	gxpc explore --children_hard_limit 1000 -t $(HOST_FILE)
+	gxpc e "hostname | grep -v $$HOSTNAME\\$$"
+	gxpc smask
+	echo "*** USED HOSTS ***"
+	gxpc e hostname
+
+connect_node1:
+	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
+	gxpc explore --children_hard_limit 1000 -t $(HOST_FILE)
+	gxpc e "hostname | grep -v $$HOSTNAME\\$$ | grep -v $(DIST_HOST_OF_SF)"
+	gxpc smask
+	echo "*** USED HOSTS ***"
+	gxpc e hostname | sort
+
 connect_node2:
 	gxpc use $(ACCESS_METHOD) $$HOSTNAME $(NODE_PREFIX)
 	gxpc explore --children_hard_limit 1000 -t $(HOST_FILE)
@@ -167,6 +178,14 @@ connect_node3:
 	gxpc smask
 	echo "*** USED HOSTS ***"
 	gxpc e hostname
+
+connect_node_by_torque:
+	gxpc use torque $(NODE_PREFIX)
+	gxpc explore $(NODE_PREFIX) $(NUM_OF_USE_NODE)
+	gxpc e "hostname | grep -v $$HOSTNAME\\$$ | grep -v $(DIST_HOST_OF_SF)"
+	gxpc smask
+	echo "*** USED HOSTS ***"
+	gxpc e hostname | sort
 
 
 
