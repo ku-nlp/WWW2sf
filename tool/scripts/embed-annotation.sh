@@ -105,7 +105,7 @@ fi
 
 workspace=$workspace4embed
 LOGFILE=$workspace/$id.log
-command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt -logfile $LOGFILE"
+command="perl -I/home/shibata/tool-x86_64/lib/perl5/site_perl/5.8.8 -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt -logfile $LOGFILE"
 
 
 mkdir -p $workspace 2> /dev/null
@@ -115,7 +115,7 @@ touch $LOGFILE
 
 
 echo scp $filepath ./
-scp $filepath ./
+scp -o "BatchMode yes" -o "StrictHostKeyChecking no" $filepath ./
 
 echo tar xzf $sfdir.tgz
 tar xzf $sfdir.tgz
@@ -163,6 +163,6 @@ mv $LOGFILE $workspace/finish/
 
 if [ $distflg -eq 1 ]
 then
-    scp $workspace/finish/$outdir.tgz $distdir
+    scp -o "BatchMode yes" -o "StrictHostKeyChecking no" $workspace/finish/$outdir.tgz $distdir
     rm -f $workspace/finish/$outdir.tgz
 fi

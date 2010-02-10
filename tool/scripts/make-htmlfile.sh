@@ -5,9 +5,10 @@
 # $Id$
 
 base_dir=`dirname $0`
+source $HOME/.zshrc
 
 option=
-tmpdir=/tmp/$USER
+tmpdir=.
 fnum=10000
 flist='none'
 while getopts hiT:zN:F: OPT
@@ -20,7 +21,7 @@ do
 	z)  option="-z $option"
 	    ;;
 	T)  tmpdir=$OPTARG
-	    option="-outdir $tmpdir/htmls $option"
+	    option="-outdir $tmpdir/html $option"
 	    ;;
 	N)  fnum=$OPTARG
 	    ;;
@@ -30,7 +31,8 @@ do
 done
 shift `expr $OPTIND - 1`
 
-perl $base_dir/make-htmlfile.perl $option $@
+mkdir -p $tmpdir 2> /dev/null
+perl -I$base_dir/../perl $base_dir/make-htmlfile.perl $option $@
 
 find $tmpdir/htmls -type f | awk '{printf "mv %s h%04d\n", $1, int(NR/'$fnum')}' > $tmpdir/mv.sh
 

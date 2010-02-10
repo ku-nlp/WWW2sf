@@ -232,6 +232,7 @@ sub process_one_html {
     # HTMLを文のリストに変換
     my $parsed = $ext->extract_text(\$buf);
 
+
     # 助詞含有率をチェック
     if ($opt{checkzyoshi}) {
 	my $allbuf;

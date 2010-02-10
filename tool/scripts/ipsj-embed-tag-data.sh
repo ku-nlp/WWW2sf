@@ -9,6 +9,7 @@ confdir=`echo $0 | xargs dirname`/../conf
 . $confdir/configure
 
 
+# sleep `expr $RANDOM \% 60`
 
 filepath=$1
 file2id=$2
@@ -25,8 +26,7 @@ workspace=$workspace4tag
 mkdir -p $workspace 2> /dev/null
 cd $workspace
 
-echo scp $filepath ./
-scp $filepath ./
+scp -o "BatchMode yes" -o "StrictHostKeyChecking no" $filepath ./
 
 echo tar xzf $sdir.tgz
 tar xzf $sdir.tgz
@@ -40,6 +40,6 @@ rm -r $sdir
 mv $outdir $sdir
 tar czf $sdir.tgz $sdir
 
-scp $workspace/$sdir.tgz $distdir
+scp -o "BatchMode yes" -o "StrictHostKeyChecking no" $workspace/$sdir.tgz $distdir
 rm -f $workspace/$sdir.tgz
 rm -r $sdir
