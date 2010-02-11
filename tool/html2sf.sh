@@ -182,7 +182,7 @@ if [ ! -s $xmlfile1 ]; then
     exit
 fi
 
-if [ ! -s $ipsj_metadb ]; then
+if [ ! -z $ipsj_metadb ]; then
     cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
 else
     perl $base_dir/scripts/ipsj-embed-metadata.perl -cdb $ipsj_metadb -file $xmlfile1 -file2id $HOME/ipsj/istvan/file2id | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
