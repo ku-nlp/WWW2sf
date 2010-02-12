@@ -15,7 +15,10 @@ HOST_FILE = $(HOME)/data/hosts
 LOG_OUT_DIR = $(log_out_dir)
 
 
-FLAG_OF_MKHTML = 0
+FLAG_OF_MKHTML_KUHP = 0
+FLAG_OF_MKHTML_IPSJ = 0
+FLAG_OF_EMBED_IPSJ_TAG = 0
+
 
 include $(CONFIG)
 
@@ -61,8 +64,19 @@ OPTION_OF_EMBED_TAG = $(option_of_embed_tag)
 
 
 # start で行う処理
-start: mk_htmlfiles mk_tasks run_tasks mk_tasks4embed run_tasks4embed
+start: mk_htmlfiles mk_tasks run_tasks mk_tasks4embed run_tasks4embed embed_ipsj_tag
 
+
+embed_ipsj_tag:
+	if [ $(FLAG_OF_EMBED_IPSJ_TAG) -eq 1 ]; then make mk_tasks4tag run_tasks4tag ; fi
+
+
+mk_htmlfiles:
+	if [ $(FLAG_OF_MKHTML_KUHP) -eq 1 ]; then make mk_htmlfiles_kuhp ; elif [ $(FLAG_OF_MKHTML_IPSJ) -eq 1 ]; then make mk_htmlfiles_ipsj ; fi
+
+
+mk_htmlfiles_kuhp:
+	if [ $(FLAG_OF_MKHTML_KUHP) -eq 1 ]; then sh $(scriptdir)/make-htmlfile.sh $(option4mkhtmls) ; fi
 
 
 mk_htmlfiles:
@@ -74,6 +88,7 @@ mk_htmlfiles_ipsj: connect_node0
 	cat $(TXT_TGZS) | awk '{print "task"NR, "sh $(scriptdir)/ipsj-make-htmlfile.sh -C $(CONFIG) -f", $$0, "-D $(DIST_DIR_OF_MKHTML) -w 30"}' > $(LOG_OUT_DIR)/tasks4mkhtml
 	gxpc ep $(LOG_OUT_DIR)/tasks4mkhtml
 	gxpc quit
+
 	mv status $(LOG_OUT_DIR)/status4mkhtml
 	ssh $(DIST_HOST_OF_HTML) ls $(DIST_DIR_OF_HTML) | grep tgz | awk '{print "$(DIST_HOST_OF_HTML):$(DIST_DIR_OF_HTML)/"$$0}'> $(htmllist)
 
