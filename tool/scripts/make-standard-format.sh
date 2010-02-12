@@ -8,7 +8,27 @@
 
 # 設定ファイルの読み込み
 confdir=`echo $0 | xargs dirname`/../conf
-. $confdir/configure
+configfile=$confdir/configure
+
+fp=
+distdir=
+while getopts C:f:D:w: OPT
+do
+    case $OPT in
+	C) configfile=$OPTARG
+	    ;;
+	f) fp=$OPTARG
+	    ;;
+	D) distdir=$OPTARG
+	    ;;
+	w)  sleep `expr $RANDOM \% $OPTARG`
+	    ;;
+    esac
+done
+shift `expr $OPTIND - 1`
+
+. $configfile
+
 
 workspace=$workspace4mksfs
 
@@ -19,8 +39,6 @@ OPTION=$option4mksfs
 
 . $HOME/.zshrc
 
-fp=$1;
-distdir=$2
 fname=`basename $fp`
 fid=`echo $fname | cut -f 1 -d . | cut -f 2 -d 'h'`
 

@@ -6,25 +6,31 @@
 
 # 設定ファイルの読み込み
 confdir=`echo $0 | xargs dirname`/../conf
-. $confdir/configure
+configfile=$confdir/configure
 
 option=-ipsj
 tmpdir=.
 distdir=
 fnum=10000
 flist='none'
-while getopts f:D:w: OPT
+while getopts C:f:D:w: OPT
 do
     case $OPT in
-	f)  file=$OPTARG
+	C) configfile=$OPTARG
 	    ;;
-	D)  distdir=$OPTARG
+	f) file=$OPTARG
 	    ;;
-	w)  sleep `expr $RANDOM \% $OPTARG`
+	D) distdir=$OPTARG
+	    ;;
+	w) sleep `expr $RANDOM \% $OPTARG`
 	    ;;
     esac
 done
 shift `expr $OPTIND - 1`
+
+
+. $configfile
+
 
 mkdir -p $workspace4mkhtml 2> /dev/null
 cd $workspace4mkhtml

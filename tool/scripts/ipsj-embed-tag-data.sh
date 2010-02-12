@@ -4,17 +4,36 @@
 
 source $HOME/.zshrc
 
+
 # 設定ファイルの読み込み
 confdir=`echo $0 | xargs dirname`/../conf
-. $confdir/configure
+configfile=$confdir/configure
+
+filepath=
+file2id=
+tagdata=
+distdir=
+while getopts C:f:t:D:m:w: OPT
+do
+    case $OPT in
+	C) configfile=$OPTARG
+	    ;;
+	f) filepath=$OPTARG
+	    ;;
+	t) tagdata=$OPTARG
+	    ;;
+	D) distdir=$OPTARG
+	    ;;
+	m) file2id=$OPTARG
+	    ;;
+	w) sleep `expr $RANDOM \% $OPTARG`
+    esac
+done
+shift `expr $OPTIND - 1`
 
 
-# sleep `expr $RANDOM \% 60`
+. $configfile
 
-filepath=$1
-file2id=$2
-tagdata=$3
-distdir=$4
 
 id=`basename $filepath | cut -f 1 -d . | cut -f 2 -d s`
 sdir=s$id

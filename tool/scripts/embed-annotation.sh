@@ -12,7 +12,7 @@ source $HOME/.zshrc
 
 # 設定ファイルの読み込み
 confdir=`echo $0 | xargs dirname`/../conf
-. $confdir/configure
+configfile=$confdir/configure
 
 
 # 解析に用いるツールの指定
@@ -30,9 +30,11 @@ recycle=0
 no_regist_adjective_stem=
 distflg=0
 
-while getopts jksRNTOIDKSw:d: OPT
+while getopts C:jksRNTOIDKSw:d: OPT
 do
     case $OPT in
+	C)  configfile=$OPTARG
+	    ;;
 	j)  tool="-jmn"
 	    ;;
 	k)  tool="-knp"
@@ -63,7 +65,7 @@ do
 done
 shift `expr $OPTIND - 1`
 
-
+. $configfile
 
 clean_tmpfiles() {
     if [ -e $outdir ]; then
