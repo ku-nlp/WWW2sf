@@ -25,7 +25,7 @@ sub main {
     my %ipsj2kj;
     my %kj2ipsj;
     if ($opt{file2id}) {
-	open (F, '<:encoding(utf8)', $opt{file2id}) or die "$!";
+	open (F, '<:encoding(utf8)', $opt{file2id}) or die "$! $opt{file2id}";
 	while (<F>) {
 	    chop;
 
