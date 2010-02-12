@@ -182,7 +182,7 @@ if [ ! -s $xmlfile1 ]; then
     exit
 fi
 
-if [ ! -z $ipsj_metadb ]; then
+if [ -z $ipsj_metadb ]; then
     cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
 else
     file2id=`grep file2id= $base_dir/conf/configure | cut -f 2 -d =`
