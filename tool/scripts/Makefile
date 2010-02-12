@@ -7,10 +7,6 @@ SHELL = sh
 # WWW2sf/tool/conf/configure の場所
 CONFIG = ${HOME}/cvs/WWW2sf/tool/conf/configure
 
-# 変換したい html ファイルのリスト（入力ファイル）
-# 書式は以下の付録1を参照
-htmllist = $(HOME)/data/htmllist
-
 # gxp を使って並列に処理する際に利用するホスト
 # 書式は以下の付録2を参照
 HOST_FILE = $(HOME)/data/hosts
@@ -22,7 +18,6 @@ LOG_OUT_DIR = $(log_out_dir)
 FLAG_OF_MKHTML = 0
 
 include $(CONFIG)
-
 
 # 各ノードで作成された標準フォーマットは $(DIST_DIR_OF_MKSF) へ scp される
 DIST_HOST_OF_HTML  = $(dist_host_of_html)
@@ -43,6 +38,10 @@ ACCESS_METHOD = ssh
 OUTPUT_DIR_PREFIX = $(workspace4mksfs)
 OUTPUT_DIR_PREFIX_EMBED = $(workspace4embed)
 OUTPUT_DIR_PREFIX_TAG = $(workspace4tag)
+
+# 変換したい html ファイルのリスト（入力ファイル）
+# 書式は以下の付録1を参照
+htmllist = $(LOG_OUT_DIR)/hflist
 
 # 素の標準フォーマットのリストを保存するファイル
 sflist0 = $(LOG_OUT_DIR)/sflist0
@@ -72,7 +71,7 @@ mk_htmlfiles:
 
 mk_htmlfiles_ipsj: connect_node0
 	ssh $(DIST_HOST_OF_HTML) mkdir -p $(DIST_DIR_OF_HTML) 2> /dev/null
-	cat $(TXT_TGZS) | awk '{print "task"NR, "sh $(scriptdir)/ipsj-make-htmlfile.sh -f", $$0, "-D $(DIST_DIR_OF_MKHTML) -w 30"}' > $(LOG_OUT_DIR)/tasks4mkhtml
+	cat $(TXT_TGZS) | awk '{print "task"NR, "sh $(scriptdir)/ipsj-make-htmlfile.sh -C $(CONFIG) -f", $$0, "-D $(DIST_DIR_OF_MKHTML) -w 30"}' > $(LOG_OUT_DIR)/tasks4mkhtml
 	gxpc ep $(LOG_OUT_DIR)/tasks4mkhtml
 	gxpc quit
 	mv status $(LOG_OUT_DIR)/status4mkhtml
@@ -86,7 +85,7 @@ mk_tasks4tag:
 	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF2)
 	ssh $(DIST_HOST_OF_SF) "rm -r $(DIST_DIR_OF_SF2) 2> /dev/null"
 	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF2)
-	cat $(sflist1) | awk '{print "task"NR, "sh $(scriptdir)/ipsj-embed-tag-data.sh", $$0, "$(OPTION_OF_EMBED_TAG) $(DIST_DIR_OF_MKSF2)"}' > $(LOG_OUT_DIR)/tasks4tag
+	cat $(sflist1) | awk '{print "task"NR, "sh $(scriptdir)/ipsj-embed-tag-data.sh -f ", $$0, " -C $(CONFIG) $(OPTION_OF_EMBED_TAG) -D $(DIST_DIR_OF_MKSF2)"}' > $(LOG_OUT_DIR)/tasks4tag
 
 run_tasks4tag: connect_node3
 	gxpc e rm -r $(OUTPUT_DIR_PREFIX_TAG) 2> /dev/null
@@ -104,7 +103,7 @@ run_tasks4tag: connect_node3
 # 素の標準フォーマットを作成する tasks ファイルを $(LOG_OUT_DIR) 以下に出力
 mk_tasks:
 	mkdir -p $(LOG_OUT_DIR) 2> /dev/null
-	cat $(htmllist) | awk '{print "task"NR, "sh $(scriptdir)/make-standard-format.sh", $$0, "$(DIST_DIR_OF_MKSF0)"}' > $(LOG_OUT_DIR)/tasks
+	cat $(htmllist) | awk '{print "task"NR, "sh $(scriptdir)/make-standard-format.sh -C $(CONFIG) -f ", $$0, " -D $(DIST_DIR_OF_MKSF0)"}' > $(LOG_OUT_DIR)/tasks
 	ssh $(DIST_HOST_OF_SF) rm -rf $(DIST_DIR_OF_SF0) 2> /dev/null
 	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF0)
 
@@ -124,7 +123,7 @@ run_tasks: connect_node1
 # 素の標準フォーマットに解析結果を埋め込む tasks ファイル（tasks4embed）を $(LOG_OUT_DIR) 以下に出力
 mk_tasks4embed:
 	ssh $(DIST_HOST_OF_SF) ls $(DIST_DIR_OF_SF0) | awk '{print "$(DIST_HOST_OF_SF):$(DIST_DIR_OF_SF0)/"$$0}' | grep tgz > $(sflist0)
-	cat $(sflist0) | awk '{print "task"NR, "sh $(scriptdir)/embed-annotation.sh $(OPTION_OF_EMBED_ANNOTATION)", $$0}' > $(LOG_OUT_DIR)/tasks4embed
+	cat $(sflist0) | awk '{print "task"NR, "sh $(scriptdir)/embed-annotation.sh -C $(CONFIG) $(OPTION_OF_EMBED_ANNOTATION)", $$0}' > $(LOG_OUT_DIR)/tasks4embed
 	ssh $(DIST_HOST_OF_SF) rm -rf $(DIST_DIR_OF_SF1) 2> /dev/null
 	ssh $(DIST_HOST_OF_SF) mkdir -p $(DIST_DIR_OF_SF1)
 
