@@ -31,6 +31,7 @@ shibata <shibata@nlp.kuee.kyoto-u.ac.jp>	2006-08-31 modified.
     - HTTP::Date (libwww-perl-5.805にある)
     - Text::Darts
     - DetectBlocks
+    - PerlIO::gzip
 
 処理
 ----
