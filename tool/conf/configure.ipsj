@@ -1,79 +1,110 @@
 # $Id$
 
-# 解析結果を保存するディレクトリ
-# ★要変更
-workspace=/data/${USER}/tsubaki
-workspace4mkhtml=${workspace}/mkhtmls
-workspace4mksfs=${workspace}/mksfs
-workspace4embed=${workspace}/embed
-workspace4tag=${workspace}/tag
+################################################
+# ★のついた変数の値を環境に応じて変更すること #
+################################################
 
-# tasks, status, sflist ファイルをを保存するディレクトリ
-# ★要変更
-log_out_dir=${HOME}/data/tsubaki
 
-# HTMLファイルが出力されるノード、ディレクトリの指定
-# mk_htmlfiles_ipsj で利用するデータ
-dist_dir_of_html=${workspace}/htmls
 
-# 標準フォーマットが出力されるノード、ディレクトリの指定
-# ★要変更
-dist_host_of_sf=orchid05
-dist_host_of_html=${dist_host_of_sf}
-# 標準フォーマットデータ（文抽出のみ）
-dist_dir_of_sf0=${workspace}/sfs0
-# 標準フォーマットデータ（＋言語解析）
-# dist_dir_of_sf1=${workspace}/sfs1
-dist_dir_of_sf1=/data/skeiji/ipsj
-# 標準フォーマットデータ（＋領域情報）
-dist_dir_of_sf2=${workspace}/sfs2
+##############
+# ツールの設定
+##############
 
-# WWW2sf が置いてあるディレクトリ
-# ★要変更
+# ★解析に用いるJUMAN/KNPのインストール先
+jkdir=${HOME}/local/bin
+
+# ★jumanrc/knprcが置いてあるディレクトリの設定
+rcdir=${HOME}/local/etc
+
+# 解析に利用する juman/knp の設定
+jmncmd=${HOME}/local/bin/juman
+knpcmd=${HOME}/local/bin/knp
+
+# juman/knp の設定ファイル
+jmnrc=${rcdir}/jumanrc
+knprc=${rcdir}/knprc
+
+# ★WWW2sf が置いてあるディレクトリ
 www2sfdir=${HOME}/ipsj/WWW2sf
+
 perldir=${www2sfdir}/tool/perl
 scriptdir=${www2sfdir}/tool/scripts
 
-# SynGraph が置いてあるディレクトリ
-syngraphdir=${HOME}/ipsj/SynGraph
-# ★要変更
-syngraph_pm=${syngraphdir}/perl
-syndb_path=${syngraphdir}/syndb/`uname -m`
 
-# 複合名詞DBのパス
-cndb_path=${HOME}/public_html/data/cns.10M.gen.df10.cdb
 
-# 論文のメタデータのパス
-metadb=/vine4/skeiji/ipsj/org/meta.cdb
+################################
+# 変換処理で利用するデータの場所
+################################
+
+# ★複合名詞DBのパス
+cndb_path=/data/local/skeiji/data/cns.10M.gen.df10.cdb
+
+# ★論文のメタデータのパス
+metadb=${HOME}/data/tsubaki/meta.cdb
+
+# ★論文IDからTSUBAKIのインデックスの内部IDへの変換テーブル
+file2id=${HOME}/data/tsubaki/file2id
+
+# ★論文検索用に埋め込む生データ（istvanさん@NICT から提供される）
+raw_tag_data=${HOME}/data/tsubaki/n0.res.0205-3
+
+# ★論文検索用に埋め込むデータ（自動的に生成される）
+tagdata=${HOME}/data/tsubaki/tagdata
+
+
+
+####################################
+# 作業領域・出力結果用のディレクトリ
+####################################
+
+# ★tasks, status, sflist ファイルをを保存するディレクトリ
+log_out_dir=${HOME}/data/tsubaki
+
+# ★標準フォーマット等のデータが出力されるノード
+dist_host_of_sf=kyushu000
+dist_host_of_html=${dist_host_of_sf}
+
+# ★txtデータから変換されたhtmlデータを保存するディレクトリ
+dist_dir_of_html=${workspace}/htmls
+
+# ★解析結果を保存するディレクトリ
+workspace=/data/local/${USER}/tsubaki
+
+# ★txtファイルをhtmlに変換する際に利用
+workspace4mkhtml=${workspace}/mkhtmls
+
+# ★標準フォーマットデータ（文抽出のみ）
+dist_dir_of_sf0=${workspace}/sfs0
+
+# ★標準フォーマットデータ（＋言語解析）
+dist_dir_of_sf1=${workspace}/sfs1
+
+# ★標準フォーマットデータ（＋領域情報）
+dist_dir_of_sf2=${workspace}/sfs2
+
+# ★htmlファイルを標準フォーマットに変換する際の作業領域
+workspace4mksfs=${workspace}/mksfs
+
+# ★標準フォーマットに言語解析結果を埋め込む際の作業領域
+workspace4embed=${workspace}/embed
+
+# ★標準フォーマットに論文検索用のデータを埋め込む際の作業領域
+workspace4tag=${workspace}/tag
+
+
+
+##############################
+# スクリプト実行時のオプション
+##############################
 
 # www2sf.sh 実行時のオプション
-option4mksfs="-c $cndb_path -t $metadb -z"
+option4mksfs="-c ${cndb_path} -t ${metadb} -z"
 
 # embed-annotation.sh 実行時のオプション
-option4embed_annotation="-z -s -w 300 -d ${DIST_HOST_OF_SF}:${DIST_DIR_OF_SF1}"
-
-
-# 解析に用いるJUMAN/KNPのインストール先
-tooldir=$HOME/local/ipsj/bin
-
-# jumanrc/knprcが置いてあるディレクトリの設定
-rcdir=$HOME/local/ipsj/etc
-
-
-# jmncmd=$tooldir/juman
-jmncmd=$HOME/local/x86_64/ipsj/bin/juman
-knpcmd=$tooldir/knp
-# jmnrc=$rcdir/jumanrc
-jmnrc=$HOME/local/x86_64/ipsj/etc/jumanrc
-knprc=$rcdir/knprc
-
+option4embed_annotation=-s -w 300 -d ${DIST_HOST_OF_SF}:${DIST_DIR_OF_SF1}
 
 # make-htmlfiles.sh のオプション(ipsj)
 option4mkhtmls="-i -N 500 -z"
 
-# embed-tag-data.sh で利用するデータ
-file2id=${HOME}/data/tsubaki/file2id
-tagdata=${HOME}/data/tsubaki/tagdata
-raw_tag_data=${HOME}/data/tsubaki/n0.res.0205-3
-tag_data=${log_out_dir}/tagdata
-option_of_embed_tag=${file2id} ${TAG_DATA}
+# ipsj-embed-tag-data.sh 実行時のオプション
+option_of_embed_tag=-m ${file2id} -t ${TAG_DATA}
