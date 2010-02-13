@@ -25,14 +25,14 @@ jmnrc=${rcdir}/jumanrc
 knprc=${rcdir}/knprc
 
 # ★WWW2sf が置いてあるディレクトリ
-www2sfdir=${HOME}/ipsj/WWW2sf
+www2sfdir=${HOME}/work/ipsj/WWW2sf
 
 perldir=${www2sfdir}/tool/perl
 scriptdir=${www2sfdir}/tool/scripts
 
 
 # ★SynGraph が置いてあるディレクトリ
-syngraphdir=${HOME}/ipsj/SynGraph
+syngraphdir=${HOME}/work/ipsj/SynGraph
 syngraph_pm=${syngraphdir}/perl
 syndb_path=${syngraphdir}/syndb/`uname -m`
 
@@ -45,18 +45,18 @@ syndb_path=${syngraphdir}/syndb/`uname -m`
 # cndb_path=/data/local/skeiji/data/cns.10M.gen.df10.cdb
 
 # ★論文のメタデータのパス
-metadb=${HOME}/data/tsubaki/meta.cdb
+metadb=${HOME}/work/ipsj/data/meta.cdb
 
 # ★論文IDからTSUBAKIのインデックスの内部IDへの変換テーブル
 # ${HOME}を指定すると読み込めない
 # file2id=${HOME}/data/tsubaki/file2id
-file2id=/home/skeiji/data/tsubaki/file2id
+file2id=/home/skeiji/work/ipsj/data/file2id
 
 # ★論文検索用に埋め込む生データ（istvanさん@NICT から提供される）
-raw_tag_data=${HOME}/data/tsubaki/n0.res.0205-3
+raw_tag_data=${HOME}/work/ipsj/data/n0.res.0205-3
 
 # ★論文検索用に埋め込むデータ（自動的に生成される）
-tag_data=${HOME}/data/tsubaki/tagdata
+tag_data=${HOME}/work/ipsj/data/tagdata
 
 
 
@@ -65,7 +65,7 @@ tag_data=${HOME}/data/tsubaki/tagdata
 ####################################
 
 # ★tasks, status, sflist ファイルをを保存するディレクトリ
-log_out_dir=${HOME}/data/tsubaki
+log_out_dir=${HOME}/work/ipsj/data
 
 # ★標準フォーマット等のデータが出力されるノード
 dist_host_of_sf=hiro000
