@@ -52,8 +52,6 @@ sub main {
 	} else {
 	    $metadata = decode ('utf8', $cdb{$ipsj2kj{$fid}});
 	}
-
-	print $fid . "\n" if ($metadata);
     }
 
     my $xmlbuf;
@@ -66,6 +64,7 @@ sub main {
     }
 
     unless ($metadata) {
+	# メタデータがない場合はそのまま出力して終了
 	print $xmlbuf;
 	exit;
     }
