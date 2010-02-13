@@ -10,6 +10,8 @@
 confdir=`echo $0 | xargs dirname`/../conf
 configfile=$confdir/configure
 
+source $HOME/.zshrc
+
 fp=
 distdir=
 while getopts C:f:D:w: OPT
@@ -59,7 +61,7 @@ mkdir $workspace/$xdir
 
 cd $workspace
 echo sh $www2sfdir/tool/www2sf.sh $OPTION $hdir $xdir
-sh $www2sfdir/tool/www2sf.sh $OPTION $hdir $xdir
+sh $www2sfdir/tool/www2sf.sh $OPTION -C $configfile $hdir $xdir
 
 echo rm -r $hdir
 rm -r $hdir
