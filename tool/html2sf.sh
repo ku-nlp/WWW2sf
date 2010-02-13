@@ -23,11 +23,14 @@ usage() {
 # -O: アウトリンク情報を抽出する
 # -T: 領域のタイプを判定する
 # -e: 英語モード
+# -C: 設定ファイルの指定
 
 # Change this for SynGraph annotation
 CVS_DIR=$HOME/cvs
 syngraph_home=$HOME/cvs/SynGraph
 syndb_path=$syngraph_home/syndb/`uname -m`
+
+base_dir=`dirname $0`
 
 extract_std_args="--checkzyoshi --checkjapanese --checkencoding"
 extract_args=
@@ -43,8 +46,9 @@ annotate_blocktype=0
 file_cmd_filter=0
 language=japanese
 ipsj_metadb=
+configfile=$base_dir/conf/configure
 
-while getopts bfejkspPhBwc:umMUOTFt: OPT
+while getopts bfejkspPhBwc:umMUOTFt:C: OPT
 do
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -93,6 +97,8 @@ do
 	    ;;
 	F)  file_cmd_filter=1
 	    ;;
+	C)  configfile=$OPTARG
+	    ;;
         h)  usage
             ;;
     esac
@@ -122,7 +128,6 @@ clean_tmpfiles() {
 }
 
 trap 'clean_tmpfiles; exit 1' 1 2 3 15
-base_dir=`dirname $0`
 
 # 入力がテキストファイルかどうかのチェック
 if [ $file_cmd_filter -eq 1 ]; then
@@ -185,7 +190,7 @@ fi
 if [ -z $ipsj_metadb ]; then
     cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
 else
-    file2id=`grep file2id= $base_dir/conf/configure | cut -f 2 -d =`
+    file2id=`grep file2id= $configfile | cut -f 2 -d =`
     perl $base_dir/scripts/ipsj-embed-metadata.perl -cdb $ipsj_metadb -file $xmlfile1 -file2id $file2id | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
 fi
 
