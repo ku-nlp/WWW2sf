@@ -31,25 +31,32 @@ perldir=${www2sfdir}/tool/perl
 scriptdir=${www2sfdir}/tool/scripts
 
 
+# ★SynGraph が置いてあるディレクトリ
+syngraphdir=${HOME}/ipsj/SynGraph
+syngraph_pm=${syngraphdir}/perl
+syndb_path=${syngraphdir}/syndb/`uname -m`
+
 
 ################################
 # 変換処理で利用するデータの場所
 ################################
 
-# ★複合名詞DBのパス
-cndb_path=/data/local/skeiji/data/cns.10M.gen.df10.cdb
+# ★複合名詞DBのパス（論文検索では不要）
+# cndb_path=/data/local/skeiji/data/cns.10M.gen.df10.cdb
 
 # ★論文のメタデータのパス
 metadb=${HOME}/data/tsubaki/meta.cdb
 
 # ★論文IDからTSUBAKIのインデックスの内部IDへの変換テーブル
-file2id=${HOME}/data/tsubaki/file2id
+# ${HOME}を指定すると読み込めない
+# file2id=${HOME}/data/tsubaki/file2id
+file2id=/home/skeiji/data/tsubaki/file2id
 
 # ★論文検索用に埋め込む生データ（istvanさん@NICT から提供される）
 raw_tag_data=${HOME}/data/tsubaki/n0.res.0205-3
 
 # ★論文検索用に埋め込むデータ（自動的に生成される）
-tagdata=${HOME}/data/tsubaki/tagdata
+tag_data=${HOME}/data/tsubaki/tagdata
 
 
 
@@ -61,7 +68,7 @@ tagdata=${HOME}/data/tsubaki/tagdata
 log_out_dir=${HOME}/data/tsubaki
 
 # ★標準フォーマット等のデータが出力されるノード
-dist_host_of_sf=kyushu000
+dist_host_of_sf=hiro000
 dist_host_of_html=${dist_host_of_sf}
 
 # ★txtデータから変換されたhtmlデータを保存するディレクトリ
@@ -97,14 +104,14 @@ workspace4tag=${workspace}/tag
 # スクリプト実行時のオプション
 ##############################
 
+# make-htmlfiles.sh のオプション(ipsj)
+option4mkhtmls="-i -N 500 -z"
+
 # www2sf.sh 実行時のオプション
-option4mksfs="-c ${cndb_path} -t ${metadb} -z"
+option4mksfs="-t ${metadb} -z"
 
 # embed-annotation.sh 実行時のオプション
 option4embed_annotation=-s -w 300 -d ${DIST_HOST_OF_SF}:${DIST_DIR_OF_SF1}
-
-# make-htmlfiles.sh のオプション(ipsj)
-option4mkhtmls="-i -N 500 -z"
 
 # ipsj-embed-tag-data.sh 実行時のオプション
 option_of_embed_tag=-m ${file2id} -t ${TAG_DATA}
