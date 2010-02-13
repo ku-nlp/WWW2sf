@@ -157,9 +157,9 @@ sub make_htmlfile_ipsj {
 
 		print WRITER "<HTML>\n";
 		print WRITER "<BODY>\n";
-		print WRITER qq(<DIV class="maintext">$content</DIV>\n);
-		print WRITER qq(<DIV class="acknowledgement">$ack</DIV>\n) if ($ack);
-		print WRITER qq(<DIV class="reference">$cite</DIV>\n) if ($cite);
+		print WRITER qq(<DIV myblocktype="maintext">$content</DIV>\n);
+		print WRITER qq(<DIV myblocktype="acknowledgement">$ack</DIV>\n) if ($ack);
+		print WRITER qq(<DIV myblocktype="reference">$cite</DIV>\n) if ($cite);
 		print WRITER "</BODY>\n";
 		print WRITER "</HTML>\n";
 		close WRITER;
