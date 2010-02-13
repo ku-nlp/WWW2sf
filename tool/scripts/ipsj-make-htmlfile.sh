@@ -41,8 +41,10 @@ tdir=t$id
 hdir=h$id
 scp -o "BatchMode yes" -o "StrictHostKeyChecking no" $file ./
 tar xzf $fname
+rm $fname
 
 sh $scriptdir/make-htmlfile.sh $option4mkhtmls -T $tdir $tdir
+
 mv $tdir/htmls $hdir
 tar czf $hdir.tgz $hdir
 rm -r $tdir $hdir

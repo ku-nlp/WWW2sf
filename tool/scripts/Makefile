@@ -67,20 +67,12 @@ OPTION_OF_EMBED_TAG = $(option_of_embed_tag)
 start: mk_htmlfiles mk_tasks run_tasks mk_tasks4embed run_tasks4embed embed_ipsj_tag
 
 
-embed_ipsj_tag:
-	if [ $(FLAG_OF_EMBED_IPSJ_TAG) -eq 1 ]; then make mk_tasks4tag run_tasks4tag ; fi
-
-
 mk_htmlfiles:
 	if [ $(FLAG_OF_MKHTML_KUHP) -eq 1 ]; then make mk_htmlfiles_kuhp ; elif [ $(FLAG_OF_MKHTML_IPSJ) -eq 1 ]; then make mk_htmlfiles_ipsj ; fi
 
 
 mk_htmlfiles_kuhp:
 	if [ $(FLAG_OF_MKHTML_KUHP) -eq 1 ]; then sh $(scriptdir)/make-htmlfile.sh $(option4mkhtmls) ; fi
-
-
-mk_htmlfiles:
-	if [ $(FLAG_OF_MKHTML) -eq 1 ]; then sh $(scriptdir)/make-htmlfile.sh $(option4mkhtmls) ; fi
 
 
 mk_htmlfiles_ipsj: connect_node0
@@ -92,6 +84,9 @@ mk_htmlfiles_ipsj: connect_node0
 	mv status $(LOG_OUT_DIR)/status4mkhtml
 	ssh $(DIST_HOST_OF_HTML) ls $(DIST_DIR_OF_HTML) | grep tgz | awk '{print "$(DIST_HOST_OF_HTML):$(DIST_DIR_OF_HTML)/"$$0}'> $(htmllist)
 
+
+embed_ipsj_tag:
+	if [ $(FLAG_OF_EMBED_IPSJ_TAG) -eq 1 ]; then make mk_tasks4tag run_tasks4tag ; fi
 
 mk_tasks4tag:
 	mkdir -p $(LOG_OUT_DIR) 2> /dev/null

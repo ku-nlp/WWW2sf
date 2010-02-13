@@ -31,7 +31,7 @@ do
 done
 shift `expr $OPTIND - 1`
 
-mkdir -p $tmpdir 2> /dev/null
+mkdir -p $tmpdir/htmls 2> /dev/null
 perl -I$base_dir/../perl $base_dir/make-htmlfile.perl $option $@
 
 find $tmpdir/htmls -type f | awk '{printf "mv %s h%04d\n", $1, int(NR/'$fnum')}' > $tmpdir/mv.sh
