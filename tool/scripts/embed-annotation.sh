@@ -15,10 +15,6 @@ confdir=`echo $0 | xargs dirname`/../conf
 configfile=$confdir/configure
 
 
-# 解析に用いるツールの指定
-command_opt="-jmncmd $jmncmd -knpcmd $knpcmd -jmnrc $jmnrc -knprc $knprc"
-
-
 
 tool=
 recycle=0
@@ -66,6 +62,11 @@ done
 shift `expr $OPTIND - 1`
 
 . $configfile
+
+
+# 解析に用いるツールの指定
+command_opt="-jmncmd $jmncmd -knpcmd $knpcmd -jmnrc $jmnrc -knprc $knprc"
+
 
 clean_tmpfiles() {
     if [ -e $outdir ]; then
@@ -131,7 +132,6 @@ mkdir -p $outdir 2> /dev/null
 ulimit -m 2097152
 ulimit -v 2097152
 
-echo $command
 until [ `tail -1 $LOGFILE | grep finish` ] ;
 do
     $command
