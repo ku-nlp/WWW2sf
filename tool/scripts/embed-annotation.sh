@@ -30,6 +30,8 @@ command_opt=
 while getopts C:jksRNTOIDKSw:d: OPT
 do
     case $OPT in
+	c)  command_opt="$command_opt -case"
+	    ;;
 	C)  configfile=$OPTARG
 	    ;;
 	j)  tool="-jmn"
