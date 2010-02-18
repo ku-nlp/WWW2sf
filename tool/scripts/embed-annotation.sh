@@ -26,6 +26,7 @@ recycle=0
 no_regist_adjective_stem=
 distflg=0
 
+command_opt=
 while getopts C:jksRNTOIDKSw:d: OPT
 do
     case $OPT in
@@ -65,7 +66,7 @@ shift `expr $OPTIND - 1`
 
 
 # 解析に用いるツールの指定
-command_opt="-jmncmd $jmncmd -knpcmd $knpcmd -jmnrc $jmnrc -knprc $knprc"
+command_opt="$command_opt -jmncmd $jmncmd -knpcmd $knpcmd -jmnrc $jmnrc -knprc $knprc"
 
 
 clean_tmpfiles() {
@@ -108,7 +109,7 @@ fi
 
 workspace=$workspace4embed
 LOGFILE=$workspace/$id.log
-command="perl -I $perldir -I $syngraph_pm  $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt -logfile $LOGFILE"
+command="perl -I $perldir -I $syngraph_pm $scriptdir/add-knp-result-dir.perl $recycle_opt $tool -syndbdir $syndb_path -antonymy -indir $sfdir -outdir $outdir -sentence_length_max 130 -all -syndb_on_memory $no_regist_adjective_stem $command_opt -logfile $LOGFILE"
 
 
 mkdir -p $workspace 2> /dev/null
