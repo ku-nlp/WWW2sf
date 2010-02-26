@@ -1,0 +1,62 @@
+package MaltParser;
+
+# A wrapper of MaltParser
+# http://maltparser.org/
+
+use strict;
+use warnings;
+use IPC::Open3;
+use FileHandle;
+use TsuruokaTagger;
+
+our $MEMsize = '1024m';
+our $ParserDir = "$ENV{HOME}/share/tool/malt-1.3.1";
+our $ParserCommand = "java -Xmx$MEMsize -jar $ParserDir/malt.jar -c engmalt -m parse";
+
+sub new {
+    my ($this, $opt) = @_;
+
+    chdir($ParserDir);
+    my $pid = open3(\*WTR, \*RDR, \*ERR, $ParserCommand);
+    $this = {opt => $opt, WTR => \*WTR, RDR => \*RDR, ERR => \*ERR, pid => $pid, tagger => undef};
+    bless $this;
+}
+
+sub DESTROY {
+    my ($this) = @_;
+
+    $this->{WTR}->close;
+    $this->{RDR}->close;
+    $this->{ERR}->close;
+
+    undef $this->{tagger} if defined($this->{tagger});
+}
+
+# parse a tagged sentence in conll format
+sub analyze_from_conll {
+    my ($this, $str) = @_;
+
+    $this->{WTR}->print($str);
+
+    my ($buf);
+    while (1) {
+	my $line = $this->{RDR}->getline; # read one line
+	$buf .= $line;
+	last if $line =~ /^\s*$/;
+    }
+    return $buf;
+}
+
+# parse a raw sentence
+sub analyze {
+    my ($this, $str) = @_;
+
+    $this->{tagger} = new TsuruokaTagger({format => 'conll', lemmatize => defined($this->{opt}{lemmatize}) ? $this->{opt}{lemmatize} : undef}) unless defined($this->{tagger});
+
+    my $tagged_result = $this->{tagger}->analyze($str);
+    return undef unless $tagged_result;
+
+    return $this->analyze_from_conll($tagged_result);
+}
+
+1;
