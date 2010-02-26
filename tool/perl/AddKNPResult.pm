@@ -62,6 +62,18 @@ sub createKnpObject {
 	}
     }
 
+    if ($this->{opt}{anaphora}) {
+	if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
+	    my $knp = new KNP (-Command => $this->{opt}{knpcmd},
+			       -Rcfile => $this->{opt}{knprc},
+			       -JumanCommand => $this->{opt}{jmncmd},
+			       -JumanRcfile => $this->{opt}{jmnrc},
+			       -JumanOption => '-i \#',
+			       -Option => '-tab -postprocess -anaphora-normal -relation-noun -ne-crf');
+	    $this->{knp_w_anaphora} = $knp;
+	}
+    }
+
     if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
 	my $knp = new KNP (-Command => $this->{opt}{knpcmd},
 			   -Rcfile => $this->{opt}{knprc},
@@ -217,15 +229,20 @@ sub AppendNode {
 		$text = "# VERSION:\n$text";
 		if ($this->{opt}{case} && $jap_sent_flag) {
 		    $result = $this->{knp_w_case}->parse_mlist($this->{knp_w_case}->juman($text));
-		} else {
-		    # 格解析オプションが指定されていない場合, もしくは日本語文でない場合
+		}
+		elsif ($this->{opt}{anaphora} && $jap_sent_flag) {
+		    $result = $this->{knp_w_anaphora}->parse_mlist($this->{knp_w_anaphora}->juman($text));
+		}
+		else {
+		    # 格解析,省略解析オプションが指定されていない場合, もしくは日本語文でない場合
 		    $result = $this->{knp}->parse_mlist($this->{knp}->juman($text));
 		}
 		$this->{num_of_knp_use}++;
 		if ($this->{num_of_knp_use} > $this->{th_of_knp_use}) {
-		    # KNP を new し直す
+		    # KNP を close する
 		    $this->{num_of_knp_use} = 0;
-		    $this->createKnpObject();
+		    $this->{knp_w_case}->close() if ($this->{opt}{case});
+		    $this->{knp_w_anaphora}->close() if ($this->{opt}{anaphora});
 		}
 	    }
 
