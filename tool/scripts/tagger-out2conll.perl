@@ -17,7 +17,7 @@ while (<>) {
     chomp;
     my $i = 1;
     for my $pair (split(' ', $_)) {
-	my ($word, $pos) = split('/', $pair, 2);
+	my ($word, $pos) = ($pair =~ m|^(.+)/([^/]+)$|);
 	$pos = &change_parenthesis_pos($pos);
 	my $h = 0;
 	my $rel = '_';
