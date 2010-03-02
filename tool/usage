@@ -1,5 +1,5 @@
 USAGE:
-  WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u] [-c somewhere/cns.cdb] [-S] hdir xdir
+  WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u|-U] [-z] [-c somewhere/cns.cdb] [-S] [-T] [-e|-E] hdir xdir
 
 OPTION:
   -j    ... jumanの解析結果を埋め込む.
@@ -22,6 +22,10 @@ OPTION:
             (デフォルトでは5MB以上のファイルは変換されない)
 
   -T    ... 領域判定を行う.
+
+  -e    ... 英語モード.
+
+  -E    ... 英語モード (構文解析は行わず、文抽出のみを行う).
 
   hdir  ... HTML文書が収められたディレクトリ.
             (utf8化されていないもの, gzipされていないもの)
