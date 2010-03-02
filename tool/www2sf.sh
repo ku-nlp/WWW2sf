@@ -18,7 +18,7 @@ fsize_threshold=5242880
 base_dir=`dirname $0`
 
 flag_of_make_urldb=0
-while getopts jkshS:c:uUzOTFt:C: OPT
+while getopts jkshS:c:uUzOTFt:C:eE OPT
 do
     case $OPT in
 	j)  html2sf_extra_args="-j $html2sf_extra_args"
@@ -47,6 +47,10 @@ do
 	F)  html2sf_extra_args="-F $html2sf_extra_args"
 	    ;;
 	C)  html2sf_extra_args="-C $OPTARG $html2sf_extra_args"
+	    ;;
+	e)  html2sf_extra_args="-e $html2sf_extra_args"
+	    ;;
+	E)  html2sf_extra_args="-E $html2sf_extra_args"
 	    ;;
         h)  usage
             ;;
