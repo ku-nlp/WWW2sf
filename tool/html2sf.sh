@@ -48,7 +48,7 @@ language=japanese
 ipsj_metadb=
 configfile=$base_dir/conf/configure
 
-while getopts bfejkspPhBwc:umMUOTFt:C: OPT
+while getopts bfjkspPhBwc:umMUOTFt:C:eE OPT
 do
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -61,6 +61,10 @@ do
 	    addknp_args="--conll --all"
 	    annotation=conll
 	    use_module=0
+	    extract_std_args=""
+	    extract_args="--language english $extract_args"
+	    ;;
+	E)  language=english
 	    extract_std_args=""
 	    extract_args="--language english $extract_args"
 	    ;;
@@ -146,19 +150,24 @@ if [ $lnum -gt 5000 ]; then
     exit
 fi
 
-
-# utf8に変換(crawlデータは変換済みのため、強制的に utf8 と判断させる)
-if [ $input_utf8html -eq 1 ]
+# 英語以外はutf8変換
+if [ $language = english ]
 then
-    perl -CIOE -I $base_dir/perl $base_dir/scripts/to_utf8.perl -force $f > $utf8file
+    cp -f $f $utf8file
 else
-    perl -I $base_dir/perl $base_dir/scripts/to_utf8.perl $f > $utf8file
-fi
-# 文字コードが推定できないなどの理由でutf8化されたページが得られない場合は終了
-if [ $? -ne 0 ]; then
-    echo "$f - UTF-8 変換で失敗しました" 1>&2
-    rm -f $utf8file
-    exit
+    # utf8に変換(crawlデータは変換済みのため、強制的に utf8 と判断させる)
+    if [ $input_utf8html -eq 1 ]
+    then
+	perl -CIOE -I $base_dir/perl $base_dir/scripts/to_utf8.perl -force $f > $utf8file
+    else
+	perl -I $base_dir/perl $base_dir/scripts/to_utf8.perl $f > $utf8file
+    fi
+    # 文字コードが推定できないなどの理由でutf8化されたページが得られない場合は終了
+    if [ $? -ne 0 ]; then
+	echo "$f - UTF-8 変換で失敗しました" 1>&2
+	rm -f $utf8file
+	exit
+    fi
 fi
 
 # 領域のタイプを判定し、その結果を埋め込む
