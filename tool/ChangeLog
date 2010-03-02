@@ -1,3 +1,21 @@
+2010-03-02  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/parse-english.sh:
+	Modified to use MaltParser.
+
+	* html2sf.sh:
+	Fixed encoding handling for English pages.
+
+	* www2sf.sh:
+	Added options for English pages.
+
+	* usage:
+	Added description.
+
+2010-02-26  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* perl/TsuruokaTagger.pm, perl/MaltParser.pm: added.
+
 2010-02-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/make-htmlfile.perl: timeoutオプションの追加.
