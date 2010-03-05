@@ -81,3 +81,6 @@ $DetectBlocks->addCSSlink($DOMtree, 'style.css');
 print $header if ($header);
 # 先頭から３行に � を出力している
 print $DOMtree->as_HTML("<>&","\t");
+
+# メモリを解放
+$DetectBlocks->{tree}->delete();
