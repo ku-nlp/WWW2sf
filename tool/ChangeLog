@@ -1,3 +1,21 @@
+2010-05-13  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* perl/TsuruokaTagger.pm:
+	Modification of newline handling.
+
+	* perl/MaltParser.pm:
+	Turned on autoflush and lemmatization.
+	Modified to specify java PATH.
+
+	* perl/AddKNPResult.pm:
+	Added English support.
+
+	* scripts/add-knp-result.perl:
+	Changed an option (conll -> english).
+
+	* html2sf.sh:
+	Modified to use module for English.
+
 2010-03-02  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/parse-english.sh:
