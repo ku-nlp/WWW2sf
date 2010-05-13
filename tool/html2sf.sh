@@ -58,9 +58,8 @@ do
 	B)  extract_args="--blog mt $extract_args"
 	    ;;
 	e)  language=english
-	    addknp_args="--conll --all"
+	    addknp_args="--english --all"
 	    annotation=conll
-	    use_module=0
 	    extract_std_args=""
 	    extract_args="--language english $extract_args"
 	    ;;
