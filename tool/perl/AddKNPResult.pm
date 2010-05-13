@@ -25,6 +25,7 @@ sub new {
 	&createJumanObject($this);
 	&createKnpObject($this);
 	&createSynGraphObject($this);
+	&createMaltParserObject($this);
     }
 
     if ($this->{opt}{use_knpresult_cache}) {
@@ -95,6 +96,15 @@ sub createSynGraphObject {
     }
 }
 
+sub createMaltParserObject {
+    my ($this) = @_;
+
+    if ($this->{opt}{english}) {
+	require MaltParser;
+	$this->{maltparser} = new MaltParser({lemmatize => 1});
+    }
+}
+
 
 sub DESTROY {
     my ($this) = @_;
@@ -159,6 +169,10 @@ sub AddKnpResult {
 			    elsif ($this->{opt}{knp}) {
 				$this->AppendNode($doc, $sentence, $text, 'Knp', $jap_sent_flag);
 			    }
+			    # 英語
+			    elsif ($this->{opt}{english}) {
+				$this->AppendNode($doc, $sentence, $text, 'CoNLL', $jap_sent_flag);
+			    }
 			}
 		    }
 		}
@@ -206,7 +220,7 @@ sub AddKnpResult {
 }
 
 # ノードを追加する
-# $type: Juman or Knp or SynGraph
+# $type: Juman or Knp or SynGraph or CoNLL
 sub AppendNode {
     my ($this, $doc, $sentence, $text, $type, $jap_sent_flag) = @_;
 
@@ -261,6 +275,10 @@ sub AppendNode {
 	    return;
 	};
     }
+    elsif ($type eq 'CoNLL') { # 英語: CoNLL format
+	$result_string = $this->{maltparser}->analyze($text);
+	$result_string =~ s/\n\n$/\nEOS\n/;
+    }
 
     my $cdata = $doc->createCDATASection($result_string);
 
@@ -287,7 +305,7 @@ sub ReadResult {
     elsif ($this->{opt}{knp}) {
 	$scheme = 'Knp';
     }
-    elsif ($this->{opt}{conll}) {
+    elsif ($this->{opt}{english}) {
 	$scheme = 'CoNLL';
     }
 
