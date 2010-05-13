@@ -17,6 +17,9 @@ sub new {
     chdir($TaggerDir);
     my $pid = open3(\*WTR, \*RDR, \*ERR, $TaggerCommand);
     $this = {opt => $opt, WTR => \*WTR, RDR => \*RDR, ERR => \*ERR, pid => $pid, lemmatizer => undef};
+    $this->{RDR}->autoflush(1);
+    $this->{WTR}->autoflush(1);
+
     bless $this;
 }
 
@@ -33,7 +36,9 @@ sub DESTROY {
 sub analyze {
     my ($this, $str) = @_;
 
-    return undef unless $str;
+    return undef if !$str or $str =~ /^\s*$/;
+    $str .= "\n" unless $str =~ /\n$/;
+
     $this->{WTR}->print($str);
 
     my $buf = $this->{RDR}->getline; # read one line
