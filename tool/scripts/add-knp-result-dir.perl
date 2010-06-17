@@ -55,6 +55,8 @@ GetOptions(\%opt,
 	   'sentence',
 	   'timeout=s',
 	   'th_of_knp_use=s',
+	   'wikipedia_entry_db=s',
+	   'find_recursive',
 	   'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
@@ -84,6 +86,15 @@ if (! -d $opt{outdir}) {
     mkdir $opt{outdir};
 }
 
+my @files = ();
+unless ($opt{find_recursive}) {
+    for my $file (glob ("$opt{indir}/*")) {
+	push (@files, $file);
+    }
+} else {
+    &findFiles(\@files, $opt{indir});
+}
+
 # SynGraphの設定
 if ($opt{syngraph}) {
     require SynGraph;
@@ -97,7 +108,12 @@ if ($opt{syngraph}) {
     }
 
     # option
+    $regnode_option->{no_attach_synnode_in_wikipedia_entry} = 1;
+    $regnode_option->{attach_wikipedia_info} = 1 if ($opt{wikipedia_entry_db});
+    $regnode_option->{wikipedia_entry_db} = $opt{wikipedia_entry_db} if ($opt{wikipedia_entry_db});
+
     $regnode_option->{relation} = ($opt{hyponymy}) ? 1 : 0;
+    $regnode_option->{relation_recursive} = ($opt{hyponymy}) ? 1 : 0;
     $regnode_option->{antonym} = ($opt{antonymy}) ? 1 : 0;
     $regnode_option->{hypocut_attachnode} = $opt{hypocut} if $opt{hypocut};
 
@@ -107,10 +123,14 @@ if ($opt{syngraph}) {
 	no_regist_adjective_stem => $opt{no_regist_adjective_stem},
 	db_on_memory => $opt{syndb_on_memory}
     };
+    $syngraph_option->{no_attach_synnode_in_wikipedia_entry} = 1;
+    $syngraph_option->{attach_wikipedia_info} = 1 if ($opt{wikipedia_entry_db});
+    $syngraph_option->{wikipedia_entry_db} = {wikipedia_entry_db} = $opt{wikipedia_entry_db} if ($opt{wikipedia_entry_db});
 
     $opt{regnode_option} = $regnode_option;
     $opt{syngraph_option} = $syngraph_option;
 }
+
 
 
 my $addknpresult = new AddKNPResult(\%opt);
@@ -150,7 +170,8 @@ unless ($opt{nologfile}) {
 }
 
 open(LOG, ">> $opt{logfile}") or die $! unless $opt{nologfile};
-for my $file (glob ("$opt{indir}/*")) {
+
+foreach my $file (@files) {
     # 既に解析済みのファイルはスキップ
     next if (!$opt{nologfile} && exists $alreadyAnalyzedFiles{$file});
 
@@ -167,6 +188,7 @@ for my $file (glob ("$opt{indir}/*")) {
     binmode(F, ':utf8');
 
     print STDERR $file, "\n" if ($opt{debug});
+
 
     my ($buf);
     while (<F>) {
@@ -186,8 +208,6 @@ for my $file (glob ("$opt{indir}/*")) {
 	printf STDERR ("[SKIP] An exception was detected in %s (file: %s, line: %s, msg; %s)\n", $file, $err->{-file}, $err->{-line}, $err->{-text});
     };
     next unless ($doc);
-
-
 
     try {
 	# タイムアウトの設定
@@ -236,3 +256,19 @@ for my $file (glob ("$opt{indir}/*")) {
 
 print LOG "finish.\n" unless $opt{nologfile};
 close (LOG) unless $opt{nologfile};
+
+sub findFiles {
+    my ($files, $dir) = @_;
+
+    opendir (D, $dir) or die $!;
+    foreach my $file_or_dir (readdir(D)) {
+	next if ($file_or_dir eq '.' || $file_or_dir eq '..');
+
+	unless (-d "$dir/$file_or_dir") {
+	    push (@$files, "$dir/$file_or_dir");
+	} else {
+	    findFiles($files, "$dir/$file_or_dir");
+	}
+    }
+    closedir (D);
+}
