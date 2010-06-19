@@ -125,7 +125,7 @@ if ($opt{syngraph}) {
     };
     $syngraph_option->{no_attach_synnode_in_wikipedia_entry} = 1;
     $syngraph_option->{attach_wikipedia_info} = 1 if ($opt{wikipedia_entry_db});
-    $syngraph_option->{wikipedia_entry_db} = {wikipedia_entry_db} = $opt{wikipedia_entry_db} if ($opt{wikipedia_entry_db});
+    $syngraph_option->{wikipedia_entry_db} = $opt{wikipedia_entry_db} if ($opt{wikipedia_entry_db});
 
     $opt{regnode_option} = $regnode_option;
     $opt{syngraph_option} = $syngraph_option;
@@ -267,7 +267,7 @@ sub findFiles {
 	unless (-d "$dir/$file_or_dir") {
 	    push (@$files, "$dir/$file_or_dir");
 	} else {
-	    findFiles($files, "$dir/$file_or_dir");
+	    &findFiles($files, sprintf ("%s/%s", $dir, $file_or_dir));
 	}
     }
     closedir (D);
