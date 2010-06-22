@@ -20,7 +20,7 @@ use Getopt::Long;
 use strict;
 
 my (%opt);
-GetOptions(\%opt, 'all', 'title', 'text-only', 'sid-head=s', 'delete-space', 'specified-sids=s', 'blocktype=s');
+GetOptions(\%opt, 'all', 'title', 'text-only', 'sid-head=s', 'delete-space', 'specified-sids=s', 'blocktype=s', 'preserve-blocktype');
 
 # 特定のsidの文のみを抽出するオプション
 my %specified_sid;
@@ -55,7 +55,8 @@ sub extract_rawstring {
 
 	next if $opt{'specified-sids'} && !defined $specified_sid{$sid};
 
-	next if $opt{blocktype} && $sentence->getAttribute('BlockType') ne $opt{blocktype};
+	my $blocktype = $sentence->getAttribute('BlockType') if $opt{blocktype} || $opt{'preserve-blocktype'};
+	next if $opt{blocktype} && $blocktype ne $opt{blocktype};
 
 	for my $s_child_node ($sentence->getChildNodes) {
 	    if ($s_child_node->nodeName eq 'RawString') { # one of the children of S is Text
@@ -64,7 +65,11 @@ sub extract_rawstring {
 
 		    $text =~ s/\s+//g if $opt{'delete-space'};
 
-		    printf "\# S-ID:%s%s\n", $opt{'sid-head'}, $sid unless $opt{'text-only'};
+		    unless ($opt{'text-only'}) {
+			printf "\# S-ID:%s%s", $opt{'sid-head'}, $sid;
+			print " BlockType:$blocktype" if $blocktype;
+			print "\n";
+		    }
 		    print $text, "\n";
 		}
 	    }
