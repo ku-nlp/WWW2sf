@@ -1,3 +1,8 @@
+2010-06-22  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/extract-rawstring.perl:
+	Added an option of preserving blocktypes.
+
 2010-05-13  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/TsuruokaTagger.pm:
