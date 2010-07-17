@@ -1,3 +1,8 @@
+2010-07-17  Daisuke Kawahara  <dk@nict.go.jp>
+
+	* scripts/extract-rawstring.perl, scripts/extract-sentences.perl, scripts/format-www-xml.perl, scripts/sentence-filter-xml.perl, perl/AddKNPResult.pm:
+	Modified Japanese-related attributes.
+
 2010-06-22  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/extract-rawstring.perl:
