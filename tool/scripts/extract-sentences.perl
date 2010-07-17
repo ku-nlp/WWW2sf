@@ -293,12 +293,9 @@ sub print_page_header {
 		    next;
 		}
 
-		if ($opt{checkjapanese}) {
-		    my $score = sprintf("%.5f", $Filter->JapaneseCheck($line));
-		    my $is_Japanese = $score > $Threshold_Filter ? '1' : '0';
-		}
+		my $japanese_score = sprintf("%.5f", $Filter->JapaneseCheck($line));
 
-		$writer->startTag($tagname);
+		$writer->startTag($tagname, JapaneseScore => $japanese_score);
 		$writer->startTag('RawString');
 		$writer->characters($line);
 		$writer->endTag('RawString');
@@ -401,18 +398,12 @@ sub print_extract_sentences {
 	    $prev_offset = $parsed->{PROPERTY}[$i]{offset};
 	    $prev_length = $parsed->{PROPERTY}[$i]{length};
 
-	    if ($opt{checkjapanese}) {
-		my $score = sprintf("%.5f", $Filter->JapaneseCheck($line));
-		my $is_Japanese = $score > $Threshold_Filter ? '1' : '0';
+	    my $japanese_score = sprintf("%.5f", $Filter->JapaneseCheck($line));
 
-		# $writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length}, is_Japanese => $is_Japanese, JapaneseScore => $score);
-	    }
-
-#	    $writer->startTag('S', Offset => $parsed->{PROPERTY}[$i]{offset}, Length => $parsed->{PROPERTY}[$i]{length});
 	    $para++ if ($prev_para < -1 || $prev_para != $parsed->{PROPERTY}[$i]{paragraph});
 	    $prev_para = $parsed->{PROPERTY}[$i]{paragraph};
 
-	    $writer->startTag('S', Paragraph => $para, BlockType => $parsed->{PROPERTY}[$i]{blockType});
+	    $writer->startTag('S', Paragraph => $para, BlockType => $parsed->{PROPERTY}[$i]{blockType}, JapaneseScore => $japanese_score);
 	    $writer->startTag('RawString');
 	    $writer->characters($line);
 	    $writer->endTag('RawString');

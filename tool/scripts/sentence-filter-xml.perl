@@ -37,7 +37,6 @@ sub xml_japanese_check {
 	    if ($s_child_node->getNodeName eq 'RawString') { # one of the children of S is Text
 		for my $node ($s_child_node->getChildNodes) {
 		    my $score = &japanese_check($node->getNodeValue); # calculate Japanese score of text
-		    $sentence->setAttribute('is_Japanese', $score > $Threshold ? '1' : '0');
 		    $sentence->setAttribute('JapaneseScore', sprintf("%.5f", $score));
 		}
 	    }

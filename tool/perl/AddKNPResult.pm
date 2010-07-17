@@ -114,7 +114,7 @@ sub AddKnpResult {
     my ($this, $doc, $tagName) = @_;
 
     for my $sentence ($doc->getElementsByTagName($tagName)) { # for each $tagName
-	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
+	my $jap_sent_flag = $sentence->getAttribute('is_Normal_Sentence');
 	$jap_sent_flag = 1 if ($tagName ne 'S');
 	next if !$this->{opt}{all} and !$jap_sent_flag; # not Japanese
 

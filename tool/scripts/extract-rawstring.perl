@@ -48,7 +48,7 @@ sub extract_rawstring {
     my ($doc, $tagName) = @_;
 
     for my $sentence ($doc->getElementsByTagName($tagName)) { # for each S
-	my $jap_sent_flag = $sentence->getAttribute('is_Japanese_Sentence');
+	my $jap_sent_flag = $sentence->getAttribute('is_Normal_Sentence');
 	next if !$opt{all} and !($opt{title} and $tagName eq 'Title') and !$jap_sent_flag; # not Japanese
 	my $sid = $sentence->getAttribute('Id'); # the title string has 0 as its Id.
 	$sid = 0 if $tagName eq 'Title' and !defined($sid); # set the sid of title to 0
