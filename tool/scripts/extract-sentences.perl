@@ -293,7 +293,7 @@ sub print_page_header {
 		    next;
 		}
 
-		my $japanese_score = sprintf("%.5f", $Filter->JapaneseCheck($line));
+		my $japanese_score = sprintf("%.5f", $Filter->JapaneseCheck($line)) if (defined $Filter);
 
 		$writer->startTag($tagname, JapaneseScore => $japanese_score);
 		$writer->startTag('RawString');
@@ -398,7 +398,7 @@ sub print_extract_sentences {
 	    $prev_offset = $parsed->{PROPERTY}[$i]{offset};
 	    $prev_length = $parsed->{PROPERTY}[$i]{length};
 
-	    my $japanese_score = sprintf("%.5f", $Filter->JapaneseCheck($line));
+	    my $japanese_score = sprintf("%.5f", $Filter->JapaneseCheck($line)) if (defined $Filter);
 
 	    $para++ if ($prev_para < -1 || $prev_para != $parsed->{PROPERTY}[$i]{paragraph});
 	    $prev_para = $parsed->{PROPERTY}[$i]{paragraph};
