@@ -28,7 +28,7 @@ $VERSION = sprintf("%d.%d", q$Revision$ =~ /(\d+)\.(\d+)/);
 %DELIMITER_TAGS = (
 		   address => 1,
 		   blockquote => 1,
-#		   br => 1,
+		   br => 1,
 		   caption => 1,
 		   center => 1,
 		   dd => 1,
