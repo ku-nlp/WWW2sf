@@ -228,6 +228,24 @@ sub AppendNode {
     my $newchild = $doc->createElement('Annotation');
     $newchild->setAttribute('Scheme', $type);
 
+    # 言語解析結果
+    my $result_string = $this->linguisticAnalysis($text, $type, $jap_sent_flag);
+
+    # 言語解析結果を収める新しい NODE(CDATA) を作成
+    my $cdata = $doc->createCDATASection($result_string);
+
+    # 新規に作成したNODEへ追加
+    $newchild->appendChild($cdata);
+
+    # 本体へ追加
+    $sentence->appendChild($newchild);
+}
+
+# typeに対応したツールで言語解析を行う
+# $type: Juman or Knp or SynGraph or CoNLL
+sub linguisticAnalysis {
+    my ($this, $text, $type, $jap_sent_flag, $returnKnpObj) = @_;
+
     my $result_string;
     if ($type eq 'Juman') {
 	my $result = $this->{juman}->analysis($text);
@@ -268,7 +286,11 @@ sub AppendNode {
 	    }
 	    # knp
 	    else {
-		$result_string = $result->all;
+		if ($returnKnpObj) {
+		    return $result;
+		} else {
+		    $result_string = $result->all;
+		}
 	    }
 	} catch Error with {
 	    my $err = shift;
@@ -281,12 +303,9 @@ sub AppendNode {
 	$result_string =~ s/\n\n$/\nEOS\n/;
     }
 
-    my $cdata = $doc->createCDATASection($result_string);
-
-    $newchild->appendChild($cdata);
-
-    $sentence->appendChild($newchild);
+    return $result_string;
 }
+
 
 sub ReadResult {
     my ($this, $doc, $inputfile) = @_;
