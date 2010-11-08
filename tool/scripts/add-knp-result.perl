@@ -56,6 +56,8 @@ GetOptions(\%opt,
 	   'sentence',
 	   'timeout=s',
 	   'th_of_knp_use=s',
+	   'wikipedia_entry_db=s',
+	   'imi_list_db=s',
 	   'use_knpresult_cache',
 	   'knpresult_keymap=s',
 	   'blocktype=s',
@@ -95,6 +97,8 @@ if ($opt{usemodule} && $opt{syngraph}) {
     # 準内容語を除いたものもノードに登録するオプション(ネットワーク化 -> ネットワーク, 深み -> 深い)
     $syngraph_option = {
 	regist_exclude_semi_contentword => 1,
+	wikipedia_entry_db => $opt{wikipedia_entry_db},
+	imi_list_db => $opt{imi_list_db},
 	no_regist_adjective_stem => $opt{no_regist_adjective_stem}
     };
 

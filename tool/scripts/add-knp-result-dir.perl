@@ -56,6 +56,7 @@ GetOptions(\%opt,
 	   'timeout=s',
 	   'th_of_knp_use=s',
 	   'wikipedia_entry_db=s',
+	   'imi_list_db=s',
 	   'find_recursive',
 	   'debug');
 
@@ -111,6 +112,7 @@ if ($opt{syngraph}) {
     $regnode_option->{no_attach_synnode_in_wikipedia_entry} = 1;
     $regnode_option->{attach_wikipedia_info} = 1 if ($opt{wikipedia_entry_db});
     $regnode_option->{wikipedia_entry_db} = $opt{wikipedia_entry_db} if ($opt{wikipedia_entry_db});
+    $regnode_option->{imi_list_db} = $opt{imi_list_db} if ($opt{imi_list_db});
 
     $regnode_option->{relation} = ($opt{hyponymy}) ? 1 : 0;
     $regnode_option->{relation_recursive} = ($opt{hyponymy}) ? 1 : 0;
