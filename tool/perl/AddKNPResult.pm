@@ -391,6 +391,9 @@ sub AppendNode {
     my $result_string = $this->linguisticAnalysis($text, $type, $jap_sent_flag);
 
     if ($this->{opt}{embed_result_in_xml}) { # 解析結果をXMLとして埋め込む場合
+	if ($type eq 'Juman') {
+	    die "Embedding the result of JUMAN in XML is not supported.\n";
+	}
 	my $result = new KNP::Result($result_string);
 	$this->Annotation2XML($doc, $result, $newchild); # Annotation($newchild)を渡して中で追加
     }
