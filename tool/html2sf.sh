@@ -24,6 +24,7 @@ usage() {
 # -T: 領域のタイプを判定する
 # -e: 英語モード
 # -C: 設定ファイルの指定
+# -x: 解析結果をXMLとして埋め込む
 
 # Change this for SynGraph annotation
 CVS_DIR=$HOME/cvs
