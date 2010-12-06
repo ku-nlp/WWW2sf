@@ -11,8 +11,18 @@ use Data::Dumper;
 
 binmode(STDERR, ':encoding(euc-jp)');
 
+our %pf_order = (id => 0, head => 1, cat => 2, f => 3); # print order of phrase attributes
+our %wf_order = (id => 0, str => 1, lem => 2, read => 3, pos => 4, repname => 5, conj => 6, f => 99); # print order of word attributes
+our %synnodesf_order = (head => 0, phraseid => 1);
+our %synnodef_order = (wordid => 0, synid => 1, score => 2);
+
 sub new {
     my ($clazz, $opt) = @_;
+
+    if ($opt->{embed_result_in_xml}) {
+	$opt->{syngraph_option}{word_basic_unit} = 1;
+	$opt->{syngraph_option}{get_content_word_ids} = 1;
+    }
 
     my $this = ();
     # th_of_knp_use 回ごとに KNP を new しなおす（デットロックに陥るため）
@@ -220,6 +230,155 @@ sub AddKnpResult {
     }
 }
 
+# KNPオブジェクトをXML化する
+sub Annotation2XML {
+    my ($this, $writer, $result, $annotation_node) = @_;
+
+    my $version = $result->version;
+    $annotation_node->setAttribute('tool', "KNP:$version");
+
+    my ($prob) = ($result->comment =~ /SCORE:([\-\d\.]+)/);
+    $annotation_node->setAttribute('score', $prob);
+
+    my $abs_wnum = 0;
+    my $pnum = 0;
+
+    for my $bnst ($result->bnst) {
+	my @tags = $bnst->tag_list;
+	my $bnst_end_pnum = $pnum + @tags - 1;
+	for my $tag_num (0 .. @tags - 1) {
+	    my $bnst_start_flag = 1 if $tag_num == 0;
+	    my $tag = $tags[$tag_num];
+	    my (%pf);
+
+	    $pf{id} = $pnum;
+
+	    # 係り先
+	    if ($tag->parent) {
+		$pf{head} = $tag->parent->id;
+	    }
+	    else {
+		$pf{head} = -1;
+	    }
+
+	    # feature processing
+	    my $fstring = $tag->fstring;
+
+	    # phrase category
+	    # 判定詞は 用言:判
+	    if ($fstring =~ s/<(用言[^>]*)>//) {
+		$pf{cat} = $1;
+	    }
+	    elsif ($fstring =~ s/<(体言[^>]*)>//) {
+		$pf{cat} = $1;
+	    }
+	    else {
+		$pf{cat} = 'NONE';
+	    }
+
+	    # feature残り
+	    $pf{f} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) : $fstring;
+
+	    # 文節
+	    $pf{f} .= sprintf("<文節:%d-%d>", $pnum, $bnst_end_pnum) if $bnst_start_flag;
+
+	    $pf{f} .= '...';
+
+	    my $phrase_node = $writer->createElement('phrase');
+	    for my $key (sort {$pf_order{$a} <=> $pf_order{$b}} keys %pf) {
+		$phrase_node->setAttribute($key, $pf{$key});
+	    }
+
+ 	    # synnode
+	    my %synnode;
+ 	    for my $synnode ($tag->synnode) {
+		my %synnode_f;
+		my $word_id = $synnode->tagid; # 要修正
+		my $last_word_id = (split(',', $word_id))[-1]; # 最後の単語idにsynnodeを付与する
+		$synnode_f{synid} = $synnode->synid;
+		$synnode_f{score} = $synnode->score;
+		$synnode_f{wordid} = $word_id;
+
+		push @{$synnode{$last_word_id}}, { word_id => $word_id, f => \%synnode_f };
+	    }
+
+	    # word
+	    for my $mrph ($tag->mrph) {
+
+		$fstring = $mrph->fstring;
+
+		# 代表表記
+		my $rep;
+		if ($fstring =~ /<代表表記:([^\s\"\>]+)/) {
+		    $rep = $1;
+		}
+		elsif ($fstring =~ /<疑似代表表記:([^\s\"\>]+)/) {
+		    $rep = $1;
+		}
+		else {
+		    # $lem = $mrph->genkei . '/' . $mrph->yomi;
+		    $rep = $mrph->genkei . '/' . $mrph->genkei;
+		}
+
+		# 活用
+		my $conj;
+		if ($mrph->katuyou1 ne '*') {
+		    $conj = $mrph->katuyou1 . ':' . $mrph->katuyou2;
+		}
+		else {
+		    $conj = '';
+		}
+
+		my %wf = (str => $mrph->midasi,
+			  lem => $mrph->genkei,
+			  read => $mrph->yomi,
+			  repname => $rep, 
+			  pos => $mrph->hinsi,
+			  conj => $conj,
+			  id => $abs_wnum,
+			 );
+		$wf{pos} .= ':' . $mrph->bunrui if ($mrph->bunrui ne '*');
+
+		$wf{f} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) . '...' : $fstring;
+
+		my $word_node = $writer->createElement('word');
+		for my $key (sort {$wf_order{$a} <=> $wf_order{$b}} keys %wf) {
+		    $word_node->setAttribute($key, $wf{$key});
+		}
+		for my $synnode (@{$synnode{$abs_wnum}}) {
+		    my $syn_node = $writer->createElement('synnode');
+		    for my $key (sort {$synnodef_order{$a} <=> $synnodef_order{$b}} keys %{$synnode->{f}}) {
+			$syn_node->setAttribute($key, $synnode->{f}{$key});
+		    }
+		    $word_node->appendChild($syn_node);
+		    # $writer->emptyTag('synnode', map({$_ => $synnode->{f}{$_}} sort {$synnodef_order{$a} <=> $synnodef_order{$b}} keys %{$synnode->{f}}));
+		}
+
+		$phrase_node->appendChild($word_node);
+		$abs_wnum++;
+	    }
+	    $annotation_node->appendChild($phrase_node);
+	    $pnum++;
+	}
+    }
+
+    return $annotation_node;
+}
+
+sub filter_fstring {
+    my ($str) = @_;
+
+    my (@f);
+    if ($str =~ /(<係:[^>]+>)/) {
+	push(@f, $1);
+    }
+    elsif ($str =~ /(<(?:自立|接頭|付属|内容語|準内容語)>)/) {
+	push(@f, $1);
+    }
+
+    return join('', @f);
+}
+
 # ノードを追加する
 # $type: Juman or Knp or SynGraph or CoNLL
 sub AppendNode {
@@ -231,11 +390,16 @@ sub AppendNode {
     # 言語解析結果
     my $result_string = $this->linguisticAnalysis($text, $type, $jap_sent_flag);
 
-    # 言語解析結果を収める新しい NODE(CDATA) を作成
-    my $cdata = $doc->createCDATASection($result_string);
-
-    # 新規に作成したNODEへ追加
-    $newchild->appendChild($cdata);
+    if ($this->{opt}{embed_result_in_xml}) { # 解析結果をXMLとして埋め込む場合
+	my $result = new KNP::Result($result_string);
+	$this->Annotation2XML($doc, $result, $newchild); # Annotation($newchild)を渡して中で追加
+    }
+    else {
+	# 言語解析結果を収める新しい NODE(CDATA) を作成
+	my $cdata = $doc->createCDATASection($result_string);
+	# 新規に作成したNODEへ追加
+	$newchild->appendChild($cdata);
+    }
 
     # 本体へ追加
     $sentence->appendChild($newchild);
@@ -305,7 +469,6 @@ sub linguisticAnalysis {
 
     return $result_string;
 }
-
 
 sub ReadResult {
     my ($this, $doc, $inputfile) = @_;
