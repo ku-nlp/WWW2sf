@@ -48,7 +48,7 @@ language=japanese
 ipsj_metadb=
 configfile=$base_dir/conf/configure
 
-while getopts bfjkspPhBwc:umMUOTFt:C:eE OPT
+while getopts bfjkspPhBwc:umMUOTFt:C:eEx OPT
 do
     case $OPT in
 	b)  extract_args="--ignore_br $extract_args"
@@ -77,6 +77,8 @@ do
 	    ;;
 	s)  addknp_args="--syngraph $syngraph_args $addknp_args"
 	    annotation=syngraph
+	    ;;
+	x)  addknp_args="--embed_result_in_xml $addknp_args"
 	    ;;
         p)  formatwww_args="--include_paren $formatwww_args"
             ;;
