@@ -11,8 +11,8 @@ use Data::Dumper;
 
 binmode(STDERR, ':encoding(euc-jp)');
 
-our %pf_order = (id => 0, head => 1, cat => 2, f => 3); # print order of phrase attributes
-our %wf_order = (id => 0, str => 1, lem => 2, read => 3, pos => 4, repname => 5, conj => 6, f => 99); # print order of word attributes
+our %pf_order = (id => 0, head => 1, cat => 2, feature => 3); # print order of phrase attributes
+our %wf_order = (id => 0, str => 1, lem => 2, read => 3, pos => 4, repname => 5, conj => 6, feature => 99); # print order of word attributes
 our %synnodesf_order = (head => 0, phraseid => 1);
 our %synnodef_order = (wordid => 0, synid => 1, score => 2);
 
@@ -277,12 +277,12 @@ sub Annotation2XML {
 	    }
 
 	    # feature残り
-	    $pf{f} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) : $fstring;
+	    $pf{feature} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) : $fstring;
 
 	    # 文節
-	    $pf{f} .= sprintf("<文節:%d-%d>", $pnum, $bnst_end_pnum) if $bnst_start_flag;
+	    $pf{feature} .= sprintf("<文節:%d-%d>", $pnum, $bnst_end_pnum) if $bnst_start_flag;
 
-	    $pf{f} .= '...';
+	    $pf{feature} .= '...' if $this->{opt}{filter_fstring};
 
 	    my $phrase_node = $writer->createElement('phrase');
 	    for my $key (sort {$pf_order{$a} <=> $pf_order{$b}} keys %pf) {
@@ -339,7 +339,7 @@ sub Annotation2XML {
 			 );
 		$wf{pos} .= ':' . $mrph->bunrui if ($mrph->bunrui ne '*');
 
-		$wf{f} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) . '...' : $fstring;
+		$wf{feature} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) . '...' : $fstring;
 
 		my $word_node = $writer->createElement('word');
 		for my $key (sort {$wf_order{$a} <=> $wf_order{$b}} keys %wf) {
