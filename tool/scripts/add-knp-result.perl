@@ -61,6 +61,7 @@ GetOptions(\%opt,
 	   'use_knpresult_cache',
 	   'knpresult_keymap=s',
 	   'blocktype=s',
+	   'embed_result_in_xml',
 	   'debug');
 
 if (!$opt{title} && !$opt{outlink} && !$opt{inlink} && !$opt{keywords} && !$opt{description} && !$opt{sentence}) {
@@ -153,6 +154,6 @@ else {
 }
 
 # XML-LibXML 1.63以降ではバイト列が返ってくるので、decodeする
-my $string = $doc->toString();
+my $string = $doc->toString(1); # 1 means indenting
 
 print utf8::is_utf8($string) ? $string : decode($doc->actualEncoding(), $string);
