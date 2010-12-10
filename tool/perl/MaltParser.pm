@@ -5,6 +5,7 @@ package MaltParser;
 
 use strict;
 use warnings;
+use File::Path;
 use IPC::Open3;
 use FileHandle;
 use TsuruokaTagger;
@@ -16,6 +17,11 @@ our $ParserCommand = "$JavaCommand -Xmx$MEMsize -jar $ParserDir/malt.jar -w $Par
 
 sub new {
     my ($this, $opt) = @_;
+
+    # delete the directory generated when an error occurred
+    if (-d "$ParserDir/engmalt") {
+	rmtree "$ParserDir/engmalt";
+    }
 
     $opt = {} unless defined($opt);
     $opt->{lemmatize} = 1 unless exists($opt->{lemmatize}); # default: turn on lemmatization
