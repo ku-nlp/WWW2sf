@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use IPC::Open3;
 use FileHandle;
+use Cwd;
 
 our $TaggerDir = "$ENV{HOME}/share/tool/postagger-1.0";
 our $TaggerCommand = "$TaggerDir/tagger";
@@ -20,11 +21,13 @@ sub new {
     $TaggerDir = $opt->{tagger_dir} if ($opt->{tagger_dir});
     $TaggerCommand = "$TaggerDir/tagger";
 
+    my $cwd = getcwd;
     chdir($TaggerDir);
     my $pid = open3(\*WTR, \*RDR, \*ERR, $TaggerCommand);
     $this = {opt => $opt, WTR => \*WTR, RDR => \*RDR, ERR => \*ERR, pid => $pid, lemmatizer => undef};
     $this->{RDR}->autoflush(1);
     $this->{WTR}->autoflush(1);
+    chdir($cwd);
 
     bless $this;
 }
