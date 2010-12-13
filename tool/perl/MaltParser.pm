@@ -20,6 +20,12 @@ our $ParserCommand = "$JavaCommand -Xmx$MEMsize -jar $ParserDir/malt.jar -w $Par
 sub new {
     my ($this, $opt) = @_;
 
+    # パス等の設定があれば上書きする
+    $MEMsize     = $opt->{mem_size}     if ($opt->{mem_size});
+    $ParserDir   = $opt->{parser_dir}   if ($opt->{parser_dir});
+    $JavaCommand = $opt->{java_command} if ($opt->{java_command});
+    $ParserCommand = "$JavaCommand -Xmx$MEMsize -jar $ParserDir/malt.jar -w $ParserDir -c engmalt -m parse";
+
     # delete the directory generated when an error occurred
     if (-d "$ParserDir/engmalt") {
 	rmtree "$ParserDir/engmalt";

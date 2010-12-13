@@ -1,5 +1,7 @@
 package TsuruokaTagger;
 
+# $Id$
+
 # A wrapper of tsuruoka-san's tagger
 # http://www-tsujii.is.s.u-tokyo.ac.jp/~tsuruoka/postagger/
 
@@ -13,6 +15,10 @@ our $TaggerCommand = "$TaggerDir/tagger";
 
 sub new {
     my ($this, $opt) = @_;
+
+    # Tagger がインストールされているディレクトリの変更
+    $TaggerDir = $opt->{tagger_dir} if ($opt->{tagger_dir});
+    $TaggerCommand = "$TaggerDir/tagger";
 
     chdir($TaggerDir);
     my $pid = open3(\*WTR, \*RDR, \*ERR, $TaggerCommand);
