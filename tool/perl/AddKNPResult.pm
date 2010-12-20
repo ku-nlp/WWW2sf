@@ -11,7 +11,7 @@ use Data::Dumper;
 
 binmode(STDERR, ':encoding(euc-jp)');
 
-our %pf_order = (id => 0, head => 1, cat => 2, feature => 3); # print order of phrase attributes
+our %pf_order = (id => 0, head => 1, category => 2, feature => 3, dpndtype => 4); # print order of phrase attributes
 our %wf_order = (id => 0, str => 1, lem => 2, read => 3, pos => 4, repname => 5, conj => 6, feature => 99); # print order of word attributes
 our %synnodesf_order = (head => 0, phraseid => 1);
 our %synnodef_order = (wordid => 0, synid => 1, score => 2);
@@ -256,9 +256,11 @@ sub Annotation2XML {
 	    # 係り先
 	    if ($tag->parent) {
 		$pf{head} = $tag->parent->id;
+		$pf{dpndtype} = $tag->dpndtype;
 	    }
 	    else {
 		$pf{head} = -1;
+		$pf{dpndtype} = 'D';
 	    }
 
 	    # feature processing
@@ -267,13 +269,13 @@ sub Annotation2XML {
 	    # phrase category
 	    # 判定詞は 用言:判
 	    if ($fstring =~ s/<(用言[^>]*)>//) {
-		$pf{cat} = $1;
+		$pf{category} = $1;
 	    }
 	    elsif ($fstring =~ s/<(体言[^>]*)>//) {
-		$pf{cat} = $1;
+		$pf{category} = $1;
 	    }
 	    else {
-		$pf{cat} = 'NONE';
+		$pf{category} = 'NONE';
 	    }
 
 	    # feature残り
