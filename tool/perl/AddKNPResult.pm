@@ -396,8 +396,10 @@ sub AppendNode {
 	if ($type eq 'Juman') {
 	    die "Embedding the result of JUMAN in XML is not supported.\n";
 	}
-	my $result = new KNP::Result($result_string);
-	$this->Annotation2XML($doc, $result, $newchild); # Annotation($newchild)を渡して中で追加
+	if ($result_string) {
+	    my $result = new KNP::Result($result_string);
+	    $this->Annotation2XML($doc, $result, $newchild); # Annotation($newchild)を渡して中で追加
+	}
     }
     else {
 	# 言語解析結果を収める新しい NODE(CDATA) を作成
