@@ -27,8 +27,13 @@ sub ProcessEncoding {
 
     # 指定した言語とページの言語が一致するか判定
 
+    # 強制的にutf8と判断させる場合 (crawlデータなど)
+    if ($option->{force_change_to_utf8_with_flag}) {
+	$language = $this->{opt}{language};
+	$encoding = 'utf8';
+    }
     # meta情報のチェック
-    if ($$buf_ref =~ /<meta [^>]*content=[" ]*text\/html[; ]*charset=([^" >]+)/i) { 
+    elsif ($$buf_ref =~ /<meta [^>]*content=[" ]*text\/html[; ]*charset=([^" >]+)/i) { 
         my $charset = lc($1);
 	# 英語/西欧言語
 	if ($charset =~ /^iso-8859-1|iso-8859-15|windows-1252|macintosh|x-mac-roman|iso8859-1$/i) {
@@ -45,7 +50,7 @@ sub ProcessEncoding {
 	    $encoding = '7bit-jis';
 	}
 	# 日本語SJIS
-	elsif ($charset =~ /^sjis|shift_jis|windows-932|x-sjis|shift-jp|shift-jis|x_sjis|shift_sjis|shiftjis|sift_jis|x\(sjis$/i) {
+	elsif ($charset =~ /^sjis|shift_jis|windows-932|windows-31j|x-sjis|shift-jp|shift-jis|x_sjis|shift_sjis|shiftjis|sift_jis|x\(sjis$/i) {
 	    $language = 'japanese';
 	    $encoding = 'shiftjis';
 	}
