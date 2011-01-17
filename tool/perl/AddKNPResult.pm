@@ -231,7 +231,7 @@ sub AddKnpResult {
 }
 
 # KNPオブジェクトをXML化する
-sub Annotation2XML {
+sub Annotation2XMLforKNP {
     my ($this, $writer, $result, $annotation_node) = @_;
 
     my $version = $result->version;
@@ -367,6 +367,35 @@ sub Annotation2XML {
     return $annotation_node;
 }
 
+# CoNLL結果をXML化する
+sub Annotation2XMLforCoNLL {
+    my ($this, $writer, $result, $annotation_node) = @_;
+
+    $annotation_node->setAttribute('tool', "CoNLL");
+
+    for my $line (split("\n", $result)) {
+	last if $line =~ /^EOS/;
+	my @line = split(/\t/, $line);
+	my %pf = (id => $line[0], head => $line[6], dpndtype => $line[7]);
+	my %wf = (id => $line[0], str => $line[1], lem => $line[2], pos => $line[3]);
+
+	my $phrase_node = $writer->createElement('phrase');
+	for my $key (sort {$pf_order{$a} <=> $pf_order{$b}} keys %pf) {
+	    $phrase_node->setAttribute($key, $pf{$key});
+	}
+
+	my $word_node = $writer->createElement('word');
+	for my $key (sort {$wf_order{$a} <=> $wf_order{$b}} keys %wf) {
+	    $word_node->setAttribute($key, $wf{$key});
+	}
+
+	$phrase_node->appendChild($word_node);
+	$annotation_node->appendChild($phrase_node);
+    }
+
+    return $annotation_node;
+}
+
 sub filter_fstring {
     my ($str) = @_;
 
@@ -396,9 +425,14 @@ sub AppendNode {
 	if ($type eq 'Juman') {
 	    die "Embedding the result of JUMAN in XML is not supported.\n";
 	}
-	if ($result_string) {
-	    my $result = new KNP::Result($result_string);
-	    $this->Annotation2XML($doc, $result, $newchild); # Annotation($newchild)を渡して中で追加
+	elsif ($type eq 'CoNLL') {
+	    $this->Annotation2XMLforCoNLL($doc, $result_string, $newchild); # Annotation($newchild)を渡して中で追加
+	}
+	else {
+	    if ($result_string) {
+		my $result = new KNP::Result($result_string);
+		$this->Annotation2XMLforKNP($doc, $result, $newchild); # Annotation($newchild)を渡して中で追加
+	    }
 	}
     }
     else {
