@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a] input.html > output.xml"
     exit 1
 }
 
@@ -25,6 +25,7 @@ usage() {
 # -e: 英語モード
 # -C: 設定ファイルの指定
 # -x: 解析結果をXMLとして埋め込む
+# -a: KNPにおいて省略解析を行う
 
 # Change this for SynGraph annotation
 CVS_DIR=$HOME/cvs
@@ -49,9 +50,11 @@ language=japanese
 ipsj_metadb=
 configfile=$base_dir/conf/configure
 
-while getopts bfjkspPhBwc:umMUOTFt:C:eEx OPT
+while getopts abfjkspPhBwc:umMUOTFt:C:eEx OPT
 do
     case $OPT in
+	a)  addknp_args="--anaphora $addknp_args"
+	    ;;
 	b)  extract_args="--ignore_br $extract_args"
 	    ;;
 	c)  extract_args="--cndbfile $OPTARG $extract_args"
