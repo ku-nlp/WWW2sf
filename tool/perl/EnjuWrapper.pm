@@ -36,6 +36,7 @@ sub open_enju {
     my $input_file = "/tmp/enjuwrapper-tmp-input-$$.txt";
     open(INPUT, "> $input_file") or die;
     print INPUT $str;
+    print INPUT "\n" unless $str =~ /\n$/; # print a newline if the input does not have a newline
     close(INPUT);
     $this->{input_file} = $input_file;
 
