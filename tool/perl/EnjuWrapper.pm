@@ -10,7 +10,7 @@ use IPC::Open3;
 use FileHandle;
 
 our $ParserDir = "$ENV{HOME}/share/tool/SearchEngine/enju2tsubaki";
-our $ParserFile = 'run-pipe.sh';
+our $ParserFile = 'run.sh';
 our $ParserCommand;
 
 sub new {
@@ -52,7 +52,7 @@ sub open_enju {
 sub close_enju {
     my ($this) = @_;
 
-    unlink $this->{input_file};
+    unlink glob("$this->{input_file}*");
     $this->{WTR}->close;
     $this->{RDR}->close;
     $this->{ERR}->close;
