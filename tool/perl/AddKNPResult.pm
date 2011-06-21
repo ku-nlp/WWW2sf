@@ -331,6 +331,15 @@ sub Annotation2XMLforKNP {
 		    $conj = '';
 		}
 
+		# 内容語かどうか
+		my $content_p;
+		if ($fstring =~ /<(?:準)?内容語>/) {
+		    $content_p = 1;
+		}
+		else {
+		    $content_p = 0;
+		}
+
 		my %wf = (str => $mrph->midasi,
 			  lem => $mrph->genkei,
 			  read => $mrph->yomi,
@@ -338,6 +347,7 @@ sub Annotation2XMLforKNP {
 			  pos => $mrph->hinsi,
 			  conj => $conj,
 			  id => $abs_wnum,
+			  content_p => $content_p,
 			 );
 		$wf{pos} .= ':' . $mrph->bunrui if ($mrph->bunrui ne '*');
 
