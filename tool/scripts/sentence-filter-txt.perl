@@ -28,7 +28,12 @@ while (<STDIN>) {
 	chomp;
 	my $score = $Filter->JapaneseCheck($_);
 	if ($score > $Threshold_Filter) {
-	    print "$sid$_\n";
+	    if ($sid) {
+		print "$sid$_\n";
+	    }
+	    else {
+		print "$_\n";
+	    }
 	}
 	elsif ($opt{debug}) {
 	    printf STDERR "Not Japanese (%.3f):%s\n", $score, $_;
