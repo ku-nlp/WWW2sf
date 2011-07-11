@@ -1,23 +1,28 @@
 #!/usr/bin/env perl
 
-# WWW¤«¤é¼ı½¸¤·¤¿Ê¸¤òÀ°·Á, ºï½ü, S-IDÉÕÍ¿
+# WWWã‹ã‚‰åé›†ã—ãŸæ–‡ã‚’æ•´å½¢, å‰Šé™¤, S-IDä»˜ä¸
 
 # $Id$
 
 use SentenceFormatter;
-use encoding 'euc-jp';
+use utf8;
 use Getopt::Long;
 use strict;
 
 our (%opt);
 
-GetOptions(\%opt, 'head:s', 'include_paren', 'divide_paren', 'pagenum=i', 'save_all');
-# --save_all: Á´ÂÎºï½ü¤·¤Ê¤¤
-# --include_paren: ³ç¸Ì¤òºï½ü¤·¤Ê¤¤
-# --divide_paren: ³ç¸Ì¤òÊÌÊ¸¤È¤·¤Æ½ĞÎÏ
-# --pagenum: ³«»Ï¥Ú¡¼¥¸ÈÖ¹æ¤ò»ØÄê
+GetOptions(\%opt, 'head:s', 'include_paren', 'divide_paren', 'pagenum=i', 'save_all', 'encoding=s');
+# --save_all: å…¨ä½“å‰Šé™¤ã—ãªã„
+# --include_paren: æ‹¬å¼§ã‚’å‰Šé™¤ã—ãªã„
+# --divide_paren: æ‹¬å¼§ã‚’åˆ¥æ–‡ã¨ã—ã¦å‡ºåŠ›
+# --pagenum: é–‹å§‹ãƒšãƒ¼ã‚¸ç•ªå·ã‚’æŒ‡å®š
 
 $opt{'include_paren'} = 1 if $opt{'divide_paren'};
+my $encoding = $opt{encoding} ? ":encoding($opt{encoding})" : ':encoding(euc-jp)'; # default encoding is euc-jp
+
+binmode(STDIN, $encoding);
+binmode(STDOUT, $encoding);
+binmode(STDERR, $encoding);
 
 my ($head, $site, $file, $fileflag, $count, $url, $comment);
 my ($sid, $sentence) = @_;
@@ -50,7 +55,7 @@ $file = $opt{pagenum} - 1 if $opt{pagenum};
 
 my $formatter = new SentenceFormatter(\%opt);
 
-while (<>) {
+while (<STDIN>) {
     chomp;
 
     if (/^\<PAGE(?:\s*URL=\"([^\"]+)\")?\>/) {
@@ -72,13 +77,13 @@ while (<>) {
     $count++;
     $sid = sprintf("%s%s%s-%d", $head, defined($site) ? "-$site" : '', defined($file) ? "-$file" : '', $count);
 
-    # Á´Ê¸ºï½ü¤ä³ç¸Ì¤Î½èÍı
+    # å…¨æ–‡å‰Šé™¤ã‚„æ‹¬å¼§ã®å‡¦ç†
     my ($main, @parens) = $formatter->FormatSentence($_, $sid);
 
-    # ¸¶Ê¸¤ÎÉ½¼¨
+    # åŸæ–‡ã®è¡¨ç¤º
     &print_sentence($main);
 
-    # ³ç¸ÌÊ¸¤ÎÉ½¼¨
+    # æ‹¬å¼§æ–‡ã®è¡¨ç¤º
     for my $paren (@parens) {
 	&print_sentence($paren);
     }
