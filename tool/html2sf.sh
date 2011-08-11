@@ -196,6 +196,7 @@ perl -I $base_dir/perl $base_dir/scripts/set-offset-and-length.perl -html $utf8f
 if [ ! -s $xmlfile1 ]; then
     echo "$f - 日本語ページではありません" 1>&2
     rm -f $utf8file
+    rm -f $utf8file_w_annotate_blocktype
     rm -f $xmlfile0
     rm -f $xmlfile1
     exit
