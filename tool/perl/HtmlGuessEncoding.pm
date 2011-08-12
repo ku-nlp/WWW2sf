@@ -32,6 +32,11 @@ sub ProcessEncoding {
 	$language = $this->{opt}{language};
 	$encoding = 'utf8';
     }
+    # エンコーディングを指定する場合
+    elsif ($option->{given_encoding}) {
+	$language = $this->{opt}{language};
+	$encoding = $option->{given_encoding};
+    }
     # meta情報のチェック
     elsif ($$buf_ref =~ /<meta [^>]*content=[" ]*text\/html[; ]*charset=([^" >]+)/i) { 
         my $charset = lc($1);
