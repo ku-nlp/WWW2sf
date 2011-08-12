@@ -7,25 +7,25 @@ usage() {
     exit 1
 }
 
-# -j: JUMAN¤Î²òÀÏ·ë²Ì¤òËä¤á¹ş¤à
-# -k: KNP¤Î²òÀÏ·ë²Ì¤òËä¤á¹ş¤à
-# -s: SynGraph¤Î²òÀÏ·ë²Ì¤òËä¤á¹ş¤à
-# -b: <br>¤È<p>¤òÌµ»ë (extract-sentences.perl --ignore_br)
-# -B: Movable TypeÍÑ¥ª¥×¥·¥ç¥ó (extract-sentences.perl --blog mt)
-# -f: ÆüËÜ¸ì¥Á¥§¥Ã¥¯¤ò¤·¤Ê¤¤ (extract-sentences.perl)
-# -c cns.cdb: ¥¢¥ó¥«¡¼¥Æ¥­¥¹¥È¤ÎÏ¢Â³¤òÊ£¹çÌ¾»ìÃ±°Ì¤Ç¶èÀÚ¤ë (extract-sentences.perl --cndbfile cns.cdb)
-# -p: ³ç¸Ì¤òÊ¸Æâ¤Ë´Ş¤á¤ë (format-www-xml.perl --inclue_paren)
-# -P: ³ç¸Ì¤òÊ¸¤È¤·¤ÆÊ¬¤±¤ë (format-www-xml.perl --divide_paren)
-# -w: Á´ÂÎºï½ü¤·¤Ê¤¤ (format-www-xml.perl --save_all)
-# -M: ²òÀÏ·ë²Ì¤òËä¤á¹ş¤à¤¿¤á¤Ë¡¢AddKNPResult.pm¤òÍÑ¤¤¤Ê¤¤
-# -u: utf8¤ËÊÑ´¹¤·¤¿HTMLÊ¸½ñ¤òÊİÂ¸¤¹¤ë
-# -U: ÆşÎÏ¤¬¤¹¤Ç¤Ëutf8¤ËÊÑ´¹ºÑ¤ß¤Î¾ì¹ç
-# -O: ¥¢¥¦¥È¥ê¥ó¥¯¾ğÊó¤òÃê½Ğ¤¹¤ë
-# -T: ÎÎ°è¤Î¥¿¥¤¥×¤òÈ½Äê¤¹¤ë
-# -e: ±Ñ¸ì¥â¡¼¥É
-# -C: ÀßÄê¥Õ¥¡¥¤¥ë¤Î»ØÄê
-# -x: ²òÀÏ·ë²Ì¤òXML¤È¤·¤ÆËä¤á¹ş¤à
-# -a: KNP¤Ë¤ª¤¤¤Æ¾ÊÎ¬²òÀÏ¤ò¹Ô¤¦
+# -j: JUMANã®è§£æçµæœã‚’åŸ‹ã‚è¾¼ã‚€
+# -k: KNPã®è§£æçµæœã‚’åŸ‹ã‚è¾¼ã‚€
+# -s: SynGraphã®è§£æçµæœã‚’åŸ‹ã‚è¾¼ã‚€
+# -b: <br>ã¨<p>ã‚’ç„¡è¦– (extract-sentences.perl --ignore_br)
+# -B: Movable Typeç”¨ã‚ªãƒ—ã‚·ãƒ§ãƒ³ (extract-sentences.perl --blog mt)
+# -f: æ—¥æœ¬èªãƒã‚§ãƒƒã‚¯ã‚’ã—ãªã„ (extract-sentences.perl)
+# -c cns.cdb: ã‚¢ãƒ³ã‚«ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆã®é€£ç¶šã‚’è¤‡åˆåè©å˜ä½ã§åŒºåˆ‡ã‚‹ (extract-sentences.perl --cndbfile cns.cdb)
+# -p: æ‹¬å¼§ã‚’æ–‡å†…ã«å«ã‚ã‚‹ (format-www-xml.perl --inclue_paren)
+# -P: æ‹¬å¼§ã‚’æ–‡ã¨ã—ã¦åˆ†ã‘ã‚‹ (format-www-xml.perl --divide_paren)
+# -w: å…¨ä½“å‰Šé™¤ã—ãªã„ (format-www-xml.perl --save_all)
+# -M: è§£æçµæœã‚’åŸ‹ã‚è¾¼ã‚€ãŸã‚ã«ã€AddKNPResult.pmã‚’ç”¨ã„ãªã„
+# -u: utf8ã«å¤‰æ›ã—ãŸHTMLæ–‡æ›¸ã‚’ä¿å­˜ã™ã‚‹
+# -U: å…¥åŠ›ãŒã™ã§ã«utf8ã«å¤‰æ›æ¸ˆã¿ã®å ´åˆ
+# -O: ã‚¢ã‚¦ãƒˆãƒªãƒ³ã‚¯æƒ…å ±ã‚’æŠ½å‡ºã™ã‚‹
+# -T: é ˜åŸŸã®ã‚¿ã‚¤ãƒ—ã‚’åˆ¤å®šã™ã‚‹
+# -e: è‹±èªãƒ¢ãƒ¼ãƒ‰
+# -C: è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã®æŒ‡å®š
+# -x: è§£æçµæœã‚’XMLã¨ã—ã¦åŸ‹ã‚è¾¼ã‚€
+# -a: KNPã«ãŠã„ã¦çœç•¥è§£æã‚’è¡Œã†
 
 # Change this for SynGraph annotation
 CVS_DIR=$HOME/cvs
@@ -141,7 +141,7 @@ clean_tmpfiles() {
 
 trap 'clean_tmpfiles; exit 1' 1 2 3 15
 
-# ÆşÎÏ¤¬¥Æ¥­¥¹¥È¥Õ¥¡¥¤¥ë¤«¤É¤¦¤«¤Î¥Á¥§¥Ã¥¯
+# å…¥åŠ›ãŒãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‹ã©ã†ã‹ã®ãƒã‚§ãƒƒã‚¯
 if [ $file_cmd_filter -eq 1 ]; then
     file $f | grep text > /dev/null
     if [ $? -eq 1 ]; then
@@ -150,7 +150,7 @@ if [ $file_cmd_filter -eq 1 ]; then
     fi
 fi
 
-# URL¤È¥¨¥ó¥³¡¼¥Ç¥£¥ó¥°¤ò»ØÄê¤·¤¿info¥Õ¥¡¥¤¥ë(¥¹¥Ú¡¼¥¹¶èÀÚ¤ê)¤¬¤¢¤ë¾ì¹ç
+# URLã¨ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã‚’æŒ‡å®šã—ãŸinfoãƒ•ã‚¡ã‚¤ãƒ«(ã‚¹ãƒšãƒ¼ã‚¹åŒºåˆ‡ã‚Š)ãŒã‚ã‚‹å ´åˆ
 url=
 encoding=
 if [ -n "$infofile" -a -f "$infofile" ]; then
@@ -164,19 +164,19 @@ if [ -n "$infofile" -a -f "$infofile" ]; then
     fi
 fi
 
-# ÆşÎÏ¥Õ¥¡¥¤¥ë¤Î¹Ô¿ô¤¬5000¹Ô¤òÄ¶¤¨¤ë¾ì¹ç¤Ï²ø¤·¤¤¥Õ¥¡¥¤¥ë¤È¸«¤Ê¤¹
+# å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã®è¡Œæ•°ãŒ5000è¡Œã‚’è¶…ãˆã‚‹å ´åˆã¯æ€ªã—ã„ãƒ•ã‚¡ã‚¤ãƒ«ã¨è¦‹ãªã™
 lnum=`wc -l $f | awk '{print $1}'`
 if [ $lnum -gt 5000 ]; then
     echo "ERROR: $f has too much lines ($lnum)." 1>&2
     exit
 fi
 
-# ±Ñ¸ì°Ê³°¤Ïutf8ÊÑ´¹
+# è‹±èªä»¥å¤–ã¯utf8å¤‰æ›
 if [ $language = english ]
 then
     cp -f $f $utf8file
 else
-    # utf8¤ËÊÑ´¹(crawl¥Ç¡¼¥¿¤ÏÊÑ´¹ºÑ¤ß¤Î¤¿¤á¡¢¶¯À©Åª¤Ë utf8 ¤ÈÈ½ÃÇ¤µ¤»¤ë)
+    # utf8ã«å¤‰æ›(crawlãƒ‡ãƒ¼ã‚¿ã¯å¤‰æ›æ¸ˆã¿ã®ãŸã‚ã€å¼·åˆ¶çš„ã« utf8 ã¨åˆ¤æ–­ã•ã›ã‚‹)
     if [ $input_utf8html -eq 1 ]
     then
 	perl -CIOE -I $base_dir/perl $base_dir/scripts/to_utf8.perl -force $f > $utf8file
@@ -186,15 +186,15 @@ else
     else
 	perl -I $base_dir/perl $base_dir/scripts/to_utf8.perl $f > $utf8file
     fi
-    # Ê¸»ú¥³¡¼¥É¤¬¿äÄê¤Ç¤­¤Ê¤¤¤Ê¤É¤ÎÍıÍ³¤Çutf8²½¤µ¤ì¤¿¥Ú¡¼¥¸¤¬ÆÀ¤é¤ì¤Ê¤¤¾ì¹ç¤Ï½ªÎ»
+    # æ–‡å­—ã‚³ãƒ¼ãƒ‰ãŒæ¨å®šã§ããªã„ãªã©ã®ç†ç”±ã§utf8åŒ–ã•ã‚ŒãŸãƒšãƒ¼ã‚¸ãŒå¾—ã‚‰ã‚Œãªã„å ´åˆã¯çµ‚äº†
     if [ $? -ne 0 ]; then
-	echo "$f - UTF-8 ÊÑ´¹¤Ç¼ºÇÔ¤·¤Ş¤·¤¿" 1>&2
+	echo "$f - UTF-8 å¤‰æ›ã§å¤±æ•—ã—ã¾ã—ãŸ" 1>&2
 	rm -f $utf8file
 	exit
     fi
 fi
 
-# ÎÎ°è¤Î¥¿¥¤¥×¤òÈ½Äê¤·¡¢¤½¤Î·ë²Ì¤òËä¤á¹ş¤à
+# é ˜åŸŸã®ã‚¿ã‚¤ãƒ—ã‚’åˆ¤å®šã—ã€ãã®çµæœã‚’åŸ‹ã‚è¾¼ã‚€
 if [ $annotate_blocktype -eq 1 ]
 then
     OPTION="-add_class2html -add_blockname2alltag -without_juman"
@@ -203,17 +203,17 @@ else
     cat $utf8file > $utf8file_w_annotate_blocktype
 fi
 
-# ´ÊÁÇ¤ÊÉ¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¤òÀ¸À®
+# ç°¡ç´ ãªæ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’ç”Ÿæˆ
 perl -I $base_dir/perl $base_dir/scripts/extract-sentences.perl $extract_std_args $extract_args --xml $utf8file_w_annotate_blocktype > $xmlfile0
 
 
-# Offset¤ÈLength¤òËä¤á¹ş¤ß
+# Offsetã¨Lengthã‚’åŸ‹ã‚è¾¼ã¿
 perl -I $base_dir/perl $base_dir/scripts/set-offset-and-length.perl -html $utf8file -xml $xmlfile0 > $xmlfile1
 
 
-# ½õ»ì¤Î¥Á¥§¥Ã¥¯¤ÇÆüËÜ¸ì¥Ú¡¼¥¸¤È¤ÏÈ½Äê¤µ¤ì¤Ê¤«¤Ã¤¿¤â¤Î
+# åŠ©è©ã®ãƒã‚§ãƒƒã‚¯ã§æ—¥æœ¬èªãƒšãƒ¼ã‚¸ã¨ã¯åˆ¤å®šã•ã‚Œãªã‹ã£ãŸã‚‚ã®
 if [ ! -s $xmlfile1 ]; then
-    echo "$f - ÆüËÜ¸ì¥Ú¡¼¥¸¤Ç¤Ï¤¢¤ê¤Ş¤»¤ó" 1>&2
+    echo "$f - æ—¥æœ¬èªãƒšãƒ¼ã‚¸ã§ã¯ã‚ã‚Šã¾ã›ã‚“" 1>&2
     rm -f $utf8file
     rm -f $utf8file_w_annotate_blocktype
     rm -f $xmlfile0
@@ -233,7 +233,7 @@ if [ -n "$annotation" ]; then
     if [ $use_module -eq 1 ]; then
 	cat $rawfile | perl -I $base_dir/perl -I $syngraph_home/perl $base_dir/scripts/add-knp-result.perl $addknp_args --usemodule
     else
-	# Ê¸¤ÎÃê½Ğ
+	# æ–‡ã®æŠ½å‡º
 	cat $rawfile | perl -I $base_dir/perl $base_dir/scripts/extract-rawstring.perl $rawstring_args > $sentencesfile
 
 	if [ $annotation = "conll" ]; then # currently English only
