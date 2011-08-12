@@ -15,10 +15,13 @@ ext=
 # ファイルサイズの閾値(default 5M)
 fsize_threshold=5242880
 
+# ある日時より新しいファイルだけ処理するための基準epoch time (-nで指定)
+ref_time=0
+
 base_dir=`dirname $0`
 
 flag_of_make_urldb=0
-while getopts ajkshS:c:uUzOTFt:C:eEx OPT
+while getopts ajkshS:c:uUzOTFt:C:eExn: OPT
 do
     case $OPT in
 	a)  html2sf_extra_args="-a $html2sf_extra_args"
@@ -56,6 +59,8 @@ do
 	    ;;
 	x)  html2sf_extra_args="-x $html2sf_extra_args"
 	    ;;
+	n)  ref_time=$OPTARG
+	    ;;
         h)  usage
             ;;
     esac
@@ -80,11 +85,20 @@ do
 	f=$xdir/$base_f.html
     fi
 
+    # ファイルの最終修正時刻を得る
+    mtime=`$base_dir/scripts/print-epoch-time.perl $in_f`
+
     fsize=`wc -c $f | awk '{print $1}'`
-    # ファイルサイズが$fsize_threshold以下なら
-    if [ $fsize -lt $fsize_threshold ]; then
+    # ファイルサイズが$fsize_threshold以下、最終修正時刻が基準epoch timeより後(default: 全てOK)なら
+    if [ $fsize -lt $fsize_threshold -a $mtime -gt $ref_time ]; then
 	echo $f
-	$base_dir/html2sf.sh $html2sf_extra_args -p -f $f > $xdir/$base_f.xml
+	# 各htmlに対するinfoファイル(URL encoding)があれば
+	if [ -f $hdir/$base_f.info ]; then
+	    html2sf_info_args="-i $hdir/$base_f.info"
+	else
+	    html2sf_info_args=
+	fi
+	$base_dir/html2sf.sh $html2sf_extra_args $html2sf_info_args -p -f $f > $xdir/$base_f.xml
 
 	# 出力が0の場合、削除
 	if [ ! -s $xdir/$base_f.xml ]; then
