@@ -49,8 +49,9 @@ file_cmd_filter=0
 language=japanese
 ipsj_metadb=
 configfile=$base_dir/conf/configure
+infofile=
 
-while getopts abfjkspPhBwc:umMUOTFt:C:eEx OPT
+while getopts abfjkspPhBwc:umMUOTFt:C:eExi: OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
@@ -108,6 +109,8 @@ do
 	    ;;
 	C)  configfile=$OPTARG
 	    ;;
+	i)  infofile=$OPTARG
+	    ;;
         h)  usage
             ;;
     esac
@@ -147,6 +150,19 @@ if [ $file_cmd_filter -eq 1 ]; then
     fi
 fi
 
+# URLとエンコーディングを指定したinfoファイル(スペース区切り)がある場合
+url=
+encoding=
+if [ -n "$infofile" -a -f "$infofile" ]; then
+    url=`head -1 $infofile | cut -f1 -d' '`
+    encoding=`head -1 $infofile | cut -f2 -d' '`
+    if [ $encoding = "utf-8" -o $encoding = "utf8" ]; then
+	input_utf8html=1
+    fi
+    if [ -n "$url" ]; then
+	extract_args="--url $url $extract_args"
+    fi
+fi
 
 # 入力ファイルの行数が5000行を超える場合は怪しいファイルと見なす
 lnum=`wc -l $f | awk '{print $1}'`
@@ -164,6 +180,9 @@ else
     if [ $input_utf8html -eq 1 ]
     then
 	perl -CIOE -I $base_dir/perl $base_dir/scripts/to_utf8.perl -force $f > $utf8file
+    elif [ -n "$encoding" ]
+    then
+	perl -I $base_dir/perl $base_dir/scripts/to_utf8.perl --encoding $encoding $f > $utf8file
     else
 	perl -I $base_dir/perl $base_dir/scripts/to_utf8.perl $f > $utf8file
     fi
