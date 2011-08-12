@@ -12,7 +12,8 @@ use HtmlGuessEncoding;
 
 my (%opt);
 # gzip圧縮済ファイルを処理するためのオプション
-GetOptions(\%opt, 'utf8', 'overwrite', 'z', 'force');
+GetOptions(\%opt, 'utf8', 'overwrite', 'z', 'force', 'encoding=s');
+# --encoding: エンコーディングを指定
 
 &main();
 
@@ -41,7 +42,7 @@ sub main {
     close(READER);
 
     # HTML文書の文字コードを取得すると同時にutf8に変更
-    if ($HtmlGuessEncoding->ProcessEncoding(\$buff, {force_change_to_utf8_with_flag => $opt{force}, change_to_utf8 => !$opt{utf8}})) {
+    if ($HtmlGuessEncoding->ProcessEncoding(\$buff, {force_change_to_utf8_with_flag => $opt{force}, change_to_utf8 => !$opt{utf8}, given_encoding => $opt{encoding}})) {
 	if ($opt{overwrite}) {
 	    if ($opt{z}) {
 		open(WRITER, "| gzip > $file");
