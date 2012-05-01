@@ -5,10 +5,9 @@ package SentenceExtractor;
 
 # $Id$
 
-use vars qw($open_kakko $close_kakko $period $dot @honorifics);
+use vars qw($comma $open_kakko $close_kakko $period $dot $alphabet_or_number $itemize_header @honorifics);
 # use strict;
 use utf8;
-use CharacterRange;
 use Encode;
 use Data::Dumper;
 {
@@ -23,8 +22,8 @@ $close_kakko = qr/）|〕|］|｝|＞|≫|」|』|】|\)|\]|\}/;
 
 $period = qr/。|？|！|♪|…/;
 $dot = qr/．/;
-# $alphabet_or_number = qr/\xa3(?:[\xc1-\xda]|[\xe1-\xfa]|[\xb0-\xb9])/;
-$itemize_header = qr/\p{alphabet_or_number}．/;
+$alphabet_or_number = qr/(?:[Ａ-Ｚ]|[ａ-ｚ]|[０-９])/;
+$itemize_header = qr/${alphabet_or_number}．/;
 
 @honorifics = qw(Adj. Adm. Adv. Asst. Bart. Brig. Bros. Capt. Cmdr. Col. Comdr. Con. Cpl. Dr. Ens. Gen. Gov. Hon. Hosp. Insp. Lt. M. MM. Maj. Messrs. Mlle. Mme. Mr. Mrs. Ms. Msgr. Op. Ord. Pfc. Ph. Prof. Pvt. Rep. Reps. Res. Rev. Rt. Sen. Sens. Sfc. Sgt. Sr. St. Supt. Surg. vs. v.);
 
@@ -104,7 +103,7 @@ sub SplitJapanese {
     my @tmp = ();
     my $sent = '';
     my $cdot = '・';
-    while ($str =~ /(?:(?:$period)|((?:$cdot){3,})|(?<!\p{alphabet_or_number})(?:$dot)(?!\p{alphabet_or_number}|$comma))(?:$dot|$period)*/o) { # check delimiter & split
+    while ($str =~ /(?:(?:$period)|((?:$cdot){3,})|(?<!$alphabet_or_number)(?:$dot)(?!$alphabet_or_number|$comma))(?:$dot|$period)*/o) { # check delimiter & split
 	my $pre = $`;
 	$str = $'; ## this line stops incorrect coloring '
 	$sent .= $` . $&;
@@ -136,7 +135,7 @@ sub SplitJapanese {
 
 	    my $s_tmp = '';
 	    # カッコで囲まれた文がデリミタを含んでいるならば区切る
-	    while ($s_enclosed_by_kakko =~ /(?:(?:$period)|(?:$cdot){3,}|(?<!\p{alphabet_or_number})(?:$dot)(?!\p{alphabet_or_number}|$comma))(?:$dot|$period)*/o) {
+	    while ($s_enclosed_by_kakko =~ /(?:(?:$period)|(?:$cdot){3,}|(?<!$alphabet_or_number)(?:$dot)(?!$alphabet_or_number|$comma))(?:$dot|$period)*/o) {
 		my $pre = $`;
 		$s_enclosed_by_kakko = $'; # '
 

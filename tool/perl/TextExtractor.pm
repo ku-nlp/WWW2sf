@@ -13,7 +13,6 @@ use strict;
 use utf8;
 use Unicode::Normalize;
 use Unicode::Japanese;
-use CharacterRange;
 use Annotator;
 use Data::Dumper;
 {
@@ -103,10 +102,9 @@ my %SKIP_ELEMENT_TAGS = ();
 #     );
 
 
-my $ITEMIZE__HEADER = qr/\p{alphabet_or_number}．/;
+my $alphabet_or_number = qr/(?:[Ａ-Ｚ]|[ａ-ｚ]|[０-９])/;
+my $ITEMIZE__HEADER = qr/${alphabet_or_number}．/;
 my $CHARS_OF_BEGINNING_OF_ITEMIZATION = qr/、|，|：/;
-
-my $NUMBER = qr/\xa3(?:[\xa0-\xb9])/;
 
 my $CONNECT_A_TH = 1000; # aタグを連結するときの複合名詞（最長）の頻度の閾値
 
