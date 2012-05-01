@@ -526,7 +526,7 @@ sub ReadResult {
 
     my @title = $doc->getElementsByTagName('Title');
     my @sentences = $doc->getElementsByTagName('S');
-    unshift(@sentences, $title[0]) if (defined(@title));
+    unshift(@sentences, $title[0]) if (@title);
     my $start_sent = 0;
 
     my $scheme;
