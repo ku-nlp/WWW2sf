@@ -1,37 +1,39 @@
 USAGE:
-  WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u|-U] [-z] [-c somewhere/cns.cdb] [-S] [-T] [-e|-E] [-x] [-a] hdir xdir
+  WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u|-U] [-z] [-c somewhere/cns.cdb] [-S] [-T] [-e|-E] [-x] [-a] [-d SynGraphPath] hdir xdir
 
 OPTION:
-  -j    ... juman�β��Ϸ�̤�������.
+  -j    ... jumanの解析結果を埋め込む.
 
-  -k    ... knp�β��Ϸ�̤�������.
+  -k    ... knpの解析結果を埋め込む.
 
-  -s    ... SynGraph�β��Ϸ�̤�������.
+  -s    ... SynGraphの解析結果を埋め込む.
 
-  -u    ... utf8���Ѵ�����HTMLʸ�����Ϥ���.
-            utf8�����줿HTMLʸ���XXX.YYY.utf8.html�Ȥ���������hdir�ʲ��˽��Ϥ����.
-            (XXX��ʸ��ID, YYY�ϥץ������ֹ�)
+  -u    ... utf8に変換したHTML文書を出力する.
+            utf8化されたHTML文書はXXX.YYY.utf8.htmlという形式でhdir以下に出力される.
+            (XXXは文書ID, YYYはプロセス番号)
 
-  -U    ... hdir�ǻ��ꤷ��HTMLʸ�񤬤��Ǥ�utf8������Ƥ�����.
+  -U    ... hdirで指定したHTML文書がすでにutf8化されている場合.
 
-  -z    ... hdir�ǻ��ꤷ��HTMLʸ��gzip����Ƥ�����.
+  -z    ... hdirで指定したHTML文書がgzipされている場合.
 
-  -c    ... ���󥫡��ƥ����Ȥ�Ϣ³��ʣ��̾��ñ�̤Ƕ��ڤ�.
+  -c    ... アンカーテキストの連続を複合名詞単位で区切る.
 
-  -S    ... ɸ��ե����ޥåȤ��Ѵ�����HTMLʸ��Υե����륵�����ξ�¤����.
-            (�ǥե���ȤǤ�5MB�ʾ�Υե�������Ѵ�����ʤ�)
+  -S    ... 標準フォーマットに変換するHTML文書のファイルサイズの上限を指定.
+            (デフォルトでは5MB以上のファイルは変換されない)
 
-  -T    ... �ΰ�Ƚ���Ԥ�.
+  -T    ... 領域判定を行う.
 
-  -e    ... �Ѹ�⡼��.
+  -e    ... 英語モード.
 
-  -E    ... �Ѹ�⡼�� (��ʸ���ϤϹԤ鷺��ʸ��ФΤߤ�Ԥ�).
+  -E    ... 英語モード (構文解析は行わず、文抽出のみを行う).
 
-  -x    ... ���Ϸ�̤�XML�Ȥ���������.
+  -x    ... 解析結果をXMLとして埋め込む.
 
-  -a    ... KNP�ˤ����ƾ�ά���Ϥ�Ԥ�.
+  -a    ... KNPにおいて省略解析を行う.
 
-  hdir  ... HTMLʸ�񤬼����줿�ǥ��쥯�ȥ�.
-            (utf8������Ƥ��ʤ����, gzip����Ƥ��ʤ����)
+  -d    ... SynGraphのパスを指定する.
 
-  xdir  ... ɸ��ե����ޥåȤ����Ϥ����ǥ��쥯�ȥ�.
+  hdir  ... HTML文書が収められたディレクトリ.
+            (utf8化されていないもの, gzipされていないもの)
+
+  xdir  ... 標準フォーマットが出力されるディレクトリ.

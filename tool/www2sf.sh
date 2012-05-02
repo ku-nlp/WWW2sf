@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# html¤òÉ¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¤ËÊÑ´¹
+# htmlã‚’æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«å¤‰æ›
 
 # $Id$
 
@@ -12,16 +12,16 @@ usage() {
 html2sf_extra_args=
 ext=
 
-# ¥Õ¥¡¥¤¥ë¥µ¥¤¥º¤ÎïçÃÍ(default 5M)
+# ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã®é–¾å€¤(default 5M)
 fsize_threshold=5242880
 
-# ¤¢¤ëÆü»ş¤è¤ê¿·¤·¤¤¥Õ¥¡¥¤¥ë¤À¤±½èÍı¤¹¤ë¤¿¤á¤Î´ğ½àepoch time (-n¤Ç»ØÄê)
+# ã‚ã‚‹æ—¥æ™‚ã‚ˆã‚Šæ–°ã—ã„ãƒ•ã‚¡ã‚¤ãƒ«ã ã‘å‡¦ç†ã™ã‚‹ãŸã‚ã®åŸºæº–epoch time (-nã§æŒ‡å®š)
 ref_time=0
 
 base_dir=`dirname $0`
 
 flag_of_make_urldb=0
-while getopts ajkshS:c:uUzOTFt:C:eExn: OPT
+while getopts ajkshS:c:uUzOTFt:C:eExn:d: OPT
 do
     case $OPT in
 	a)  html2sf_extra_args="-a $html2sf_extra_args"
@@ -61,6 +61,8 @@ do
 	    ;;
 	n)  ref_time=$OPTARG
 	    ;;
+	d)  html2sf_extra_args="-d $OPTARG $html2sf_extra_args"
+	    ;;
         h)  usage
             ;;
     esac
@@ -79,20 +81,20 @@ do
     f=$in_f
     base_f=`basename $in_f .html$ext`
 
-    # -z(gzip°µ½Ì)¥ª¥×¥·¥ç¥ó¤¬»ØÄê¤µ¤ì¤¿¤È¤­
+    # -z(gzipåœ§ç¸®)ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒæŒ‡å®šã•ã‚ŒãŸã¨ã
     if [ "$ext" = ".gz" ]; then
 	gzip -dc $f > $xdir/$base_f.html
 	f=$xdir/$base_f.html
     fi
 
-    # ¥Õ¥¡¥¤¥ë¤ÎºÇ½ª½¤Àµ»ş¹ï¤òÆÀ¤ë
+    # ãƒ•ã‚¡ã‚¤ãƒ«ã®æœ€çµ‚ä¿®æ­£æ™‚åˆ»ã‚’å¾—ã‚‹
     mtime=`$base_dir/scripts/print-epoch-time.perl $in_f`
 
     fsize=`wc -c $f | awk '{print $1}'`
-    # ¥Õ¥¡¥¤¥ë¥µ¥¤¥º¤¬$fsize_threshold°Ê²¼¡¢ºÇ½ª½¤Àµ»ş¹ï¤¬´ğ½àepoch time¤è¤ê¸å(default: Á´¤ÆOK)¤Ê¤é
+    # ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºãŒ$fsize_thresholdä»¥ä¸‹ã€æœ€çµ‚ä¿®æ­£æ™‚åˆ»ãŒåŸºæº–epoch timeã‚ˆã‚Šå¾Œ(default: å…¨ã¦OK)ãªã‚‰
     if [ $fsize -lt $fsize_threshold -a $mtime -gt $ref_time ]; then
 	echo $f
-	# ³Æhtml¤ËÂĞ¤¹¤ëinfo¥Õ¥¡¥¤¥ë(URL encoding)¤¬¤¢¤ì¤Ğ
+	# å„htmlã«å¯¾ã™ã‚‹infoãƒ•ã‚¡ã‚¤ãƒ«(URL encoding)ãŒã‚ã‚Œã°
 	if [ -f $hdir/$base_f.info ]; then
 	    html2sf_info_args="-i $hdir/$base_f.info"
 	else
@@ -100,7 +102,7 @@ do
 	fi
 	$base_dir/html2sf.sh $html2sf_extra_args $html2sf_info_args -p -f $f > $xdir/$base_f.xml
 
-	# ½ĞÎÏ¤¬0¤Î¾ì¹ç¡¢ºï½ü
+	# å‡ºåŠ›ãŒ0ã®å ´åˆã€å‰Šé™¤
 	if [ ! -s $xdir/$base_f.xml ]; then
             rm -f $xdir/$base_f.xml
 	fi
@@ -112,7 +114,7 @@ do
 done
 
 ############################
-# ¥¢¥¦¥È¥ê¥ó¥¯¾ğÊó¤ò¤Ş¤È¤á¤ë
+# ã‚¢ã‚¦ãƒˆãƒªãƒ³ã‚¯æƒ…å ±ã‚’ã¾ã¨ã‚ã‚‹
 ############################
 
 if [ $flag_of_make_urldb -eq 1 ]; then

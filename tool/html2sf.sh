@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a] [-d SynGraphPath] input.html > output.xml"
     exit 1
 }
 
@@ -26,6 +26,7 @@ usage() {
 # -C: 設定ファイルの指定
 # -x: 解析結果をXMLとして埋め込む
 # -a: KNPにおいて省略解析を行う
+# -d: SynGraphのパスを指定する
 
 # Change this for SynGraph annotation
 CVS_DIR=$HOME/cvs
@@ -51,7 +52,7 @@ ipsj_metadb=
 configfile=$base_dir/conf/configure
 infofile=
 
-while getopts abfjkspPhBwc:umMUOTFt:C:eExi: OPT
+while getopts abfjkspPhBwc:umMUOTFt:C:eExi:d: OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
@@ -110,6 +111,9 @@ do
 	C)  configfile=$OPTARG
 	    ;;
 	i)  infofile=$OPTARG
+	    ;;
+	d)  syngraph_home=$OPTARG
+	    syndb_path=$syngraph_home/syndb/`uname -m`
 	    ;;
         h)  usage
             ;;
