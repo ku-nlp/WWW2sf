@@ -40,7 +40,6 @@ extract_args=
 formatwww_args=
 addknp_args="--sentence_length_max 130 --all"
 rawstring_args="--all"
-syngraph_args="--syndbdir $syndb_path --antonymy --syndb_on_memory"
 save_utf8file=0
 use_module=1
 annotation=
@@ -81,8 +80,7 @@ do
 	k)  addknp_args="--knp $addknp_args"
 	    annotation=knp
 	    ;;
-	s)  addknp_args="--syngraph $syngraph_args $addknp_args"
-	    annotation=syngraph
+	s)  annotation=syngraph
 	    ;;
 	x)  addknp_args="--embed_result_in_xml $addknp_args"
 	    ;;
@@ -120,6 +118,11 @@ do
     esac
 done
 shift `expr $OPTIND - 1`
+
+if [ $annotation = "syngraph" ]; then
+    syngraph_args="--syndbdir $syndb_path --antonymy --syndb_on_memory"
+    addknp_args="--syngraph $syngraph_args $addknp_args"
+fi
 
 if [ ! -f "$1" ]; then
     usage
