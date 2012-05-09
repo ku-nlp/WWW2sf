@@ -119,7 +119,7 @@ do
 done
 shift `expr $OPTIND - 1`
 
-if [ $annotation = "syngraph" ]; then
+if [ "$annotation" = "syngraph" ]; then
     syngraph_args="--syndbdir $syndb_path --antonymy --syndb_on_memory"
     addknp_args="--syngraph $syngraph_args $addknp_args"
 fi
