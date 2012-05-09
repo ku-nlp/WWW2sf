@@ -1,3 +1,157 @@
+2012-05-09  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result-dir.perl: Added -embed_result_in_xml option.
+
+	* html2sf.sh: Fix for non-analysis mode.
+
+2012-05-02  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* html2sf.sh: Modified specification of SynGraphPath.
+
+	* html2sf.sh, usage, www2sf.sh: Added an option to specify SynGraph.
+
+2012-05-01  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm: Fixed illegal usage of "defined".
+
+	* perl/SentenceExtractor.pm, perl/TextExtractor.pm:
+	Modified not to use CharacterRange.pm.
+
+2011-08-12  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* www2sf.sh: Added an option to check modified time of an input HTML.
+
+	* scripts/print-epoch-time.perl: added.
+
+	* html2sf.sh: Changed the file encoding to UTF-8.
+
+	* html2sf.sh: Added an option to specify an info file (-i).
+
+	* scripts/to_utf8.perl: Added an option to give an encoding.
+
+	* perl/HtmlGuessEncoding.pm: Added an option to give a encoding.
+
+2011-08-11  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* html2sf.sh: Modified to clean completely.
+
+2011-07-11  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* scripts/cut-crawled-htmls.perl: added.
+
+	* html2text.sh: Adapted the change of format-www.perl.
+
+	* scripts/sentence-filter-txt.perl: Added a check of SID.
+
+	* scripts/format-www.perl:
+	Added --encoding option and changed the file encoding to UTF-8.
+
+2011-06-21  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm: Added content_p attribute for words.
+
+2011-02-23  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* perl/EnjuWrapper.pm: Added newline handling.
+
+	* perl/EnjuWrapper.pm: Modified to use run.sh.
+
+2011-02-21  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* perl/EnjuWrapper.pm, perl/test-enjuwrapper.perl: added.
+
+2011-02-04  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* scripts/extract-cdata.perl: added.
+
+2011-02-03  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* usage, www2sf.sh: Added anaphora option (-a).
+
+2011-02-02  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* html2sf.sh: Added anaphora option (-a).
+
+2011-01-17  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm:
+	Added a converter from a CoNLL format to new format.
+
+2010-12-25  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* perl/HtmlGuessEncoding.pm:
+	Modified to skip encoding checking for force_change_to_utf8_with_flag and added windows-31j encoding.
+
+2010-12-23  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm: Added error check of result_string.
+
+2010-12-20  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm:
+	Added dpndtype to phrase and changed cat to category.
+
+2010-12-13  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* perl/TsuruokaTagger.pm: Modified to return to the current directory.
+
+2010-12-13  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/MaltParser.pm, perl/TsuruokaTagger.pm:
+	new ã™ã‚‹éš›ã€ã‚³ãƒãƒ³ãƒ‰ã®å ´æ‰€ç­‰ã‚’å¤‰æ›´ã§ãã‚‹ã‚ˆã†ã«.
+
+	* perl/MaltParser.pm: ãƒãƒ¼ã‚¸ãƒ§ãƒ³ç•ªå·ã®è¿½åŠ .
+
+2010-12-10  shibata  <shibata@h212.146.228.10.30760.vlan.kuins.net>
+
+	* perl/MaltParser.pm:
+	Modified to delete the directory generated when an error occurred.
+
+2010-12-06  Daisuke Kawahara  <dk@i.kyoto-u.ac.jp>
+
+	* html2sf.sh, usage: Updated comments and usages.
+
+	* www2sf.sh: Added -x option.
+
+	* perl/AddKNPResult.pm:
+	Modified to die for embedding the result of JUMAN in XML.
+
+	* perl/AddKNPResult.pm:
+	Modified the name of word/phrase fstring from "f" to "feature."
+
+	* html2sf.sh: Added -x for embedding annotation in xml.
+
+	* scripts/add-knp-result.perl:
+	Added --embed_result_in_xml for embedding annotation in xml.
+
+	* perl/AddKNPResult.pm: Added a method for embedding annotation in xml.
+
+	* perl/test-tsuruokatagger.perl: added.
+
+2010-11-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/add-knp-result-dir.perl, scripts/add-knp-result.perl:
+	-imi_list_dbã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ .
+
+2010-10-13  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm:
+	AppendNodeãƒ¡ã‚½ãƒƒãƒ‰ã‹ã‚‰è¨€èªè§£æéƒ¨åˆ†ã‚’åˆ¥ãƒ¡ã‚½ãƒƒãƒ‰ã¨ã—ã¦ç‹¬ç«‹ã•ã›ãŸ.
+
+2010-09-21  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/AddKNPResult.pm:
+	æ•°å­—, ç©ºç™½ãŒå¤šã„æ–‡ã¯è¨€èªè§£æã®å¯¾è±¡ã‹ã‚‰é™¤ãã‚ˆã†ã«.
+
+2010-07-22  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* perl/TextExtractor.pm: <BR>ã‚’æ–‡åŒºåˆ‡ã‚Šã¨è¦‹ãªã™ã‚ˆã†ã«.
+
+2010-07-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
+
+	* scripts/extract-sentences.perl:
+	japanese_scoreã‚’è¨ˆç®—ã™ã‚‹éš›ã€FilterãŒå®šç¾©æ¸ˆã¿ã‹ã©ã†ã‹ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã‚ˆã†ã«.
+
 2010-07-17  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/extract-rawstring.perl, scripts/extract-sentences.perl, scripts/format-www-xml.perl, scripts/sentence-filter-xml.perl, perl/AddKNPResult.pm:
@@ -46,107 +200,107 @@
 
 2010-02-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/make-htmlfile.perl: timeout¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã.
+	* scripts/make-htmlfile.perl: timeoutã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ .
 
 	* scripts/Makefile: small changes.
 
 2010-02-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* conf/configure: ¥Ñ¥é¥á¡¼¥¿¤ÎÄÉ²Ã.
+	* conf/configure: ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¿½åŠ .
 
-	* scripts/Makefile: mk_tasks4tag ¥¿¡¼¥²¥Ã¥È¤òÄÉ²Ã.
+	* scripts/Makefile: mk_tasks4tag ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’è¿½åŠ .
 
-	* scripts/add-knp-result-dir.perl: Keyword, Author Í×ÁÇ¤ò²òÀÏ¤ÎÂĞ¾İ¤Ë.
+	* scripts/add-knp-result-dir.perl: Keyword, Author è¦ç´ ã‚’è§£æã®å¯¾è±¡ã«.
 
-	* scripts/make-htmlfile.perl: make_htmlfile_ipsj ´Ø¿ô¤òÄÉ²Ã.
+	* scripts/make-htmlfile.perl: make_htmlfile_ipsj é–¢æ•°ã‚’è¿½åŠ .
 
 	* scripts/ipsj-embed-tag-data.sh: small changes.
 
 	* scripts/embed-metadata4ipsj.perl:
-	ipsj <-> kj ÊÑ´¹¥Ç¡¼¥¿¤ò¼õ¤±¼è¤ë¤è¤¦¤Ë.
+	ipsj <-> kj å¤‰æ›ãƒ‡ãƒ¼ã‚¿ã‚’å—ã‘å–ã‚‹ã‚ˆã†ã«.
 
-	* scripts/ipsj-convert-tag-data.perl: ¸µ¥Ç¡¼¥¿¤ÎÍ¾Ê¬¤Ê¶õÇò¤òºï½ü.
+	* scripts/ipsj-convert-tag-data.perl: å…ƒãƒ‡ãƒ¼ã‚¿ã®ä½™åˆ†ãªç©ºç™½ã‚’å‰Šé™¤.
 
 2010-02-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* conf/configure: ¥Ñ¥é¥á¡¼¥¿¤ÎÄÉ²Ã.
+	* conf/configure: ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®è¿½åŠ .
 
 	* scripts/Makefile:
-	ÊÑ¿ôÌ¾¤ÎÊÑ¹¹, ¸À¸ì²òÀÏ¸å¡¢É¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¥Ç¡¼¥¿¤ò DIST_HOST_OF_SF ¤Ë¥³¥Ô¡¼¤¹¤ë¤è¤¦¤Ë.
+	å¤‰æ•°åã®å¤‰æ›´, è¨€èªè§£æå¾Œã€æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚’ DIST_HOST_OF_SF ã«ã‚³ãƒ”ãƒ¼ã™ã‚‹ã‚ˆã†ã«.
 
 	* scripts/embed-annotation.sh:
-	log¥Õ¥¡¥¤¥ë¤ò finish ¥Ç¥£¥ì¥¯¥È¥ê¤Ë°Ü¤¹¤è¤¦¤Ë.
+	logãƒ•ã‚¡ã‚¤ãƒ«ã‚’ finish ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ç§»ã™ã‚ˆã†ã«.
 
 2010-02-04  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* ChangeLog: updated.
 
-	* html2sf.sh: bug fixed.¡ÊÎÎ°è¾ğÊó¤òËä¤á¹ş¤ó¤Àºİ¡¢¥ª¥ê¥¸¥Ê¥ë¤Î¥Õ¥¡¥¤¥ë¤«¤é¥ª¥Õ¥»¥Ã¥È¤ò¼èÆÀ¤¹¤ë¤è¤¦¤Ë¡Ë
+	* html2sf.sh: bug fixed.ï¼ˆé ˜åŸŸæƒ…å ±ã‚’åŸ‹ã‚è¾¼ã‚“ã éš›ã€ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å–å¾—ã™ã‚‹ã‚ˆã†ã«ï¼‰
 
 2010-02-03  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm:
-	link_buf¤ÎÆâÍÆ¤¬ÄÉ²Ã¤µ¤ì¤ëºİ¡¢property¥Ç¡¼¥¿¤ò½ñ¤­¹ş¤à¤è¤¦¤Ë.
+	link_bufã®å†…å®¹ãŒè¿½åŠ ã•ã‚Œã‚‹éš›ã€propertyãƒ‡ãƒ¼ã‚¿ã‚’æ›¸ãè¾¼ã‚€ã‚ˆã†ã«.
 
 2010-01-19  Tomohide Shibata  <shibata@reed.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl, scripts/extract-rawstring.perl, perl/AddKNPResult.pm:
-	»ØÄê¤µ¤ì¤¿Blocktype¤Î¤ß¤ò²òÀÏÂĞ¾İ¤È¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	æŒ‡å®šã•ã‚ŒãŸBlocktypeã®ã¿ã‚’è§£æå¯¾è±¡ã¨ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 	* scripts/embed-region-info.perl, html2sf.sh:
-	DetectBlocks.pm ¤Î¹âÂ®²½¤ËÂĞ±ş.
+	DetectBlocks.pm ã®é«˜é€ŸåŒ–ã«å¯¾å¿œ.
 
 2010-01-12  Tomohide Shibata  <shibata@reed.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl, perl/AddKNPResult.pm:
-	KNP²òÀÏ·ë²Ì¤Î¥­¥ã¥Ã¥·¥å¤ò¤Ò¤¯¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	KNPè§£æçµæœã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’ã²ãã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 	* perl/AddKNPResult.pm:
-	syngraph¥ª¥×¥·¥ç¥ó¤¬Í¿¤¨¤é¤ì¤¿»ş¤Î¤ß¡¢require SynGraph¤¹¤ë¤è¤¦¤Ë
+	syngraphã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒä¸ãˆã‚‰ã‚ŒãŸæ™‚ã®ã¿ã€require SynGraphã™ã‚‹ã‚ˆã†ã«
 
 2010-01-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
-	verbose»ØÄê»ş¤ËÆÉ¤ßº£ÅÙHTMLÊ¸½ñ¤òÉ½¼¨¤¹¤ë¤è¤¦¤Ë.
+	verboseæŒ‡å®šæ™‚ã«èª­ã¿ä»Šåº¦HTMLæ–‡æ›¸ã‚’è¡¨ç¤ºã™ã‚‹ã‚ˆã†ã«.
 
 	* perl/TextExtractor.pm:
-	<title>¥¿¥°¤ÎÍ×ÁÇ¤ò²ş¹Ô¤ÎÏ¢Â³¤Ç¶èÀÚ¤é¤Ê¤¤¤è¤¦¤Ë¤·¤¿.
+	<title>ã‚¿ã‚°ã®è¦ç´ ã‚’æ”¹è¡Œã®é€£ç¶šã§åŒºåˆ‡ã‚‰ãªã„ã‚ˆã†ã«ã—ãŸ.
 
 2010-01-05  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-rawstring.perl:
-	ÆÃÄê¤Îsid¤ÎÊ¸¤Î¤ß¤òÃê½Ğ¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	ç‰¹å®šã®sidã®æ–‡ã®ã¿ã‚’æŠ½å‡ºã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 	* perl/AddKNPResult.pm:
-	usemodule¥ª¥×¥·¥ç¥ó¤¬»ØÄê¤µ¤ì¤¿¤È¤­¤Î¤ß¡¢¥ª¥Ö¥¸¥§¥¯¥È¤ònew¤¹¤ë¤è¤¦¤ËÊÑ¹¹
+	usemoduleã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒæŒ‡å®šã•ã‚ŒãŸã¨ãã®ã¿ã€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’newã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
 
 2009-12-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
-	¥¨¥é¡¼¤ò½ĞÎÏ¤·¤¿¥Õ¥¡¥¤¥ë¤ÎID¤ò½ĞÎÏ¤¹¤ë¤è¤¦¤Ë.
+	ã‚¨ãƒ©ãƒ¼ã‚’å‡ºåŠ›ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®IDã‚’å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«.
 
 2009-12-15  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* perl/TextExtractor.pm: ¥ë¥ÓÌäÂê¤ËÂĞ±ş.
+	* perl/TextExtractor.pm: ãƒ«ãƒ“å•é¡Œã«å¯¾å¿œ.
 
-	* scripts/embed-region-info.perl: DetectBlocks2¤«¤éDetectBlocks¤ËÊÑ¹¹
+	* scripts/embed-region-info.perl: DetectBlocks2ã‹ã‚‰DetectBlocksã«å¤‰æ›´
 
 2009-12-01  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-rawstring.perl:
-	rawstring¤Î¶õÇò¤òºï½ü¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	rawstringã®ç©ºç™½ã‚’å‰Šé™¤ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 2009-11-23  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl:
-	replace¥ª¥×¥·¥ç¥ó¤òÇÑ»ß¤·¤Æ¡¢remove_annotation¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	replaceã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å»ƒæ­¢ã—ã¦ã€remove_annotationã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 	* perl/AddKNPResult.pm:
-	replace¥ª¥×¥·¥ç¥ó¤òÇÑ»ß¤·¤Æ¡¢remove_annotation¥ª¥×¥·¥ç¥ó¤È¶¦ÄÌ¤Ë
+	replaceã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å»ƒæ­¢ã—ã¦ã€remove_annotationã‚ªãƒ—ã‚·ãƒ§ãƒ³ã¨å…±é€šã«
 
 2009-11-22  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* perl/AddKNPResult.pm: case¥ª¥×¥·¥ç¥ó»ØÄê»ş¤âÄÌ¾ï¤ÎKNP¤ònew¤¹¤ë¤è¤¦¤Ë.
+	* perl/AddKNPResult.pm: caseã‚ªãƒ—ã‚·ãƒ§ãƒ³æŒ‡å®šæ™‚ã‚‚é€šå¸¸ã®KNPã‚’newã™ã‚‹ã‚ˆã†ã«.
 
 2009-11-17  Daisuke Kawahara  <kawahara@reed.kuee.kyoto-u.ac.jp>
 
@@ -163,57 +317,57 @@
 2009-11-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2sf.sh, www2sf.sh:
-	file ¥³¥Ş¥ó¥É¤Ë¤è¤ë¥Õ¥£¥ë¥¿¤ò¥ª¥×¥·¥ç¥ó²½¡Ê-F¥ª¥×¥·¥ç¥ó¤ÇÍ­¸ú¡Ë
+	file ã‚³ãƒãƒ³ãƒ‰ã«ã‚ˆã‚‹ãƒ•ã‚£ãƒ«ã‚¿ã‚’ã‚ªãƒ—ã‚·ãƒ§ãƒ³åŒ–ï¼ˆ-Fã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§æœ‰åŠ¹ï¼‰
 
 2009-10-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/Makefile: ¥³¥á¥ó¥È¤òÄÉ²Ã.
+	* scripts/Makefile: ã‚³ãƒ¡ãƒ³ãƒˆã‚’è¿½åŠ .
 
-	* conf/configure: option4embed_annotation ¤Î¥Ç¥Õ¥©¥ë¥ÈÃÍ¤òÊÑ¹¹.
+	* conf/configure: option4embed_annotation ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã‚’å¤‰æ›´.
 
-	* conf/configure: ÊÑ¿ô¤ÎÄÉ²Ã.
+	* conf/configure: å¤‰æ•°ã®è¿½åŠ .
 
-	* scripts/Makefile: torque ¤ÇÍøÍÑ¤¹¤ë¾ì¹ç¤Î¥³¡¼¥É¤òÄÉ²Ã.
+	* scripts/Makefile: torque ã§åˆ©ç”¨ã™ã‚‹å ´åˆã®ã‚³ãƒ¼ãƒ‰ã‚’è¿½åŠ .
 
 	* scripts/make-standard-format.sh:
-	configure ¥Õ¥¡¥¤¥ëÆâ¤Ç»ØÄê¤µ¤ì¤¿ÃÍ¤òÍøÍÑ¤¹¤ë¤è¤¦¤Ë (www2sf.sh ¤Î¥ª¥×¥·¥ç¥ó, Ê£¹çÌ¾»ìDB ¤Î¾ì½ê).
+	configure ãƒ•ã‚¡ã‚¤ãƒ«å†…ã§æŒ‡å®šã•ã‚ŒãŸå€¤ã‚’åˆ©ç”¨ã™ã‚‹ã‚ˆã†ã« (www2sf.sh ã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³, è¤‡åˆåè©DB ã®å ´æ‰€).
 
-	* scripts/embed-region-info.perl: -juman ¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã.
+	* scripts/embed-region-info.perl: -juman ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ .
 
 	* scripts/embed-annotation.sh:
-	ºî¶ÈÎÎ°è¤È¤·¤Æ configure Æâ¤Î $workspace4embed ¤Ç»ØÄê¤µ¤ì¤¿¥Ç¥£¥ì¥¯¥È¥ê¤òÍøÍÑ¤¹¤ë¤è¤¦¤Ë.
+	ä½œæ¥­é ˜åŸŸã¨ã—ã¦ configure å†…ã® $workspace4embed ã§æŒ‡å®šã•ã‚ŒãŸãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’åˆ©ç”¨ã™ã‚‹ã‚ˆã†ã«.
 
-	* conf/configure: ÊÑ¿ô¤ÎÄÉ²Ã.
+	* conf/configure: å¤‰æ•°ã®è¿½åŠ .
 
 	* scripts/add-knp-result.perl, scripts/add-knp-result-dir.perl:
-	JUMAN, KNP, SynGraph ¥ª¥Ö¥¸¥§¥¯¥È¤ÎºîÀ®¤ò AddKNPResult ¤ËÇ¤¤»¤¿, th_of_knp_use ¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã.
+	JUMAN, KNP, SynGraph ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã‚’ AddKNPResult ã«ä»»ã›ãŸ, th_of_knp_use ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ .
 
 	* perl/AddKNPResult.pm:
-	JUMAN, KNP, SynGraph ¥ª¥Ö¥¸¥§¥¯¥È¤ÎºîÀ®¤ò¹Ô¤¦¤è¤¦¤Ë.
+	JUMAN, KNP, SynGraph ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã‚’è¡Œã†ã‚ˆã†ã«.
 
 2009-10-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/make-standard-format.sh:
-	½ĞÎÏ·ë²Ì¤òÆÃÄê¤Î¥Û¥¹¥È¤Ë¥³¥Ô¡¼¤¹¤ë¤è¤¦¤Ë.
+	å‡ºåŠ›çµæœã‚’ç‰¹å®šã®ãƒ›ã‚¹ãƒˆã«ã‚³ãƒ”ãƒ¼ã™ã‚‹ã‚ˆã†ã«.
 
-	* scripts/Makefile: ²òÀÏ·ë²Ì¤òËä¤á¹ş¤à½èÍı¤òÄÉ²Ã.
+	* scripts/Makefile: è§£æçµæœã‚’åŸ‹ã‚è¾¼ã‚€å‡¦ç†ã‚’è¿½åŠ .
 
 2009-10-04  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/format-www-xml.perl: XMLÀë¸À°ÊÁ°¤Î¥Ç¡¼¥¿¤ÏÆÉ¤ß¹ş¤Ş¤Ê¤¤¤è¤¦¤Ë.
+	* scripts/format-www-xml.perl: XMLå®£è¨€ä»¥å‰ã®ãƒ‡ãƒ¼ã‚¿ã¯èª­ã¿è¾¼ã¾ãªã„ã‚ˆã†ã«.
 
-	* scripts/extract-sentences.perl: ÎÎ°èÈ½Äê¤Î·ë²Ì¤ò½ĞÎÏ¤¹¤ë¤è¤¦¤Ë.
+	* scripts/extract-sentences.perl: é ˜åŸŸåˆ¤å®šã®çµæœã‚’å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«.
 
-	* perl/TextExtractor.pm: ÎÎ°èÈ½Äê·ë²Ì¤òÊİ»ı¤¹¤ë¤è¤¦¤Ë.
+	* perl/TextExtractor.pm: é ˜åŸŸåˆ¤å®šçµæœã‚’ä¿æŒã™ã‚‹ã‚ˆã†ã«.
 
-	* html2sf.sh, www2sf.sh: ÎÎ°è¤ÎÈ½Äê·ë²Ì¤òËä¤á¹ş¤à¥ª¥×¥·¥ç¥ó -T ¤òÄÉ²Ã.
+	* html2sf.sh, www2sf.sh: é ˜åŸŸã®åˆ¤å®šçµæœã‚’åŸ‹ã‚è¾¼ã‚€ã‚ªãƒ—ã‚·ãƒ§ãƒ³ -T ã‚’è¿½åŠ .
 
 2009-10-02  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/extract-sentences.perl: URL¤ÎËöÈø¤¬\r,\n,\r\n¤Î¾ì¹ç¤ËÂĞ±ş.
+	* scripts/extract-sentences.perl: URLã®æœ«å°¾ãŒ\r,\n,\r\nã®å ´åˆã«å¯¾å¿œ.
 
 	* scripts/extract-sentences.perl:
-	É¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¤Ë¥¢¥¦¥È¥ê¥ó¥¯¾ğÊó¤òËä¤á¹ş¤Ş¤Ê¤¤¤è¤¦¤Ë¤·¤¿¡Ê¥ê¥ó¥¯¾ğÊó¤ÏÊÌ´ÉÍı¤Ë¤Ê¤Ã¤¿¤¿¤á¡Ë
+	æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«ã‚¢ã‚¦ãƒˆãƒªãƒ³ã‚¯æƒ…å ±ã‚’åŸ‹ã‚è¾¼ã¾ãªã„ã‚ˆã†ã«ã—ãŸï¼ˆãƒªãƒ³ã‚¯æƒ…å ±ã¯åˆ¥ç®¡ç†ã«ãªã£ãŸãŸã‚ï¼‰
 
 2009-09-14  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
@@ -221,16 +375,16 @@
 
 2009-08-26  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* conf/configure: bug fixed (uname¤Î¥ª¥×¥·¥ç¥ó¤ò½¤Àµ)
+	* conf/configure: bug fixed (unameã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’ä¿®æ­£)
 
 2009-08-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/embed-annotation.sh: rm¥³¥Ş¥ó¥É¤Ë-f¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã.
+	* scripts/embed-annotation.sh: rmã‚³ãƒãƒ³ãƒ‰ã«-fã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ .
 
 2009-08-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-annotation.sh:
-	../conf/configure¤òÆÉ¤ß¹ş¤à¤è¤¦¤Ë, ¼Â¹ÔÁ°¤Ësleep¤µ¤»¤ë¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã, ½ĞÎÏ·ë²Ì¤ò¥³¥Ô¡¼¤¹¤ë¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã.
+	../conf/configureã‚’èª­ã¿è¾¼ã‚€ã‚ˆã†ã«, å®Ÿè¡Œå‰ã«sleepã•ã›ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ , å‡ºåŠ›çµæœã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ .
 
 2009-06-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
@@ -243,122 +397,122 @@
 2009-06-16  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm, scripts/set-offset-and-length.perl:
-	&#160;¤òÈ¾³Ñ¶õÇò¤ËÊÑ´¹¤¹¤ë¤è¤¦¤Ë.
+	&#160;ã‚’åŠè§’ç©ºç™½ã«å¤‰æ›ã™ã‚‹ã‚ˆã†ã«.
 
 2009-06-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/set-offset-and-length.perl: HTML¥¨¥ó¥Æ¥£¥Æ¥£¤Î¸íÉ½µ­¤ËÂĞ±ş.
+	* scripts/set-offset-and-length.perl: HTMLã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã®èª¤è¡¨è¨˜ã«å¯¾å¿œ.
 
 	* perl/SentenceExtractor.pm:
-	bug fixed (´İ³ç¸Ì¤Ç°Ï¤Ş¤ì¤¿Ê¸¤Î°·¤¤¤ò½¤Àµ)
+	bug fixed (ä¸¸æ‹¬å¼§ã§å›²ã¾ã‚ŒãŸæ–‡ã®æ‰±ã„ã‚’ä¿®æ­£)
 
 2009-06-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* www2sf.perl:
-	NW*.data¥Õ¥¡¥¤¥ë¤ËÂĞ±ş, Ê¸»ú¥³¡¼¥É¤Î¿äÄê¤Ë¼ºÇÔ¤·¤¿»ş¤Ë¥¨¥é¡¼¤ò½ĞÎÏ¤¹¤ë¤è¤¦¤Ë.
+	NW*.dataãƒ•ã‚¡ã‚¤ãƒ«ã«å¯¾å¿œ, æ–‡å­—ã‚³ãƒ¼ãƒ‰ã®æ¨å®šã«å¤±æ•—ã—ãŸæ™‚ã«ã‚¨ãƒ©ãƒ¼ã‚’å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«.
 
 	* perl/HtmlGuessEncoding.pm:
-	META¥¿¥°¤Ç»ØÄê¤µ¤ì¤ëÊ¸»ú¥³¡¼¥É¤Î¥Ğ¥ê¥¨¡¼¥·¥ç¥ó¤òÄÉ²Ã, Ê¸»ú¥³¡¼¥É¤¬Û£Ëæ¤Ê»ş¤Î½èÍı¤òÄÉ²Ã.
+	METAã‚¿ã‚°ã§æŒ‡å®šã•ã‚Œã‚‹æ–‡å­—ã‚³ãƒ¼ãƒ‰ã®ãƒãƒªã‚¨ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ , æ–‡å­—ã‚³ãƒ¼ãƒ‰ãŒæ›–æ˜§ãªæ™‚ã®å‡¦ç†ã‚’è¿½åŠ .
 
 2009-05-29  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
-	Ê¸½ñID¤È¤·¤Æ999999999¤ò½ĞÎÏ¤¹¤ë¤è¤¦¤Ë.
+	æ–‡æ›¸IDã¨ã—ã¦999999999ã‚’å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«.
 
 	* www2sf.perl:
-	utf8¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã. Ê¸½ñID¤È¤·¤Æ999999999¤ò½ĞÎÏ¤¹¤ë¤è¤¦¤Ë.
+	utf8ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ . æ–‡æ›¸IDã¨ã—ã¦999999999ã‚’å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«.
 
 	* scripts/add-knp-result-dir.perl, scripts/add-knp-result.perl:
-	URLÃæ¤ÎHTML¥¨¥ó¥Æ¥£¥Æ¥£¤òÊÑ´¹¤·¤Ê¤¤¤è¤¦¤Ë (É¸½à¥Õ¥©¡¼¥Ş¥Ã¥ÈÀ¸À®»ş¤ËÊÑ´¹¤µ¤ì¤Æ¤¤¤ë¤¿¤á)
+	URLä¸­ã®HTMLã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’å¤‰æ›ã—ãªã„ã‚ˆã†ã« (æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆç”Ÿæˆæ™‚ã«å¤‰æ›ã•ã‚Œã¦ã„ã‚‹ãŸã‚)
 
 2009-05-25  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/extract-sentences.perl: NOCACHE, NOINDEX¾ğÊó¤òËä¤á¹ş¤à¤è¤¦¤Ë.
+	* scripts/extract-sentences.perl: NOCACHE, NOINDEXæƒ…å ±ã‚’åŸ‹ã‚è¾¼ã‚€ã‚ˆã†ã«.
 
 2009-04-21  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* www2sf.perl: ¥¿¥¤¥à¥¢¥¦¥Èµ¡Ç½¤ÎÄÉ²Ã, try ... catch ¤Î¾ì½ê¤òÊÑ¹¹.
+	* www2sf.perl: ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆæ©Ÿèƒ½ã®è¿½åŠ , try ... catch ã®å ´æ‰€ã‚’å¤‰æ›´.
 
 2009-04-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* www2sf.perl:
-	TextExtractor.pm¤¬½ĞÎÏ¤¹¤ë¥¨¥é¡¼¤òÎã³°¤È¤·¤Æ¥­¥ã¥Ã¥Á¤¹¤ë¤è¤¦¤Ë.
+	TextExtractor.pmãŒå‡ºåŠ›ã™ã‚‹ã‚¨ãƒ©ãƒ¼ã‚’ä¾‹å¤–ã¨ã—ã¦ã‚­ãƒ£ãƒƒãƒã™ã‚‹ã‚ˆã†ã«.
 
-	* www2sf.perl: URLÆâ¤ÎÀ©¸æ¥³¡¼¥É¤òºï½ü¤¹¤ë¤è¤¦¤Ë.
+	* www2sf.perl: URLå†…ã®åˆ¶å¾¡ã‚³ãƒ¼ãƒ‰ã‚’å‰Šé™¤ã™ã‚‹ã‚ˆã†ã«.
 
 	* www2sf.perl:
-	-linenum¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã, XMLÀ¸À®»ş¤ËÉÔÅ¬ÀÚ¤ÊÊ¸»ú¤¬½ĞÎÏ¤µ¤ì¤Æ¤â¤ª¤Á¤Ê¤¤¤è¤¦¤Ë, utf8·Á¼°¤ÎHTML¥Õ¥¡¥¤¥ë¤¬½ĞÎÏ¤µ¤ì¤ë¤è¤¦¤Ë.
+	-linenumã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ , XMLç”Ÿæˆæ™‚ã«ä¸é©åˆ‡ãªæ–‡å­—ãŒå‡ºåŠ›ã•ã‚Œã¦ã‚‚ãŠã¡ãªã„ã‚ˆã†ã«, utf8å½¢å¼ã®HTMLãƒ•ã‚¡ã‚¤ãƒ«ãŒå‡ºåŠ›ã•ã‚Œã‚‹ã‚ˆã†ã«.
 
-	* perl/Archiver.pm: ¥Æ¥­¥¹¥È¥Õ¥¡¥¤¥ë¤«¤É¤¦¤«¤Î¥Á¥§¥Ã¥¯ÊıË¡¤ò½¤Àµ.
+	* perl/Archiver.pm: ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‹ã©ã†ã‹ã®ãƒã‚§ãƒƒã‚¯æ–¹æ³•ã‚’ä¿®æ­£.
 
 2009-04-19  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/Emoticon.pm:
-	Emoticon.dic¤Î¥Ñ¥¹¤ò»ØÄê¤¹¤ë¤è¤¦¤Ë, Ê£¿ô²ónew¤µ¤ì¤¿»ş¡¢EmoticonDic¤Î¥¨¥ó¥È¥ê¤¬Ê£¿ô²ódecode¤µ¤ì¤Ê¤¤¤è¤¦¤Ë.
+	Emoticon.dicã®ãƒ‘ã‚¹ã‚’æŒ‡å®šã™ã‚‹ã‚ˆã†ã«, è¤‡æ•°å›newã•ã‚ŒãŸæ™‚ã€EmoticonDicã®ã‚¨ãƒ³ãƒˆãƒªãŒè¤‡æ•°å›decodeã•ã‚Œãªã„ã‚ˆã†ã«.
 
 2009-04-14  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-linkinfo.sh:
-	¥¤¥ó¥ê¥ó¥¯¡¤¥¢¥¦¥È¥ê¥ó¥¯¤ÎÊ¸½ñID¤òËä¤á¹ş¤à¤è¤¦¤ËÊÑ¹¹.
+	ã‚¤ãƒ³ãƒªãƒ³ã‚¯ï¼Œã‚¢ã‚¦ãƒˆãƒªãƒ³ã‚¯ã®æ–‡æ›¸IDã‚’åŸ‹ã‚è¾¼ã‚€ã‚ˆã†ã«å¤‰æ›´.
 
 	* scripts/embed-linkinfo.perl:
-	¥¤¥ó¥ê¥ó¥¯, ¥¢¥¦¥È¥ê¥ó¥¯¤ÎÊ¸½ñID¤òËä¤á¹ş¤à¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã (url2did)
+	ã‚¤ãƒ³ãƒªãƒ³ã‚¯, ã‚¢ã‚¦ãƒˆãƒªãƒ³ã‚¯ã®æ–‡æ›¸IDã‚’åŸ‹ã‚è¾¼ã‚€ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ  (url2did)
 
 	* scripts/extract-anchor.perl:
-	Ê¸½ñ¥»¥Ã¥ÈÆâ¤Ë¤Ê¤¤URL¤Ë¤Ä¤¤¤Æ¤Ï, Ê¸½ñID¤È¤·¤Æ999999999¤ò½ĞÎÏ¤¹¤ë¤è¤¦¤Ë.
+	æ–‡æ›¸ã‚»ãƒƒãƒˆå†…ã«ãªã„URLã«ã¤ã„ã¦ã¯, æ–‡æ›¸IDã¨ã—ã¦999999999ã‚’å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«.
 
 2009-04-13  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* perl/AddKNPResult.pm: RawStringÆâ¤Î²ş¹Ô¤òºï½ü.
+	* perl/AddKNPResult.pm: RawStringå†…ã®æ”¹è¡Œã‚’å‰Šé™¤.
 
 2009-04-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-linkinfo.perl:
-	¥¤¥ó¥ê¥ó¥¯¤À¤±¤ÎÉ¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¤òºîÀ®¤¹¤ë¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã, ¥¤¥ó¥ê¥ó¥¯¾ğÊó¤ò½ĞÎÏ¤¹¤ëºİ¡¢XML::Writer¤òÄÌ¤¹¤è¤¦¤Ë.
+	ã‚¤ãƒ³ãƒªãƒ³ã‚¯ã ã‘ã®æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’ä½œæˆã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ , ã‚¤ãƒ³ãƒªãƒ³ã‚¯æƒ…å ±ã‚’å‡ºåŠ›ã™ã‚‹éš›ã€XML::Writerã‚’é€šã™ã‚ˆã†ã«.
 
 2009-04-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/set-offset-and-length.perl: &¤ò&amp;¤ËÊÑ´¹¤¹¤ë¾ò·ï¤ò½¤Àµ.
+	* scripts/set-offset-and-length.perl: &ã‚’&amp;ã«å¤‰æ›ã™ã‚‹æ¡ä»¶ã‚’ä¿®æ­£.
 
 	* www2sf.sh:
-	²òÀÏ¥Ä¡¼¥ëÌ¾¤Î¥ª¥×¥·¥ç¥ó¤ò»ØÄê¤¹¤ë¤È¡¢¤½¤ì°ÊÁ°¤Ë»ØÄê¤·¤Æ¤¤¤¿¥ª¥×¥·¥ç¥ó¤¬¥ê¥»¥Ã¥È¤µ¤ì¤ë¥Ğ¥°¤ò½¤Àµ.
+	è§£æãƒ„ãƒ¼ãƒ«åã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’æŒ‡å®šã™ã‚‹ã¨ã€ãã‚Œä»¥å‰ã«æŒ‡å®šã—ã¦ã„ãŸã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒãƒªã‚»ãƒƒãƒˆã•ã‚Œã‚‹ãƒã‚°ã‚’ä¿®æ­£.
 
 2009-04-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* www2sf.sh: ¥¢¥¦¥È¥ê¥ó¥¯¤Î¥Ç¡¼¥¿¤¬$hdir.outlinks¤Ë½ĞÎÏ¤µ¤ì¤¦¤è¤¦¤Ë.
+	* www2sf.sh: ã‚¢ã‚¦ãƒˆãƒªãƒ³ã‚¯ã®ãƒ‡ãƒ¼ã‚¿ãŒ$hdir.outlinksã«å‡ºåŠ›ã•ã‚Œã†ã‚ˆã†ã«.
 
 	* html2sf.sh:
-	ÆşÎÏ¥Õ¥¡¥¤¥ë¤Î¹Ô¿ô¤¬5000¹Ô¤òÄ¶¤¨¤ë¾ì¹ç¤Ï²ø¤·¤¤¥Õ¥¡¥¤¥ë¤È¤ß¤Ê¤¹¤è¤¦¤Ë.
+	å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã®è¡Œæ•°ãŒ5000è¡Œã‚’è¶…ãˆã‚‹å ´åˆã¯æ€ªã—ã„ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã¿ãªã™ã‚ˆã†ã«.
 
 	* perl/TextExtractor.pm:
-	ºÇ½é¤Ë<TITLE>¥¿¥°¤Ç°Ï¤Ş¤ì¤¿É½¸½¤ò¥¿¥¤¥È¥ë¤È¤¹¤ë¤è¤¦¤Ë.
+	æœ€åˆã«<TITLE>ã‚¿ã‚°ã§å›²ã¾ã‚ŒãŸè¡¨ç¾ã‚’ã‚¿ã‚¤ãƒˆãƒ«ã¨ã™ã‚‹ã‚ˆã†ã«.
 
 2009-04-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm:
-	¥¢¥ó¥«¡¼¥Æ¥­¥¹¥È¤ËÂĞ¤·¤Æ, ¶õÇò½èÍı, À©¸æ¥³¡¼¥É½èÍı¤òÅ¬ÍÑ¤¹¤ë¤è¤¦¤Ë, ¥¢¥ó¥«¡¼¥Æ¥­¥¹¥ÈÁ°¸å¤Î¶õÇò¤òºï½ü.
+	ã‚¢ãƒ³ã‚«ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆã«å¯¾ã—ã¦, ç©ºç™½å‡¦ç†, åˆ¶å¾¡ã‚³ãƒ¼ãƒ‰å‡¦ç†ã‚’é©ç”¨ã™ã‚‹ã‚ˆã†ã«, ã‚¢ãƒ³ã‚«ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆå‰å¾Œã®ç©ºç™½ã‚’å‰Šé™¤.
 
 	* scripts/add-knp-result-dir.perl, scripts/add-knp-result.perl:
-	³Ê²òÀÏ¥ª¥×¥·¥ç¥ó(case)¤ÎÄÉ²Ã, ·Ù¹ğ¥á¥Ã¥»¡¼¥¸¤Î½ĞÎÏ¤òÊÑ¹¹.
+	æ ¼è§£æã‚ªãƒ—ã‚·ãƒ§ãƒ³(case)ã®è¿½åŠ , è­¦å‘Šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å‡ºåŠ›ã‚’å¤‰æ›´.
 
 	* perl/AddKNPResult.pm:
-	³Ê²òÀÏ¤ò¹Ô¤¦¥ª¥×¥·¥ç¥ó¤ËÂĞ±ş.
+	æ ¼è§£æã‚’è¡Œã†ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«å¯¾å¿œ.
 
 2009-04-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/extract-sentences.perl: postp_check¤ò¹âÂ®²½.
+	* scripts/extract-sentences.perl: postp_checkã‚’é«˜é€ŸåŒ–.
 
 	* perl/SentenceExtractor.pm:
-	Ê¸¶­³¦¤òÀµµ¬É½¸½¤ò»È¤Ã¤Æ¸¡½Ğ¤¹¤ë¤è¤¦¤Ë, Àµµ¬É½¸½Æâ¤ÎÊÑ¿ô¤ÎºÆÉ¾²Á¤ò¹Ô¤ï¤Ê¤¤¤è¤¦¤Ë(o¤Î»ØÄê)
+	æ–‡å¢ƒç•Œã‚’æ­£è¦è¡¨ç¾ã‚’ä½¿ã£ã¦æ¤œå‡ºã™ã‚‹ã‚ˆã†ã«, æ­£è¦è¡¨ç¾å†…ã®å¤‰æ•°ã®å†è©•ä¾¡ã‚’è¡Œã‚ãªã„ã‚ˆã†ã«(oã®æŒ‡å®š)
 
 	* perl/SentenceExtractor.pm:
-	bug fixed. (¡Ö.¡×¤òÊ¸¶èÀÚ¤ê¤È¤¹¤ë¤«¤É¤¦¤«¤ÎÈ½Äê¥ë¡¼¥ë¤ò½¤Àµ)
+	bug fixed. (ã€Œ.ã€ã‚’æ–‡åŒºåˆ‡ã‚Šã¨ã™ã‚‹ã‹ã©ã†ã‹ã®åˆ¤å®šãƒ«ãƒ¼ãƒ«ã‚’ä¿®æ­£)
 
 	* perl/TextExtractor.pm:
-	¥Ç¥ê¥ß¥¿¤È´éÊ¸»ú¤Î¥Ş¥Ã¥Á¥ó¥°¤Ëdarts¤Î¥á¥½¥Ã¥É¤òÍøÍÑ¤¹¤ë¤è¤¦¤Ë, Àµµ¬É½¸½Æâ¤ÎÊÑ¿ô¤ÎºÆÉ¾²Á¤ò¹Ô¤ï¤Ê¤¤¤è¤¦¤Ë(o¤Î»ØÄê).
+	ãƒ‡ãƒªãƒŸã‚¿ã¨é¡”æ–‡å­—ã®ãƒãƒƒãƒãƒ³ã‚°ã«dartsã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’åˆ©ç”¨ã™ã‚‹ã‚ˆã†ã«, æ­£è¦è¡¨ç¾å†…ã®å¤‰æ•°ã®å†è©•ä¾¡ã‚’è¡Œã‚ãªã„ã‚ˆã†ã«(oã®æŒ‡å®š).
 
 	* perl/Annotator.pm:
-	¶èÀÚ¤êÊ¸»ú, ´éÊ¸»ú¤Î¥Ç¡¼¥¿¤òText::Darts¤Ç»ı¤Ä¤è¤¦¤Ë¤·¤¿.
+	åŒºåˆ‡ã‚Šæ–‡å­—, é¡”æ–‡å­—ã®ãƒ‡ãƒ¼ã‚¿ã‚’Text::Dartsã§æŒã¤ã‚ˆã†ã«ã—ãŸ.
 
 2009-04-04  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -375,11 +529,11 @@
 2009-03-25  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result-dir.perl:
-	¥¨¥ó¥Æ¥£¥Æ¥£»²¾È¤ò¤½¤Î¤Ş¤Ş½ĞÎÏ¤¹¤ë¤è¤¦¤Ë.
+	ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£å‚ç…§ã‚’ãã®ã¾ã¾å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«.
 
 2009-03-24  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* README: Ê£¹çÌ¾»ì¥Ç¡¼¥¿¥Ù¡¼¥¹¤Ë´Ø¤¹¤ëµ­½Ò¤òÄÉ²Ã
+	* README: è¤‡åˆåè©ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«é–¢ã™ã‚‹è¨˜è¿°ã‚’è¿½åŠ 
 
 2009-03-24  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -387,33 +541,33 @@
 
 2009-03-22  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* perl/AddKNPResult.pm: remove_annotation¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	* perl/AddKNPResult.pm: remove_annotationã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
-	* scripts/add-knp-result-dir.perl: -nologfile¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
-	-remove_annotation¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	* scripts/add-knp-result-dir.perl: -nologfileã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
+	-remove_annotationã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 2009-03-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-anchor.perl:
-	URL¤òÃê½Ğ¤¹¤ëºİ¤ËÀµµ¬²½¤¹¤ë¤è¤¦¤Ë, ¥×¥í¥È¥³¥ëÌ¾¤â½ĞÎÏ¤Ë´Ş¤á¤ë¤è¤¦¤Ë
+	URLã‚’æŠ½å‡ºã™ã‚‹éš›ã«æ­£è¦åŒ–ã™ã‚‹ã‚ˆã†ã«, ãƒ—ãƒ­ãƒˆã‚³ãƒ«åã‚‚å‡ºåŠ›ã«å«ã‚ã‚‹ã‚ˆã†ã«
 
 2009-02-23  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result-dir.perl, scripts/add-knp-result.perl:
-	¥¿¥¤¥à¥¢¥¦¥Èµ¡Ç½¤ÎÄÉ²Ã(¥Ç¥Õ¥©¥ë¥È60ÉÃ).
+	ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆæ©Ÿèƒ½ã®è¿½åŠ (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ60ç§’).
 
 2009-01-30  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl:
-	ÉôÊ¬²òÀÏ¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã, URLÃæ¤Î¥¨¥ó¥Æ¥£¥Æ¥£¤òÊÑ´¹¤¹¤ë¤è¤¦¤Ë¤·¤¿, ¥¢¥ó¥«¡¼¥Æ¥­¥¹¥ÈÆâ¤ÎÀ©¸æÊ¸»ú¤òºï½ü¤¹¤ë¤è¤¦¤Ë¤·¤¿
+	éƒ¨åˆ†è§£æã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ , URLä¸­ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’å¤‰æ›ã™ã‚‹ã‚ˆã†ã«ã—ãŸ, ã‚¢ãƒ³ã‚«ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆå†…ã®åˆ¶å¾¡æ–‡å­—ã‚’å‰Šé™¤ã™ã‚‹ã‚ˆã†ã«ã—ãŸ
 
 	* scripts/add-knp-result-dir.perl:
-	URLÃæ¤Î¥¨¥ó¥Æ¥£¥Æ¥£¤òÊÑ´¹¤¹¤ë¤è¤¦¤Ë¤·¤¿, ¥¢¥ó¥«¡¼¥Æ¥­¥¹¥ÈÆâ¤ÎÀ©¸æÊ¸»ú¤òºï½ü¤¹¤ë¤è¤¦¤Ë¤·¤¿
+	URLä¸­ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’å¤‰æ›ã™ã‚‹ã‚ˆã†ã«ã—ãŸ, ã‚¢ãƒ³ã‚«ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆå†…ã®åˆ¶å¾¡æ–‡å­—ã‚’å‰Šé™¤ã™ã‚‹ã‚ˆã†ã«ã—ãŸ
 
 2009-01-28  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl, scripts/set-offset-and-length.perl, scripts/extract-rawstring.perl:
-	LibXML¤ËÍ¿¤¨¤ëÁ°¤Ë¡¢URLÃæ¤Î&¤ò¥¨¥ó¥Æ¥£¥Æ¥£¤ËÊÑ´¹¤¹¤ë¤è¤¦¤Ë¤·¤¿.
+	LibXMLã«ä¸ãˆã‚‹å‰ã«ã€URLä¸­ã®&ã‚’ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã«å¤‰æ›ã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 2009-01-21  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -423,24 +577,24 @@
 2009-01-03  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-annotation.sh, scripts/add-knp-result-dir.perl:
-	¸À¸ì²òÀÏ¤¹¤ë¾ì½ê¤ò¥ª¥×¥·¥ç¥ó¤Ç»ØÄê¤Ç¤­¤ë¤è¤¦¤Ë¤·¤¿¡¥(»ØÄê¤¬¤Ê¤¤¾ì¹ç¤ÏÁ´¤Æ¤¬²òÀÏÂĞ¾İ)
+	è¨€èªè§£æã™ã‚‹å ´æ‰€ã‚’ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§æŒ‡å®šã§ãã‚‹ã‚ˆã†ã«ã—ãŸï¼(æŒ‡å®šãŒãªã„å ´åˆã¯å…¨ã¦ãŒè§£æå¯¾è±¡)
 
 2008-12-28  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* perl/TextExtractor.pm: ´Ø¿ôProcessJapanese¤ò¥°¥í¡¼¥Ğ¥ë¤ËÊÑ¹¹
+	* perl/TextExtractor.pm: é–¢æ•°ProcessJapaneseã‚’ã‚°ãƒ­ãƒ¼ãƒãƒ«ã«å¤‰æ›´
 
 2008-12-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl, perl/TextExtractor.pm:
-	ÃÊÍîID¤ò½ĞÎÏ¤¹¤ë¤è¤¦¤Ë¤·¤¿.
+	æ®µè½IDã‚’å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 2008-11-26  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/extract-sentences.perl: ¥Ø¥Ã¥À¡¼Ãæ¤ÎURL¤ò¼èÆÀ¤¹¤ëÉôÊ¬¤ò½¤Àµ.
+	* scripts/extract-sentences.perl: ãƒ˜ãƒƒãƒ€ãƒ¼ä¸­ã®URLã‚’å–å¾—ã™ã‚‹éƒ¨åˆ†ã‚’ä¿®æ­£.
 
 2008-11-06  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/parse-comp.sh: KNParg¤ò¥ª¥×¥·¥ç¥ó¤Ç»ØÄê¤Ç¤­¤ë¤è¤¦¤Ë¤·¤¿(-k)
+	* scripts/parse-comp.sh: KNPargã‚’ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§æŒ‡å®šã§ãã‚‹ã‚ˆã†ã«ã—ãŸ(-k)
 
 2008-10-20  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -449,7 +603,7 @@
 
 2008-10-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* perl/TextExtractor.pm: È¾³Ñ±Ñ¿ô»ú´Ö¤Î¶õÇò¤¬¤Ä¤Ş¤é¤Ê¤¤¤è¤¦¤Ë¤·¤¿.
+	* perl/TextExtractor.pm: åŠè§’è‹±æ•°å­—é–“ã®ç©ºç™½ãŒã¤ã¾ã‚‰ãªã„ã‚ˆã†ã«ã—ãŸ.
 
 2008-10-04  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -462,28 +616,28 @@
 2008-09-29  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/format-www-xml.perl:
-	Title, Description, KeywordsÍ×ÁÇ¤ËÂĞ¤·¤Æis_Japanese_SentenceÂ°À­¤òÉÕÍ¿¤¹¤ë¤è¤¦¤Ë¤·¤¿. SÍ×ÁÇ¤ÎLogÂ°À­¤ò½ĞÎÏ¤·¤Ê¤¤¤è¤¦¤Ë¤·¤¿.
+	Title, Description, Keywordsè¦ç´ ã«å¯¾ã—ã¦is_Japanese_Sentenceå±æ€§ã‚’ä»˜ä¸ã™ã‚‹ã‚ˆã†ã«ã—ãŸ. Sè¦ç´ ã®Logå±æ€§ã‚’å‡ºåŠ›ã—ãªã„ã‚ˆã†ã«ã—ãŸ.
 
 2008-09-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* html2sf.sh: file¥³¥Ş¥ó¥É¤Î½ĞÎÏ¤¬É¸½à½ĞÎÏ¤Ë½ĞÎÏ¤µ¤ì¤Ê¤¤¤è¤¦¤Ë¤·¤¿.
+	* html2sf.sh: fileã‚³ãƒãƒ³ãƒ‰ã®å‡ºåŠ›ãŒæ¨™æº–å‡ºåŠ›ã«å‡ºåŠ›ã•ã‚Œãªã„ã‚ˆã†ã«ã—ãŸ.
 
 2008-09-16  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-annotation.sh:
-	mkdir¤ò¤¹¤ëºİ¡¢-p¥ª¥×¥·¥ç¥ó¤ò»ØÄê¤¹¤ë¤è¤¦¤Ë¤·¤¿¡£
+	mkdirã‚’ã™ã‚‹éš›ã€-pã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’æŒ‡å®šã™ã‚‹ã‚ˆã†ã«ã—ãŸã€‚
 
 	* scripts/add-knp-result.perl:
-	-recycle_knp, no_regist_adjective_stem ¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã.
+	-recycle_knp, no_regist_adjective_stem ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ .
 
 2008-09-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
-	* html2sf.sh: ¥Æ¥­¥¹¥È·Á¼°°Ê³°¤Î¥Õ¥¡¥¤¥ë¤ò½èÍı¤·¤Ê¤¤¤è¤¦¤Ë¤·¤¿.
+	* html2sf.sh: ãƒ†ã‚­ã‚¹ãƒˆå½¢å¼ä»¥å¤–ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‡¦ç†ã—ãªã„ã‚ˆã†ã«ã—ãŸ.
 
 2008-09-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-annotation.sh:
-	ºî¶ÈÍÑ¥Ç¥£¥ì¥¯¥È¥êºîÀ®¸å¤Ë¥í¥°¥Õ¥¡¥¤¥ë¤òtouch¤¹¤ë¤è¤¦¤Ë¤·¤¿.
+	ä½œæ¥­ç”¨ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆå¾Œã«ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«ã‚’touchã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 2008-09-08  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
@@ -492,31 +646,31 @@
 2008-09-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
-	¡¼¤ÎÄ¾¸å¤Î¥Ï¥¤¥Õ¥ó¤âÀµµ¬²½¤µ¤ì¤ë¤è¤¦¤Ë¤·¤¿.
+	ãƒ¼ã®ç›´å¾Œã®ãƒã‚¤ãƒ•ãƒ³ã‚‚æ­£è¦åŒ–ã•ã‚Œã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 2008-09-03  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result-dir.perl, scripts/embed-annotation.sh:
-	Out of memory¤¬È¯À¸¤·¤¿¾ì¹ç¡¢¼«Æ°Åª¤Ë½èÍı¤òºÆ³«¤¹¤ë¤è¤¦¤Ë¤·¤¿.
-	ulimit¤ÇÀßÄê¤¹¤ë¥á¥â¥ê¤Î¾å¸Â¤ò½¤Àµ (ulimit¤ÇÀßÄê¤Ç¤­¤ëÃÍ¤ÏKBÃ±°Ì¤Î¤¿¤á).
+	Out of memoryãŒç™ºç”Ÿã—ãŸå ´åˆã€è‡ªå‹•çš„ã«å‡¦ç†ã‚’å†é–‹ã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
+	ulimitã§è¨­å®šã™ã‚‹ãƒ¡ãƒ¢ãƒªã®ä¸Šé™ã‚’ä¿®æ­£ (ulimitã§è¨­å®šã§ãã‚‹å€¤ã¯KBå˜ä½ã®ãŸã‚).
 
 	* scripts/embed-annotation.sh:
-	-N¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã¡Êadd-knp-result-dir.perl¤Î-no_regist_adjective_stem¤¬»ØÄê¤µ¤ì¤ë¡Ë
-	²òÀÏ¥Ä¡¼¥ë¤ò»ØÄê¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÊÑ¿ô¤Ë¤Ş¤È¤á¤¿.
+	-Nã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ ï¼ˆadd-knp-result-dir.perlã®-no_regist_adjective_stemãŒæŒ‡å®šã•ã‚Œã‚‹ï¼‰
+	è§£æãƒ„ãƒ¼ãƒ«ã‚’æŒ‡å®šã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å¤‰æ•°ã«ã¾ã¨ã‚ãŸ.
 
 	* scripts/add-knp-result-dir.perl:
-	-no_regist_adjective_stem¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã.
+	-no_regist_adjective_stemã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ .
 
 	* perl/AddKNPResult.pm:
-	verbose¤¬»ØÄê¤µ¤ì¤¿¤È¤­¤Î¤ß¡¢¡ÖToo Long Sentence¡×¤ò½ĞÎÏ¤¹¤ë¤è¤¦¤Ë¤·¤¿.
+	verboseãŒæŒ‡å®šã•ã‚ŒãŸã¨ãã®ã¿ã€ã€ŒToo Long Sentenceã€ã‚’å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 2008-09-02  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-anchor.perl:
-	¥×¥í¥È¥³¥ëÌ¾¤òºï½ü, ¥¢¥ó¥«¡¼¥Æ¥­¥¹¥ÈÁ°¸å¤Î¶õÇò¤òºï½ü, ¥¢¥ó¥«¡¼¥Æ¥­¥¹¥ÈÃæ¤Ç£²Ï¢Â³°Ê¾å¤¹¤ë¶õÇò¤òºï½ü, CDB_Reader¤ò»È¤¦¤è¤¦¤Ë¤·¤¿.
+	ãƒ—ãƒ­ãƒˆã‚³ãƒ«åã‚’å‰Šé™¤, ã‚¢ãƒ³ã‚«ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆå‰å¾Œã®ç©ºç™½ã‚’å‰Šé™¤, ã‚¢ãƒ³ã‚«ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆä¸­ã§ï¼’é€£ç¶šä»¥ä¸Šã™ã‚‹ç©ºç™½ã‚’å‰Šé™¤, CDB_Readerã‚’ä½¿ã†ã‚ˆã†ã«ã—ãŸ.
 
 	* scripts/extract-outlinks.sh, scripts/make-anchor-db.perl, scripts/make-inlink-db.sh, scripts/make-inlinks-txt.sh, scripts/merge-linkdata.perl, scripts/merge-outlinks.sh, scripts/split-inlink-text.perl:
-	¥ê¥ó¥¯¥Ç¡¼¥¿¥Ù¡¼¥¹ºîÀ®¥¹¥¯¥ê¥×¥È¤òÄÉ²Ã.
+	ãƒªãƒ³ã‚¯ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ä½œæˆã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’è¿½åŠ .
 
 2008-08-13  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -526,26 +680,26 @@
 2008-08-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/AddKNPResult.pm:
-	-recycle_knp»ØÄê»ş¤Ë¡¢SynGraph¤Î¥Ğ¡¼¥¸¥ç¥ó¤Ëunstable¤¬Æş¤Ã¤Æ¤¤¤Æ¤â¡¢¥Ğ¡¼¥¸¥ç¥ó¾ğÊó¤¬¹¹¿·¤µ¤ì¤ë¤è¤¦¤Ë¤·¤¿.
+	-recycle_knpæŒ‡å®šæ™‚ã«ã€SynGraphã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã«unstableãŒå…¥ã£ã¦ã„ã¦ã‚‚ã€ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ãŒæ›´æ–°ã•ã‚Œã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 2008-08-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm, scripts/extract-sentences.perl:
-	<BR>\n, <P>\n ¤ò°ì¤Ä¤Î²ş¹Ô¤È¸«¤Ê¤¹¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã. (¥Ç¥Õ¥©¥ë¥È¤Ï¥ª¥Õ)
+	<BR>\n, <P>\n ã‚’ä¸€ã¤ã®æ”¹è¡Œã¨è¦‹ãªã™ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ . (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯ã‚ªãƒ•)
 
 	* scripts/extract-sentences-by-offset-and-length.perl:
-	¥Õ¥¡¥¤¥ëÌ¾¤ò½ĞÎÏ¤¹¤ë¤è¤¦¤Ë¤·¤¿.
+	ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 	* scripts/set-offset-and-length.perl:
-	Ê¸Ãæ¤ËHTML¥¿¥°¤¬´Ş¤Ş¤ì¤Æ¤¤¤ëºİ¤Ë¡¢¥ª¥Õ¥»¥Ã¥ÈÃÍ¤ò¸í¤ë¥Ğ¥°¤ò½¤Àµ.
+	æ–‡ä¸­ã«HTMLã‚¿ã‚°ãŒå«ã¾ã‚Œã¦ã„ã‚‹éš›ã«ã€ã‚ªãƒ•ã‚»ãƒƒãƒˆå€¤ã‚’èª¤ã‚‹ãƒã‚°ã‚’ä¿®æ­£.
 
 2008-08-04  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
-	euc-jp¤Ë¤Ê¤¤¥³¡¼¥É¤ÎÊÑ´¹½èÍı¤òÄÉ²Ã.
+	euc-jpã«ãªã„ã‚³ãƒ¼ãƒ‰ã®å¤‰æ›å‡¦ç†ã‚’è¿½åŠ .
 
 	* scripts/extract-sentences.perl:
-	ÊÑ´¹¥Ä¡¼¥ë¤Î¥Ğ¡¼¥¸¥ç¥ó¡¢ÊÑ´¹Æü»ş¡¢¥¯¥í¡¼¥ëÆü»ş¤ò<StandardFormat>¥¿¥°Æâ¤Ëµ­½Ò¤¹¤ë¤è¤¦¤Ë¤·¤¿.
+	å¤‰æ›ãƒ„ãƒ¼ãƒ«ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã€å¤‰æ›æ—¥æ™‚ã€ã‚¯ãƒ­ãƒ¼ãƒ«æ—¥æ™‚ã‚’<StandardFormat>ã‚¿ã‚°å†…ã«è¨˜è¿°ã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 2008-07-31  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -590,27 +744,27 @@
 2008-06-25  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result-dir.perl:
-	ÆşÎÏ¤¬gzip°µ½Ì¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¤Î¾ì¹ç¡¢¼«Æ°Åª¤Ëzcat¤·¤ÆÆÉ¤ß¹ş¤à¤è¤¦¤Ë¤·¤¿.
+	å…¥åŠ›ãŒgzipåœ§ç¸®ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®å ´åˆã€è‡ªå‹•çš„ã«zcatã—ã¦èª­ã¿è¾¼ã‚€ã‚ˆã†ã«ã—ãŸ.
 
 	* scripts/embed-annotation.sh:
-	À¸À®¤µ¤ì¤¿É¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¥Ç¡¼¥¿¤ògzip¤Ç°µ½Ì¤¹¤ëºİ¡¢-f¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã.
-	»ÈÍÑ¤Ç¤­¤ë¥á¥â¥ê¤Î¾å¸ÂÃÍ¤Î½¤Àµ.
+	ç”Ÿæˆã•ã‚ŒãŸæ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚’gzipã§åœ§ç¸®ã™ã‚‹éš›ã€-fã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ .
+	ä½¿ç”¨ã§ãã‚‹ãƒ¡ãƒ¢ãƒªã®ä¸Šé™å€¤ã®ä¿®æ­£.
 
 2008-06-24  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-annotation.sh:
-	»ÈÍÑ¤Ç¤­¤ë¥á¥â¥ê¤Î¾å¸Â¤ò2GB¤ËÀßÄê¤·¤¿.
+	ä½¿ç”¨ã§ãã‚‹ãƒ¡ãƒ¢ãƒªã®ä¸Šé™ã‚’2GBã«è¨­å®šã—ãŸ.
 
 	* scripts/embed-annotation.sh:
-	SYNGRAPH²òÀÏ¤À¤±¤ò¤ä¤êÄ¾¤¹¥ª¥×¥·¥ç¥ó(-R)¤òÄÉ²Ã.
-	ºîÀ®¤µ¤ì¤¿É¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¥Ç¡¼¥¿¤ò$workspace/finish°Ê²¼¤ËÊİÂ¸¤¹¤ë¤è¤¦¤Ë¤·¤¿.
-	É¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¥Ç¡¼¥¿¤ògzip¤Ç°µ½Ì¤·¤Æ¤«¤étgz¤¹¤ë¤è¤¦¤Ë¤·¤¿.
+	SYNGRAPHè§£æã ã‘ã‚’ã‚„ã‚Šç›´ã™ã‚ªãƒ—ã‚·ãƒ§ãƒ³(-R)ã‚’è¿½åŠ .
+	ä½œæˆã•ã‚ŒãŸæ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚’$workspace/finishä»¥ä¸‹ã«ä¿å­˜ã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
+	æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚’gzipã§åœ§ç¸®ã—ã¦ã‹ã‚‰tgzã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 	* scripts/embed-annotation.sh:
-	ÅÓÃæ¤ÇÄä»ß¤·¤¿ºİ¡¢ºî¶ÈÃæ¤Î¥Õ¥¡¥¤¥ë¤òºï½ü¤¹¤ë¤è¤¦¤Ë¤·¤¿.
+	é€”ä¸­ã§åœæ­¢ã—ãŸéš›ã€ä½œæ¥­ä¸­ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‰Šé™¤ã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
 
 	* perl/AddKNPResult.pm, scripts/add-knp-result-dir.perl:
-	É¸½à¥Õ¥©¡¼¥Ş¥Ã¥ÈÆâ¤ÎKNP²òÀÏ·ë²Ì¤òÍøÍÑ¤·¤ÆSYNGRAPH²òÀÏ¤ò¹Ô¤¦¥ª¥×¥·¥ç¥ó(-recycle_knp)¤òÄÉ²Ã.
+	æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå†…ã®KNPè§£æçµæœã‚’åˆ©ç”¨ã—ã¦SYNGRAPHè§£æã‚’è¡Œã†ã‚ªãƒ—ã‚·ãƒ§ãƒ³(-recycle_knp)ã‚’è¿½åŠ .
 
 2008-06-17  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -620,211 +774,211 @@
 2008-05-24  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
-	HTML¥¨¥ó¥Æ¥£¥Æ¥£¤ò´Ş¤àÊ¸¤Çlength¤¬¥º¥ì¤Ê¤¤¤è¤¦¤Ë¤·¤¿.
+	HTMLã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’å«ã‚€æ–‡ã§lengthãŒã‚ºãƒ¬ãªã„ã‚ˆã†ã«ã—ãŸ.
 
 2008-05-23  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
-	bug fixed (HTMLÊ¸½ñ¤ò¥Ñ¡¼¥¹¤¹¤ëºİ¤ËUTF8¥Õ¥é¥°¤òÎ©¤Æ¤Ê¤¤¤è¤¦¤ËÊÑ¹¹)
+	bug fixed (HTMLæ–‡æ›¸ã‚’ãƒ‘ãƒ¼ã‚¹ã™ã‚‹éš›ã«UTF8ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ãªã„ã‚ˆã†ã«å¤‰æ›´)
 
 2008-05-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result-dir.perl:
-	juman/knp¤Î¥³¥Ş¥ó¥É¤òÄ¾ÀÜ»ØÄê¤¹¤ë¤è¤¦¤Ë¤·¤¿.
-	jumanrc/knprc¤ò¥ª¥×¥·¥ç¥ó¤Ç¤È¤ë¤è¤¦¤Ë¤·¤¿. 
-	KNP¤Î¥ª¥×¥·¥ç¥ó¤Ë-postprocess¤òÄÉ²Ã.
+	juman/knpã®ã‚³ãƒãƒ³ãƒ‰ã‚’ç›´æ¥æŒ‡å®šã™ã‚‹ã‚ˆã†ã«ã—ãŸ.
+	jumanrc/knprcã‚’ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§ã¨ã‚‹ã‚ˆã†ã«ã—ãŸ. 
+	KNPã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«-postprocessã‚’è¿½åŠ .
 
 2008-05-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl:
-	HTMLÊ¸½ñÃæ¤Î¥Î¡¼¥Ö¥ì¡¼¥¯¥¹¥Ú¡¼¥¹(x00A0)¤Ï¥¹¥­¥Ã¥×¤¹¤ë¤è¤¦¤ËÊÑ¹¹
+	HTMLæ–‡æ›¸ä¸­ã®ãƒãƒ¼ãƒ–ãƒ¬ãƒ¼ã‚¯ã‚¹ãƒšãƒ¼ã‚¹(x00A0)ã¯ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
 
 2008-04-09  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl, perl/AddKNPResult.pm:
-	²òÀÏ¤¹¤ëÊ¸¤ÎºÇÂçÊ¸»ú¿ô¤ò»ØÄê¤Ç¤­¤ë¤è¤¦¤Ë
+	è§£æã™ã‚‹æ–‡ã®æœ€å¤§æ–‡å­—æ•°ã‚’æŒ‡å®šã§ãã‚‹ã‚ˆã†ã«
 
-	* scripts/add-knp-result.perl: KNP¤Îoption¤ò'-tab -dpnd'¤ËÊÑ¹¹
+	* scripts/add-knp-result.perl: KNPã®optionã‚’'-tab -dpnd'ã«å¤‰æ›´
 
-	* scripts/add-knp-result.perl: ¼çÍ×ÉôÊ¬¤òAddKNPResult.pm¤Ë°ÜÆ°
+	* scripts/add-knp-result.perl: ä¸»è¦éƒ¨åˆ†ã‚’AddKNPResult.pmã«ç§»å‹•
 
 2008-04-07  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl:
-	$result¤¬ÆÀ¤é¤ì¤Ê¤¤¾ì¹ç¤Ï¼¡¤ÎÊ¸¤Ë¤¤¤¯¤è¤¦¤ËÊÑ¹¹
+	$resultãŒå¾—ã‚‰ã‚Œãªã„å ´åˆã¯æ¬¡ã®æ–‡ã«ã„ãã‚ˆã†ã«å¤‰æ›´
 
 2008-04-01  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/add-knp-result.perl: SynGraph¤Î²òÀÏ·ë²Ì¤ò¤¦¤á¤³¤á¤ë¤è¤¦¤Ë½¤Àµ
+	* scripts/add-knp-result.perl: SynGraphã®è§£æçµæœã‚’ã†ã‚ã“ã‚ã‚‹ã‚ˆã†ã«ä¿®æ­£
 
 2008-03-31  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* html2sf.sh: ¥³¡¼¥É¤òÀ°Íı¤·¤Æ¡¢ÌµÂÌ¤ò¾¯¤·¾Ê¤¤¤¿
+	* html2sf.sh: ã‚³ãƒ¼ãƒ‰ã‚’æ•´ç†ã—ã¦ã€ç„¡é§„ã‚’å°‘ã—çœã„ãŸ
 
 2008-03-24  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2sf.sh:
-	utf8²½¤µ¤ì¤¿¥¦¥§¥Ö¥Ú¡¼¥¸¤Î³ÈÄ¥»Ò¤òxml¤«¤éhtml¤ØÊÑ¹¹¡¥
+	utf8åŒ–ã•ã‚ŒãŸã‚¦ã‚§ãƒ–ãƒšãƒ¼ã‚¸ã®æ‹¡å¼µå­ã‚’xmlã‹ã‚‰htmlã¸å¤‰æ›´ï¼
 	* scripts/rename-did.sh
-	¥¦¥§¥Ö¥Ú¡¼¥¸¡¢utf8²½¤µ¤ì¤¿¥¦¥§¥Ö¥Ú¡¼¥¸¤Ë¤Ä¤¤¤Æ¤âID¤ò¿¶¤ê¤Ê¤ª¤¹¤è¤¦¤Ë½¤Àµ¡¥
+	ã‚¦ã‚§ãƒ–ãƒšãƒ¼ã‚¸ã€utf8åŒ–ã•ã‚ŒãŸã‚¦ã‚§ãƒ–ãƒšãƒ¼ã‚¸ã«ã¤ã„ã¦ã‚‚IDã‚’æŒ¯ã‚ŠãªãŠã™ã‚ˆã†ã«ä¿®æ­£ï¼
 	* perl/TextExtractor.pm
-	meta¥¿¥°Æâ¤Îkeywords, description¤«¤éÃê½Ğ¤µ¤ì¤¿Ê¸¤ò¶èÊÌ¤¹¤ë¤è¤¦¤ËÊÑ¹¹¡¥
+	metaã‚¿ã‚°å†…ã®keywords, descriptionã‹ã‚‰æŠ½å‡ºã•ã‚ŒãŸæ–‡ã‚’åŒºåˆ¥ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´ï¼
 	* scripts/extract-sentences.perl
-	meta¥¿¥°Æâ¤Îkeywords, description¤«¤éÃê½Ğ¤µ¤ì¤¿Ê¸¤ò¶èÊÌ¤·¤ÆÉ¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¤ËËä¤á¹ş¤à¤è¤¦¤ËÊÑ¹¹¡¥
+	metaã‚¿ã‚°å†…ã®keywords, descriptionã‹ã‚‰æŠ½å‡ºã•ã‚ŒãŸæ–‡ã‚’åŒºåˆ¥ã—ã¦æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«åŸ‹ã‚è¾¼ã‚€ã‚ˆã†ã«å¤‰æ›´ï¼
 	* scripts/set-offset-and-length.perl
-	Keywords, Description´Ø·¸¤ÎÊÑ¹¹¤ËÂĞ±ş¡¥
+	Keywords, Descriptioné–¢ä¿‚ã®å¤‰æ›´ã«å¯¾å¿œï¼
 
 2008-03-13  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl
-	¥¯¥í¡¼¥é¤Î½ĞÎÏ¤¹¤ë¥Ø¥Ã¥À¡¼¾ğÊó¤Î¼èÆÀ¤Ë\r¤òÍøÍÑ¤¹¤ë¤è¤¦¤ËÊÑ¹¹¡¥
-	* html2sf.sh: ÀèÆ¬¤Çutf8¤ËÊÑ´¹¤¹¤ë¤è¤¦¤ËÊÑ¹¹
-	Ê¸»ú¥³¡¼¥É¤¬¿äÄê¤Ç¤­¤Ê¤¤¤Ê¤É¤ÎÍıÍ³¤Çutf8²½¤µ¤ì¤¿¥¦¥§¥Ö¥Ú¡¼¥¸¤¬ÆÀ¤é¤ì¤Ê¤¤¾ì¹ç¤Ï½ªÎ»¤¹¤ë¤è¤¦¤Ë¤·¤¿¡¥
+	ã‚¯ãƒ­ãƒ¼ãƒ©ã®å‡ºåŠ›ã™ã‚‹ãƒ˜ãƒƒãƒ€ãƒ¼æƒ…å ±ã®å–å¾—ã«\rã‚’åˆ©ç”¨ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´ï¼
+	* html2sf.sh: å…ˆé ­ã§utf8ã«å¤‰æ›ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
+	æ–‡å­—ã‚³ãƒ¼ãƒ‰ãŒæ¨å®šã§ããªã„ãªã©ã®ç†ç”±ã§utf8åŒ–ã•ã‚ŒãŸã‚¦ã‚§ãƒ–ãƒšãƒ¼ã‚¸ãŒå¾—ã‚‰ã‚Œãªã„å ´åˆã¯çµ‚äº†ã™ã‚‹ã‚ˆã†ã«ã—ãŸï¼
 
 2008-03-11  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* www2sf.sh: utf8¥Õ¥¡¥¤¥ë¤ò»Ä¤¹¥ª¥×¥·¥ç¥ó(-u)¤òÄÉ²Ã
+	* www2sf.sh: utf8ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ®‹ã™ã‚ªãƒ—ã‚·ãƒ§ãƒ³(-u)ã‚’è¿½åŠ 
 
 	* perl/TextExtractor.pm:
-	Ê£¹çÌ¾»ì¤ò¥Á¥§¥Ã¥¯¤¹¤ë»ş¤Ë¡¢¤Ò¤é¤¬¤Ê°ìÊ¸»ú¤ÎÏ¢·ë¤ÏÊ£¹çÌ¾»ì¤È¤ß¤Ê¤µ¤Ê¤¤¤è¤¦¤ËÊÑ¹¹
+	è¤‡åˆåè©ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹æ™‚ã«ã€ã²ã‚‰ãŒãªä¸€æ–‡å­—ã®é€£çµã¯è¤‡åˆåè©ã¨ã¿ãªã•ãªã„ã‚ˆã†ã«å¤‰æ›´
 
 2008-03-11  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm:
-	Ê£¹çÌ¾»ì¤ò¥Á¥§¥Ã¥¯¤¹¤ë»ş¤Ë¡¢¤Ò¤é¤¬¤Ê°ìÊ¸»ú¤ÎÏ¢·ë¤ÏÊ£¹çÌ¾»ì¤È¤ß¤Ê¤µ¤Ê¤¤¤è¤¦¤ËÊÑ¹¹
+	è¤‡åˆåè©ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹æ™‚ã«ã€ã²ã‚‰ãŒãªä¸€æ–‡å­—ã®é€£çµã¯è¤‡åˆåè©ã¨ã¿ãªã•ãªã„ã‚ˆã†ã«å¤‰æ›´
 
 2008-03-03  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* www2sf.sh: Ê£¹çÌ¾»ì¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò»ØÄê¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	* www2sf.sh: è¤‡åˆåè©ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’æŒ‡å®šã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
-	* html2sf.sh: ÀèÆ¬¤Çutf8¤ËÊÑ´¹¤¹¤ë¤è¤¦¤ËÊÑ¹¹
-	Ê£¹çÌ¾»ì¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò»ØÄê¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	* html2sf.sh: å…ˆé ­ã§utf8ã«å¤‰æ›ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
+	è¤‡åˆåè©ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’æŒ‡å®šã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 	* scripts/extract-sentences.perl:
-	´Ø¿ôProcessEncoding¤Î¥ª¥×¥·¥ç¥ó¤òforce_change_to_utf8_with_flag¤ËÊÑ¹¹
+	é–¢æ•°ProcessEncodingã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’force_change_to_utf8_with_flagã«å¤‰æ›´
 
 	* perl/HtmlGuessEncoding.pm:
-	force_change_to_utf8_with_flag¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	force_change_to_utf8_with_flagã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
-	* scripts/to_utf8.perl: charset¤òutf8¤Ë½ñ¤­´¹¤¨¤Ê¤¤¤è¤¦¤ËÊÑ¹¹
+	* scripts/to_utf8.perl: charsetã‚’utf8ã«æ›¸ãæ›ãˆãªã„ã‚ˆã†ã«å¤‰æ›´
 
 2008-03-02  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/extract-sentences.perl: verbose¥ª¥×¥·¥ç¥óÄÉ²Ã
+	* scripts/extract-sentences.perl: verboseã‚ªãƒ—ã‚·ãƒ§ãƒ³è¿½åŠ 
 
 	* perl/TextExtractor.pm:
-	Ê£¹çÌ¾»ì¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò¤Ò¤¤¤Æ¡¢<a>¥¿¥°¤ÎÃæ¤Î¥Æ¥­¥¹¥È¤òÏ¢·ë¤¹¤ë¤«¤É¤¦¤«¤òÈ½Äê
+	è¤‡åˆåè©ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’ã²ã„ã¦ã€<a>ã‚¿ã‚°ã®ä¸­ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’é€£çµã™ã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤å®š
 
 	* scripts/extract-sentences.perl:
-	½õ»ì´ŞÍ­Î¨¤¬ïçÃÍ°Ê²¼¤Î¾ì¹ç¤Ë¡¢¥á¥Ã¥»¡¼¥¸¤ò½Ğ¤·¤Æexit¤¹¤ë¤è¤¦¤ËÊÑ¹¹
+	åŠ©è©å«æœ‰ç‡ãŒé–¾å€¤ä»¥ä¸‹ã®å ´åˆã«ã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºã—ã¦exitã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
 
 2008-02-25  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm:
-	´éÊ¸»ú¤Ë¤è¤ëÊ¸¶èÀÚ¤ê¤ò¡¢¶çÅÀ¤Ë¤è¤ëÊ¸¶èÀÚ¤ê¤ÎÄ¾¸å¤Ë°ÜÆ°
+	é¡”æ–‡å­—ã«ã‚ˆã‚‹æ–‡åŒºåˆ‡ã‚Šã‚’ã€å¥ç‚¹ã«ã‚ˆã‚‹æ–‡åŒºåˆ‡ã‚Šã®ç›´å¾Œã«ç§»å‹•
 
 2008-02-24  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
-	Ê£¹çÌ¾»ì¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î¾ì½ê¤òTextExtractor.pm¤ËÅÏ¤¹¤è¤¦¤Ë½¤Àµ
+	è¤‡åˆåè©ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã®å ´æ‰€ã‚’TextExtractor.pmã«æ¸¡ã™ã‚ˆã†ã«ä¿®æ­£
 
 2008-02-18  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-syngraph.perl:
-	½àÆâÍÆ¸ì¤ò½ü¤¤¤¿¤â¤Î¤â¥Î¡¼¥É¤È¤·¤ÆÅĞÏ¿¤¹¤ë¤è¤¦¤ËÊÑ¹¹
-	(¥Í¥Ã¥È¥ï¡¼¥¯²½ -> ¥Í¥Ã¥È¥ï¡¼¥¯, ¿¼¤ß -> ¿¼¤¤)
+	æº–å†…å®¹èªã‚’é™¤ã„ãŸã‚‚ã®ã‚‚ãƒãƒ¼ãƒ‰ã¨ã—ã¦ç™»éŒ²ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
+	(ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯åŒ– -> ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯, æ·±ã¿ -> æ·±ã„)
 
 2008-02-17  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl
-	²òÀÏ·ë²Ì¤òËä¤á¹ş¤ßÄ¾¤¹¥ª¥×¥·¥ç¥ó-replace¤òÄÉ²Ã¡¥
+	è§£æçµæœã‚’åŸ‹ã‚è¾¼ã¿ç›´ã™ã‚ªãƒ—ã‚·ãƒ§ãƒ³-replaceã‚’è¿½åŠ ï¼
 
 2008-02-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl
-	XML::LibXML¤Î¥Ğ¡¼¥¸¥ç¥ó¤¬¸Å¤¤¾ì¹ç¤ËÊ¸»ú²½¤±¤¬È¯À¸¤¹¤ë¥Ğ¥°¤ËÂĞ½è¡¥
+	XML::LibXMLã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ãŒå¤ã„å ´åˆã«æ–‡å­—åŒ–ã‘ãŒç™ºç”Ÿã™ã‚‹ãƒã‚°ã«å¯¾å‡¦ï¼
 
 2008-02-12  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/SentenceFormatter.pm:
-	¡Ö¡á¡×¤ò³ç¸Ì¤ÈÆ±ÍÍ¤Ë°·¤ï¤Ê¤¤¤è¤¦¤ËÊÑ¹¹
+	ã€Œï¼ã€ã‚’æ‹¬å¼§ã¨åŒæ§˜ã«æ‰±ã‚ãªã„ã‚ˆã†ã«å¤‰æ›´
 
 	* html2text.sh:
-	extract-sentences.perl¤Î½ĞÎÏÊ¸»ú¥³¡¼¥É¤¬utf8¤Ë¤Ê¤Ã¤¿¤³¤È¤ËÂĞ¤¹¤ëÂĞ±ş
+	extract-sentences.perlã®å‡ºåŠ›æ–‡å­—ã‚³ãƒ¼ãƒ‰ãŒutf8ã«ãªã£ãŸã“ã¨ã«å¯¾ã™ã‚‹å¯¾å¿œ
 
 2008-02-11  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
-	Ê¸»ú¥³¡¼¥É¤òutf8¤ËÊÑ¹¹¡¥
-	TextExtractor.pm¤ò»È¤¦¤è¤¦¤ËÊÑ¹¹¡¥
+	æ–‡å­—ã‚³ãƒ¼ãƒ‰ã‚’utf8ã«å¤‰æ›´ï¼
+	TextExtractor.pmã‚’ä½¿ã†ã‚ˆã†ã«å¤‰æ›´ï¼
 
 	* perl/HtmlGuessEncoding.pm
-	¥Õ¥é¥°ÉÕ¤­¥³¡¼¥É¤ËÊÑ¹¹¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã¡¥
+	ãƒ•ãƒ©ã‚°ä»˜ãã‚³ãƒ¼ãƒ‰ã«å¤‰æ›´ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ ï¼
 
 2008-02-10  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
-	¥¯¥í¡¼¥é¡¼¤Î½ĞÎÏ¤¹¤ëHTML¤·¤«Æ°ºî¤·¤Ê¤«¤Ã¤¿¤Î¤ò½¤Àµ
+	ã‚¯ãƒ­ãƒ¼ãƒ©ãƒ¼ã®å‡ºåŠ›ã™ã‚‹HTMLã—ã‹å‹•ä½œã—ãªã‹ã£ãŸã®ã‚’ä¿®æ­£
 
 2008-02-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2sf.sh
-	¥ª¥Õ¥»¥Ã¥È¤Î¥¢¥é¥¤¥á¥ó¥È¤ò¤È¤ë½èÍı¤òÄÉ²Ã¡¥
+	ã‚ªãƒ•ã‚»ãƒƒãƒˆã®ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆã‚’ã¨ã‚‹å‡¦ç†ã‚’è¿½åŠ ï¼
 
 2007-02-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm
-	HTML¥¨¥ó¥Æ¥£¥Æ¥£¤òÊÑ¹¹¤¹¤ë¤è¤¦¤Ë¤·¤¿¡¥
-	title, description, keywordsÆâ¤Ï²Õ¾ò½ñ¤­¤È¤·¤Æ¸«¤Ê¤µ¤Ê¤¤¤è¤¦¤ËÊÑ¹¹¡¥
-	¥¯¥í¡¼¥é¤Î¥Ø¥Ã¥À¤òºï½ü¤·¤¿¤È¤­¤Î¤¿¤á¤Ë¡¢¥ª¥Õ¥»¥Ã¥È¤Î¥ª¥Õ¥»¥Ã¥È¤ò¹ÍÎ¸¤¹¤ë¤è¤¦¤ËÊÑ¹¹¡¥
-	Ê¸¶èÀÚ¤ê¤È¤·¤Æ¸«¤Ê¤¹¥¿¥°¤òÄÉ²Ã¡¥(<select>, <option>)
-	<br>¥¿¥°¤òÊ¸¶èÀÚ¤ê¤Ç¤Ï¤Ê¤¯Ã±¤Ê¤ë²ş¹Ô¤È¤·¤Æ¸«¤Ê¤¹¤è¤¦¤ËÊÑ¹¹¡¥
-	0Ã±ÂÎ¤¬ºï½ü¤µ¤ì¤ë¥Ğ¥°¤ò½¤Àµ¡¥
+	HTMLã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’å¤‰æ›´ã™ã‚‹ã‚ˆã†ã«ã—ãŸï¼
+	title, description, keywordså†…ã¯ç®‡æ¡æ›¸ãã¨ã—ã¦è¦‹ãªã•ãªã„ã‚ˆã†ã«å¤‰æ›´ï¼
+	ã‚¯ãƒ­ãƒ¼ãƒ©ã®ãƒ˜ãƒƒãƒ€ã‚’å‰Šé™¤ã—ãŸã¨ãã®ãŸã‚ã«ã€ã‚ªãƒ•ã‚»ãƒƒãƒˆã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’è€ƒæ…®ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´ï¼
+	æ–‡åŒºåˆ‡ã‚Šã¨ã—ã¦è¦‹ãªã™ã‚¿ã‚°ã‚’è¿½åŠ ï¼(<select>, <option>)
+	<br>ã‚¿ã‚°ã‚’æ–‡åŒºåˆ‡ã‚Šã§ã¯ãªãå˜ãªã‚‹æ”¹è¡Œã¨ã—ã¦è¦‹ãªã™ã‚ˆã†ã«å¤‰æ›´ï¼
+	0å˜ä½“ãŒå‰Šé™¤ã•ã‚Œã‚‹ãƒã‚°ã‚’ä¿®æ­£ï¼
 
 2007-02-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/set-offset-and-length.perl
-	¥³¡¼¥É¤ÎÀ°Íı¡Ê¥¢¥é¥¤¥á¥ó¥È¤ò¤È¤ëÉôÊ¬¤ò´Ø¿ô²½¤¹¤ë¤Ê¤É¡Ë
+	ã‚³ãƒ¼ãƒ‰ã®æ•´ç†ï¼ˆã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆã‚’ã¨ã‚‹éƒ¨åˆ†ã‚’é–¢æ•°åŒ–ã™ã‚‹ãªã©ï¼‰
 
 2007-02-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtractor.pm
-	extract_text¥á¥½¥Ã¥É¤ò¥¿¥°¤ò½ü¤¯½èÍı¤ÈÊ¸Ãê½Ğ½èÍı¤Ë¤ï¤±¤¿¡¥
+	extract_textãƒ¡ã‚½ãƒƒãƒ‰ã‚’ã‚¿ã‚°ã‚’é™¤ãå‡¦ç†ã¨æ–‡æŠ½å‡ºå‡¦ç†ã«ã‚ã‘ãŸï¼
 
 2007-12-30  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/embed-syngraph.perl:
-	Ê¸»ú¥³¡¼¥É¤ÎÊÑ¹¹¡Êeuc-jp -> utf8¡Ë
-	</S>, </Title>¤¬½ĞÎÏ¤µ¤ì¤Ê¤¤¥Ğ¥°¤ò½¤Àµ
+	æ–‡å­—ã‚³ãƒ¼ãƒ‰ã®å¤‰æ›´ï¼ˆeuc-jp -> utf8ï¼‰
+	</S>, </Title>ãŒå‡ºåŠ›ã•ã‚Œãªã„ãƒã‚°ã‚’ä¿®æ­£
 
 2007-12-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/to_utf8.perl:
-	utf8¤ËÊÑ¹¹¤¹¤ë¤«¤É¤¦¤«¤ò¥ª¥×¥·¥ç¥ó²½¡¥¾å½ñ¤­¥ª¥×¥·¥ç¥ó¤ÎÄÉ²Ã¡¥
+	utf8ã«å¤‰æ›´ã™ã‚‹ã‹ã©ã†ã‹ã‚’ã‚ªãƒ—ã‚·ãƒ§ãƒ³åŒ–ï¼ä¸Šæ›¸ãã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¿½åŠ ï¼
 
 2007-12-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/parse-comp.sh:
-	Ì¾»ì³Ê¥Õ¥ì¡¼¥à¤ò¥Ç¥Õ¥©¥ë¥È¤Ç¤Ò¤¯¤è¤¦¤ËÊÑ¹¹
+	åè©æ ¼ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã²ãã‚ˆã†ã«å¤‰æ›´
 
 2007-12-10  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/SentenceExtractor.pm:
-	²Õ¾ò½ñ¤­È½Äê¼şÊÕ¤Îbug fix.
+	ç®‡æ¡æ›¸ãåˆ¤å®šå‘¨è¾ºã®bug fix.
 
 2007-12-10  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
-	¥¯¥í¡¼¥é¤Î½ĞÎÏ¤¹¤ë¥Ø¥Ã¥À¡¼¤òÌµ»ë¤¹¤ë¤è¤¦¤ËÊÑ¹¹¡¥¥Ú¡¼¥¸¥¿¥¤¥È¥ë¤òHeaderÍ×ÁÇ¤Ë½ñ¤­½Ğ¤¹¤è¤¦¤ËÊÑ¹¹¡¥
+	ã‚¯ãƒ­ãƒ¼ãƒ©ã®å‡ºåŠ›ã™ã‚‹ãƒ˜ãƒƒãƒ€ãƒ¼ã‚’ç„¡è¦–ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´ï¼ãƒšãƒ¼ã‚¸ã‚¿ã‚¤ãƒˆãƒ«ã‚’Headerè¦ç´ ã«æ›¸ãå‡ºã™ã‚ˆã†ã«å¤‰æ›´ï¼
 
 	* scripts/extract-rawstring.perl:
-	TitleÍ×ÁÇ¤«¤éÊ¸¤òÃê½Ğ¤¹¤ë¤è¤¦¤ËÊÑ¹¹
+	Titleè¦ç´ ã‹ã‚‰æ–‡ã‚’æŠ½å‡ºã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
 
 2007-12-06  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/Emoticon.pm, perl/Emoticon.dic: added.
 
-	* perl/SentenceFormatter.pm: ´éÊ¸»úÂĞ±ş
+	* perl/SentenceFormatter.pm: é¡”æ–‡å­—å¯¾å¿œ
 
 2007-12-03  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -835,25 +989,25 @@
 2007-12-01  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtor2.pm:
-	¶õÇò¤¬ÁŞÆş¤µ¤ì¤ë¥Ğ¥°¤ò½¤Àµ¡¥A¡£(B)C¤Î»ş¡¢A¡£(B)¤ÇÊ¸¤ò¶èÀÚ¤ë¤è¤¦¤ËÊÑ¹¹¡¥B-C´Ö¤Ï¡¢³ç¸Ì¤Î¸å¤Ë¶õÇò¡¦²ş¹Ô¤¬¤¢¤ë¾ì¹ç¶èÀÚ¤ë¤è¤¦¤ËÊÑ¹¹¡¥
+	ç©ºç™½ãŒæŒ¿å…¥ã•ã‚Œã‚‹ãƒã‚°ã‚’ä¿®æ­£ï¼Aã€‚(B)Cã®æ™‚ã€Aã€‚(B)ã§æ–‡ã‚’åŒºåˆ‡ã‚‹ã‚ˆã†ã«å¤‰æ›´ï¼B-Cé–“ã¯ã€æ‹¬å¼§ã®å¾Œã«ç©ºç™½ãƒ»æ”¹è¡ŒãŒã‚ã‚‹å ´åˆåŒºåˆ‡ã‚‹ã‚ˆã†ã«å¤‰æ›´ï¼
 
 	* perl/SentenceExtractor2.pm:
-	³ç¸ÌÆâ¤ÎÊ¸¤ò¶èÀÚ¤é¤Ê¤¤¤è¤¦¤ËÊÑ¹¹¡¥
+	æ‹¬å¼§å†…ã®æ–‡ã‚’åŒºåˆ‡ã‚‰ãªã„ã‚ˆã†ã«å¤‰æ›´ï¼
 
 2007-11-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtor2.pm:
-	¡±¤ò¡Á¤ØÊÑ´¹¤¹¤ë¤è¤¦¤ËÊÑ¹¹(¡±¤ÎÁ°¸å¤Ë¿ô»ú¤Ş¤¿¤Ï¿ô»ú+Ã±°Ì(1¤«¤é2Ê¸»ú)¤¬¸½¤ì¤Æ¤¤¤ë¾ì¹ç¤Ë¸Â¤êÊÑ¹¹¤¹¤ë)¡¥
+	ï¿£ã‚’ã€œã¸å¤‰æ›ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´(ï¿£ã®å‰å¾Œã«æ•°å­—ã¾ãŸã¯æ•°å­—+å˜ä½(1ã‹ã‚‰2æ–‡å­—)ãŒç¾ã‚Œã¦ã„ã‚‹å ´åˆã«é™ã‚Šå¤‰æ›´ã™ã‚‹)ï¼
 
 2007-11-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtor2.pm:
-	¡±¤ò¡Á¤Ø¶¯À©Åª¤ËÊÑ´¹¤¹¤ë¤è¤¦¤ËÊÑ¹¹¡¥
+	ï¿£ã‚’ã€œã¸å¼·åˆ¶çš„ã«å¤‰æ›ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´ï¼
 
 2007-11-12  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/SentenceFormatter.pm, scripts/format-www.perl, scripts/format-www-xml.perl:
-	Á´ÂÎºï½ü¤ò¤»¤º¡¢¤¹¤Ù¤ÆÊİ»ı¤¹¤ë¥ª¥×¥·¥ç¥ó(--save_all)¤òÄÉ²Ã.
+	å…¨ä½“å‰Šé™¤ã‚’ã›ãšã€ã™ã¹ã¦ä¿æŒã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³(--save_all)ã‚’è¿½åŠ .
 
 	* html2text.sh, html2sf.sh:
 	Added "-s" (--save_all) option.
@@ -861,37 +1015,37 @@
 2007-11-12  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtor2.pm:
-	²Õ¾ò½ñ¤­Ç§¼±ÉôÊ¬¤Î¥³¡¼¥É¤òÀ°Íı¡¥
+	ç®‡æ¡æ›¸ãèªè­˜éƒ¨åˆ†ã®ã‚³ãƒ¼ãƒ‰ã‚’æ•´ç†ï¼
 
 2007-11-09  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/TextExtor2.pm:
-	Ê¸Ãæ¤Ç²Õ¾ò½ñ¤­¤¬Îóµó¤µ¤ì¤Æ¤¤¤ë¾ì¹ç¤Ï¡¡¤ò´Ö¤Ë¶´¤ó¤ÇÍ×ÁÇ¤òÏ¢·ë¤¹¤ë¤è¤¦¤ËÊÑ¹¹¡¥¡ÊÊ¸¤Î³°¤Î¾ì¹ç¤ÏÃ±ÆÈ¤ÎÊ¸¤È¤·¤ÆÇ§¼±¤µ¤ì¤ë¡Ë
+	æ–‡ä¸­ã§ç®‡æ¡æ›¸ããŒåˆ—æŒ™ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€€ã‚’é–“ã«æŒŸã‚“ã§è¦ç´ ã‚’é€£çµã™ã‚‹ã‚ˆã†ã«å¤‰æ›´ï¼ï¼ˆæ–‡ã®å¤–ã®å ´åˆã¯å˜ç‹¬ã®æ–‡ã¨ã—ã¦èªè­˜ã•ã‚Œã‚‹ï¼‰
 
 2007-11-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/SentenceExtractor2.pm:
-	²Õ¾ò½ñ¤­¤ÎÎóµóÃæ¤ËÊ¸¤¬Ê¬³ä¤µ¤ì¤Ê¤¤¤è¤¦¤ËÊÑ¹¹¡¥
+	ç®‡æ¡æ›¸ãã®åˆ—æŒ™ä¸­ã«æ–‡ãŒåˆ†å‰²ã•ã‚Œãªã„ã‚ˆã†ã«å¤‰æ›´ï¼
 
 2007-11-08  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/SentenceExtractor2.pm:
-	³ç¸Ì¤ÎÂĞ±ş´Ø·¸¤ò¤Ş¤¸¤á¤Ë¹Í¤¨¤ë¤è¤¦¤ËÊÑ¹¹¡¥¥³¥á¥ó¥ÈÄÉ²Ã¡¥¡Ö¡ª¡×¤Î¸å¤Ë¡Ö¤Ç¤¹¡×¤¬¤¯¤ë¾ì¹ç¤Ï¡¢¡Ö¡ª¡×¤ÇÊ¸¤ò¶èÀÚ¤é¤Ê¤¤¤è¤¦¤ËÊÑ¹¹¡¥
+	æ‹¬å¼§ã®å¯¾å¿œé–¢ä¿‚ã‚’ã¾ã˜ã‚ã«è€ƒãˆã‚‹ã‚ˆã†ã«å¤‰æ›´ï¼ã‚³ãƒ¡ãƒ³ãƒˆè¿½åŠ ï¼ã€Œï¼ã€ã®å¾Œã«ã€Œã§ã™ã€ãŒãã‚‹å ´åˆã¯ã€ã€Œï¼ã€ã§æ–‡ã‚’åŒºåˆ‡ã‚‰ãªã„ã‚ˆã†ã«å¤‰æ›´ï¼
 
 2007-11-07  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/SentenceExtractor2.pm:
-	¥¢¥ë¥Õ¥¡¥Ù¥Ã¥È¤Ş¤¿¤Ï¿ô»ú¤ÎÄ¾¸å¤Ë¡¥(¥Ô¥ê¥ª¥É)¤¬¤¢¤ë¾ì¹ç¤Ï²Õ¾ò½ñ¤­¤È¤·¤Æ¸«¤Ê¤¹¤è¤¦¤ËÊÑ¹¹¡¥
+	ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆã¾ãŸã¯æ•°å­—ã®ç›´å¾Œã«ï¼(ãƒ”ãƒªã‚ªãƒ‰)ãŒã‚ã‚‹å ´åˆã¯ç®‡æ¡æ›¸ãã¨ã—ã¦è¦‹ãªã™ã‚ˆã†ã«å¤‰æ›´ï¼
 
 2007-11-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/SentenceExtractor2.pm:
-	¡É¡ÉÆâ¤Î¶çÅÀ¤ÇÊ¸¤ò¶èÀÚ¤é¤Ê¤¤¤è¤¦¤ËÊÑ¹¹¡¥
+	â€â€å†…ã®å¥ç‚¹ã§æ–‡ã‚’åŒºåˆ‡ã‚‰ãªã„ã‚ˆã†ã«å¤‰æ›´ï¼
 
 2007-11-05  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/SentenceFormatter.pm:
-	--include_paren»ş¤Ë¤Ç¤­¤ë¤À¤±Á´ÂÎºï½ü¤·¤Ê¤¤¤è¤¦¤Ë½¤Àµ
+	--include_parenæ™‚ã«ã§ãã‚‹ã ã‘å…¨ä½“å‰Šé™¤ã—ãªã„ã‚ˆã†ã«ä¿®æ­£
 
 2007-11-03  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -924,82 +1078,82 @@
 2007-10-26  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* html2text.sh:
-	-f¥ª¥×¥·¥ç¥ó¤Î¤È¤­¡¢ÆüËÜ¸ìÊ¸¥Õ¥£¥ë¥¿¤ò¤«¤Ş¤µ¤Ê¤¤¤è¤¦¤Ë½¤Àµ
+	-fã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®ã¨ãã€æ—¥æœ¬èªæ–‡ãƒ•ã‚£ãƒ«ã‚¿ã‚’ã‹ã¾ã•ãªã„ã‚ˆã†ã«ä¿®æ­£
 
 	* scripts/extract-sentences.perl:
-	Movable Type¥ª¥×¥·¥ç¥ó¤Î¤È¤­¤Ëbanner-inner, content-nav, entry-footer¤Ê¤É¤òºï½ü
+	Movable Typeã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®ã¨ãã«banner-inner, content-nav, entry-footerãªã©ã‚’å‰Šé™¤
 
 2007-10-23  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* html2text.sh:
-	³ç¸Ì¤òÊÌ¤ÎÊ¸¤ËÊ¬¤±¤ë¥ª¥×¥·¥ç¥ó(-P)¤òÄÉ²Ã
+	æ‹¬å¼§ã‚’åˆ¥ã®æ–‡ã«åˆ†ã‘ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³(-P)ã‚’è¿½åŠ 
 
 	* scripts/format-www.perl:
-	³ç¸Ì¤òÊÌ¤ÎÊ¸¤ËÊ¬¤±¤ë¥ª¥×¥·¥ç¥ó(--divide_paren)¤òÄÉ²Ã
+	æ‹¬å¼§ã‚’åˆ¥ã®æ–‡ã«åˆ†ã‘ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³(--divide_paren)ã‚’è¿½åŠ 
 
 2007-09-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/to_utf8.perl:
-	HTMLÊ¸½ñ¤ÎÊ¸»ú¥³¡¼¥É¤òutf8¤ËÊÑ¹¹¤¹¤ë¥×¥í¥°¥é¥à¤òÄÉ²Ã (meta¥¿¥°¤Ë¤ÆcharsetÂ°À­¤¬»ØÄê¤µ¤ì¤Æ¤¤¤ë¾ì¹ç¤Ï¡¢¤½¤ÎÃÍ¤òutf8¤ËÊÑ¹¹¤¹¤ë)
+	HTMLæ–‡æ›¸ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ã‚’utf8ã«å¤‰æ›´ã™ã‚‹ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’è¿½åŠ  (metaã‚¿ã‚°ã«ã¦charsetå±æ€§ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€ãã®å€¤ã‚’utf8ã«å¤‰æ›´ã™ã‚‹)
 	
 2007-09-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* README
-	É¬Í×¤Ê¤â¤Î¤ËShiftJIS::CP932::MapUTF¤òÄÉ²Ã.
+	å¿…è¦ãªã‚‚ã®ã«ShiftJIS::CP932::MapUTFã‚’è¿½åŠ .
 	
 2007-09-20  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/HtmlGuessEncoding.pm:
-	shiftjis¤Îµ¡¼ï°ÍÂ¸Ê¸»ú¤Ç²½¤±¤Ê¤¤¤è¤¦¤ËShiftJIS::CP932::MapUTF¥â¥¸¥å¡¼¥ë¤òÍøÍÑ¤¹¤ë¤è¤¦¤ËÊÑ¹¹.
+	shiftjisã®æ©Ÿç¨®ä¾å­˜æ–‡å­—ã§åŒ–ã‘ãªã„ã‚ˆã†ã«ShiftJIS::CP932::MapUTFãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’åˆ©ç”¨ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´.
 	
 2007-07-14  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/parse-comp.sh:
-	¤É¤Î¥Ç¥£¥ì¥¯¥È¥ê¤Ç¤â¼Â¹Ô¤Ç¤­¤ë¤è¤¦¤Ë½¤Àµ
+	ã©ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ã‚‚å®Ÿè¡Œã§ãã‚‹ã‚ˆã†ã«ä¿®æ­£
 	
 2007-07-13  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* html2sf.sh, html2text.sh, www2sf.sh:
-	¤É¤Î¥Ç¥£¥ì¥¯¥È¥ê¤Ç¤â¼Â¹Ô¤Ç¤­¤ë¤è¤¦¤Ë½¤Àµ
+	ã©ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ã‚‚å®Ÿè¡Œã§ãã‚‹ã‚ˆã†ã«ä¿®æ­£
 
 2007-07-05  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/format-www-xml.perl:
-	XML-LibXML1.63¤Ç¤Î$doc->toString()¤Î»ÅÍÍÊÑ¹¹¤ËÂĞ±ş
+	XML-LibXML1.63ã§ã®$doc->toString()ã®ä»•æ§˜å¤‰æ›´ã«å¯¾å¿œ
 
 	* scripts/embed-syngraph.perl:
-	²¼°Ì¸ì¿ô¤¬ $opt{hypocut} ¤è¤êÂç¤­¤±¤ì¤Ğ¡¢SYN¥Î¡¼¥É¤ò¤Ï¤ê¤Ä¤±¤Ê¤¤¤è¤¦¤Ë¤·¤¿(¥Ç¥Õ¥©¥ë¥ÈÃÍ:9)
+	ä¸‹ä½èªæ•°ãŒ $opt{hypocut} ã‚ˆã‚Šå¤§ãã‘ã‚Œã°ã€SYNãƒãƒ¼ãƒ‰ã‚’ã¯ã‚Šã¤ã‘ãªã„ã‚ˆã†ã«ã—ãŸ(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤:9)
 
 2007-06-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* www2sf.sh:
-	10M¤ò±Û¤¨¤ë¥Õ¥¡¥¤¥ë¤ÏÉ¸½à¥Õ¥©¡¼¥Ş¥Ã¥È²½¤·¤Ê¤¤¤è¤¦¤ËÊÑ¹¹
+	10Mã‚’è¶Šãˆã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã¯æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆåŒ–ã—ãªã„ã‚ˆã†ã«å¤‰æ›´
 
 2007-06-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl:
-	Title¥¿¥°Æâ¤ÎRawString¤ò²òÀÏ¤¹¤ë¤è¤¦¤ËÊÑ¹¹
+	Titleã‚¿ã‚°å†…ã®RawStringã‚’è§£æã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
 
 2007-06-05  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* www2sf.sh:
-	html2sf.sh¤ò¸Æ¤Öºİ-a¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	html2sf.shã‚’å‘¼ã¶éš›-aã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 2007-06-04  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl:
-	XML-LibXML1.63¤Ç¤Î$doc->toString()¤Î»ÅÍÍÊÑ¹¹¤ËÂĞ±ş
+	XML-LibXML1.63ã§ã®$doc->toString()ã®ä»•æ§˜å¤‰æ›´ã«å¯¾å¿œ
 
 2007-05-02  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/judge-encoding.perl:
-	content-type¤òcase insensitive¤Ë½¤Àµ
+	content-typeã‚’case insensitiveã«ä¿®æ­£
 
 2007-05-01  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/read-zaodata.pl:
-	shim-crawler¤Î¥Õ¥©¡¼¥Ş¥Ã¥ÈÊÑ¹¹¤ËÂĞ±ş
-	ÆüËÜ¸ìÈ½Äê½èÍı¤ò¹Ô¤ï¤Ê¤¤¥ª¥×¥·¥ç¥ó--ignore-check-japanese¤òÄÉ²Ã
+	shim-crawlerã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå¤‰æ›´ã«å¯¾å¿œ
+	æ—¥æœ¬èªåˆ¤å®šå‡¦ç†ã‚’è¡Œã‚ãªã„ã‚ªãƒ—ã‚·ãƒ§ãƒ³--ignore-check-japaneseã‚’è¿½åŠ 
 
 2007-04-13  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -1014,112 +1168,112 @@
 2007-03-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* perl/SentenceExtractor2.pm:
-	Ê¸Ê¬²ò¥ë¡¼¥ë¤Î¼ÂÁõ (A¢öB -> A¢ö/B¡¤A¡¦¡¦¡¦B -> A¡¦¡¦¡¦/B¡¤A¡ÄB -> A¡Ä/B¡¤¡ÊA¡£B¡Ë -> ¡ÊA¡£/B¡Ë)
-	Ê¸·ë¹ç¥ë¡¼¥ë¤Î¼ÂÁõ (A¡ª¤ÈB¡¤A¡©¤ÈB¡¤AÊÄ¤¸³ç¸Ì¤ÈB¡¤A¡ª¤ÃB¡¤A¡©¤ÃB¡¤AÊÄ¤¸³ç¸Ì¤ÃB)
+	æ–‡åˆ†è§£ãƒ«ãƒ¼ãƒ«ã®å®Ÿè£… (Aâ™ªB -> Aâ™ª/Bï¼ŒAãƒ»ãƒ»ãƒ»B -> Aãƒ»ãƒ»ãƒ»/Bï¼ŒAâ€¦B -> Aâ€¦/Bï¼Œï¼ˆAã€‚Bï¼‰ -> ï¼ˆAã€‚/Bï¼‰)
+	æ–‡çµåˆãƒ«ãƒ¼ãƒ«ã®å®Ÿè£… (Aï¼ã¨Bï¼ŒAï¼Ÿã¨Bï¼ŒAé–‰ã˜æ‹¬å¼§ã¨Bï¼ŒAï¼ã£Bï¼ŒAï¼Ÿã£Bï¼ŒAé–‰ã˜æ‹¬å¼§ã£B)
 
 2007-03-06  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2sf.sh
-	parse-comp.sh¤Î¥í¥°¤ò/dev/null¤Ë½ĞÎÏ¤¹¤ë¤è¤¦¤ËÊÑ¹¹.
+	parse-comp.shã®ãƒ­ã‚°ã‚’/dev/nullã«å‡ºåŠ›ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´.
 
 2007-02-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2text.sh, html2sf.sh:
-	Movable Type¤Î¥È¥é¥Ã¥¯¥Ğ¥Ã¥¯¡¢¥³¥á¥ó¥È¡¢¥á¥Ë¥å¡¼ÉôÊ¬¤«¤éÊ¸Ãê½Ğ¤ò¹Ô¤ï¤Ê¤¤¥ª¥×¥·¥ç¥ó -B ¤òÄÉ²Ã.
+	Movable Typeã®ãƒˆãƒ©ãƒƒã‚¯ãƒãƒƒã‚¯ã€ã‚³ãƒ¡ãƒ³ãƒˆã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼éƒ¨åˆ†ã‹ã‚‰æ–‡æŠ½å‡ºã‚’è¡Œã‚ãªã„ã‚ªãƒ—ã‚·ãƒ§ãƒ³ -B ã‚’è¿½åŠ .
 
 2007-02-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/extract-sentences.perl:
-	¥È¥é¥Ã¥¯¥Ğ¥Ã¥¯¡¢¥³¥á¥ó¥È¡¢¥á¥Ë¥å¡¼ÉôÊ¬¤òºï½ü¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã¡ÊMovable Type¤Î¤ßÂĞ±ş¡Ë
+	ãƒˆãƒ©ãƒƒã‚¯ãƒãƒƒã‚¯ã€ã‚³ãƒ¡ãƒ³ãƒˆã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼éƒ¨åˆ†ã‚’å‰Šé™¤ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ ï¼ˆMovable Typeã®ã¿å¯¾å¿œï¼‰
 
 2007-02-21  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/format-www.perl:
-	include_paren¥ª¥×¥·¥ç¥ó»ş¤Ë¡¢³ç¸Ì¤Ç»Ï¤Ş¤ëÊ¸¤Ê¤É¤òºï½ü¤·¤Ê¤¤¤è¤¦¤Ë½¤Àµ
+	include_parenã‚ªãƒ—ã‚·ãƒ§ãƒ³æ™‚ã«ã€æ‹¬å¼§ã§å§‹ã¾ã‚‹æ–‡ãªã©ã‚’å‰Šé™¤ã—ãªã„ã‚ˆã†ã«ä¿®æ­£
 
 	* html2text.sh:
-	¥ª¥×¥·¥ç¥ó¤òÈù½¤Àµ
+	ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å¾®ä¿®æ­£
 
 2007-02-21  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* html2text.sh:
-	include_paren¤òinclude-paren¤ËÊÑ¹¹.
+	include_parenã‚’include-parenã«å¤‰æ›´.
 
 2007-02-15  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/TextExtor2.pm:
-	<br>¤È<p>¤òÌµ»ë¤¹¤ë¥ª¥×¥·¥ç¥ó¤ËÂĞ±ş
+	<br>ã¨<p>ã‚’ç„¡è¦–ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«å¯¾å¿œ
 
 	* perl/HtmlGuessEncoding.pm:
-	Îã³°Åª¤Êcharset¤Î°·¤¤¤òÄÉ²Ã
+	ä¾‹å¤–çš„ãªcharsetã®æ‰±ã„ã‚’è¿½åŠ 
 
 	* scripts/extract-sentences.perl:
-	<br>¤È<p>¤òÌµ»ë¤¹¤ë¥ª¥×¥·¥ç¥ó(--ignore_br)¤òÄÉ²Ã
+	<br>ã¨<p>ã‚’ç„¡è¦–ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³(--ignore_br)ã‚’è¿½åŠ 
 
 	* scripts/format-www-xml.perl:
-	³ç¸Ì¤òÊİ»ı¤¹¤ë¥ª¥×¥·¥ç¥ó¤ò--include_paren¤ËÊÑ¹¹
+	æ‹¬å¼§ã‚’ä¿æŒã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’--include_parenã«å¤‰æ›´
 
 	* html2sf.sh:
-	¥ª¥×¥·¥ç¥óÄÉ²Ã
-	  -b: <br>¤È<p>¤òÌµ»ë¤¹¤ë
-	  -p: ³ç¸Ì¤òÊİ»ı¤¹¤ë
-	  -f: ¥¨¥ó¥³¡¼¥Ç¥£¥ó¥°¤òÌµ»ë¤·¤ÆÊÑ´¹¤¹¤ë
-	  -a: ¤¹¤Ù¤Æ¤ÎÊ¸¤ò²òÀÏ¤¹¤ë
+	ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¿½åŠ 
+	  -b: <br>ã¨<p>ã‚’ç„¡è¦–ã™ã‚‹
+	  -p: æ‹¬å¼§ã‚’ä¿æŒã™ã‚‹
+	  -f: ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã‚’ç„¡è¦–ã—ã¦å¤‰æ›ã™ã‚‹
+	  -a: ã™ã¹ã¦ã®æ–‡ã‚’è§£æã™ã‚‹
 
 2006-12-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/add-knp-result.perl:
-	²òÀÏ·ë²Ì¤ÎËä¤á¹ş¤ß¤òÉ¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¤Ë½àµò¤¹¤ë¤è¤¦¤ËÊÑ¹¹.
+	è§£æçµæœã®åŸ‹ã‚è¾¼ã¿ã‚’æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«æº–æ‹ ã™ã‚‹ã‚ˆã†ã«å¤‰æ›´.
 
 2006-12-27  Keiji Shinzato  <shinzato@nlp.kuee.kyoto-u.ac.jp>
 
 	* ../doc/standard_format.pdf:
-	É¸½à¥Õ¥©¡¼¥Ş¥Ã¥È¥Ş¥Ë¥å¥¢¥ëpdfÈÇ¤òÄÉ²Ã.
+	æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒãƒ‹ãƒ¥ã‚¢ãƒ«pdfç‰ˆã‚’è¿½åŠ .
 
 2006-12-21  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/parse-comp.sh:
-	KNP¤Î¥ª¥×¥·¥ç¥ó¤Ë-postprocess¤òÉÕ²Ã¡£
+	KNPã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«-postprocessã‚’ä»˜åŠ ã€‚
 
 2006-12-14  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/TextExtor2.pm:
-	¥«¥¿¥«¥Ê¤Ë¸åÂ³¤¹¤ë¥Ï¥¤¥Õ¥ó¤ò¡Ö¡¼¡×¤ËÀµµ¬²½
+	ã‚«ã‚¿ã‚«ãƒŠã«å¾Œç¶šã™ã‚‹ãƒã‚¤ãƒ•ãƒ³ã‚’ã€Œãƒ¼ã€ã«æ­£è¦åŒ–
 
 2006-12-13  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/TextExtor2.pm:
-	²ş¹Ô¥³¡¼¥É¡¢¶õÇò¤Î°·¤¤¤òÀºåÌ²½
+	æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã€ç©ºç™½ã®æ‰±ã„ã‚’ç²¾ç·»åŒ–
 
 2006-12-12  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* perl/SentenceFilter.pm:
-	ÆüËÜ¸ìÊ¸»ú¤ÎÀµµ¬É½¸½¤Ë¶çÆÉÅÀ¤¬¥Ş¥Ã¥Á¤·¤Ê¤«¤Ã¤¿¤Î¤ò½¤Àµ
+	æ—¥æœ¬èªæ–‡å­—ã®æ­£è¦è¡¨ç¾ã«å¥èª­ç‚¹ãŒãƒãƒƒãƒã—ãªã‹ã£ãŸã®ã‚’ä¿®æ­£
 
 	* perl/SentenceExtractor2.pm:
-	Ê¸ÀÚ¤ê¤ÎÀºÅÙ¸ş¾å(¿ô»ú¤Ê¤É)
+	æ–‡åˆ‡ã‚Šã®ç²¾åº¦å‘ä¸Š(æ•°å­—ãªã©)
 
 2006-11-26  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/format-www.perl, scripts/format-www-xml.perl:
-	¥ª¥×¥·¥ç¥ó¤Ë¤è¤Ã¤Æ³ç¸Ì¤ÎÉôÊ¬ºï½ü¤òÍŞÀ©¤Ç¤­¤ë¤è¤¦¤ËÊÑ¹¹
+	ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã«ã‚ˆã£ã¦æ‹¬å¼§ã®éƒ¨åˆ†å‰Šé™¤ã‚’æŠ‘åˆ¶ã§ãã‚‹ã‚ˆã†ã«å¤‰æ›´
 
 	* perl/SentenceExtractor2.pm:
-	Ê¸ÀÚ¤ê¤ÎÀºÅÙ¸ş¾å
+	æ–‡åˆ‡ã‚Šã®ç²¾åº¦å‘ä¸Š
 
 	* html2sf.sh, html2text.sh:
-	¥ª¥×¥·¥ç¥ó¤òÊÑ¹¹
+	ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å¤‰æ›´
 
 2006-11-01  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/ntcir2sf.sh:
-	ÊÑ´¹¸å¤Î³Æ¥Õ¥¡¥¤¥ë¤ò°µ½Ì¤¹¤ë¥ª¥×¥·¥ç¥ó(-g)¡¢ÊÑ´¹¤·¤¿¥Õ¥¡¥¤¥ë¤ò¥µ¥Ö¥Ç¥£¥ì¥¯¥È¥ê¤ò·¡¤Ã¤ÆÃÖ¤¯¥ª¥×¥·¥ç¥ó(-s)¤òÄÉ²Ã
-	Á´ÂÎºï½ü¤Ê¤É¤â´Ş¤á¤Æ¡¢¤¹¤Ù¤Æ¤ÎÊ¸¤ò²òÀÏ¤¹¤ë¤è¤¦¤Ë½¤Àµ
+	å¤‰æ›å¾Œã®å„ãƒ•ã‚¡ã‚¤ãƒ«ã‚’åœ§ç¸®ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³(-g)ã€å¤‰æ›ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚µãƒ–ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æ˜ã£ã¦ç½®ãã‚ªãƒ—ã‚·ãƒ§ãƒ³(-s)ã‚’è¿½åŠ 
+	å…¨ä½“å‰Šé™¤ãªã©ã‚‚å«ã‚ã¦ã€ã™ã¹ã¦ã®æ–‡ã‚’è§£æã™ã‚‹ã‚ˆã†ã«ä¿®æ­£
 
 2006-10-31  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/format-www-xml.perl, scripts/extract-rawstring.perl, scripts/add-knp-result.perl:
-	ÃÙ¤¤XML::DOM¤ò¤ä¤á¤Æ¡¢¤¤¤¯¤Ö¤óÂ®¤¤XML::LibXML¤ò»È¤¦¤è¤¦¤ËÊÑ¹¹
+	é…ã„XML::DOMã‚’ã‚„ã‚ã¦ã€ã„ãã¶ã‚“é€Ÿã„XML::LibXMLã‚’ä½¿ã†ã‚ˆã†ã«å¤‰æ›´
 
 	* scripts/ntcir2sf.sh:
 	added.
@@ -1127,8 +1281,8 @@
 2006-10-30  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/format-www-xml.perl, scripts/extract-rawstring.perl, scripts/add-knp-result.perl:
-	¡ÖÁ´ÂÎºï½ü¡×¤·¤Æ¤â¡¢RawString¤ò¾Ã¤µ¤Ê¤¤¤è¤¦¤ËÊÑ¹¹
-	¡ÖÁ´ÂÎºï½ü¡×¤µ¤ì¤¿Ê¸(is_Japanese_Sentence==0)¤Ï¥Ç¥Õ¥©¥ë¥È²òÀÏ¤»¤º¡¢--all¥ª¥×¥·¥ç¥ó»ş¤Ë²òÀÏ¤¹¤ë¤è¤¦¤ËÊÑ¹¹
+	ã€Œå…¨ä½“å‰Šé™¤ã€ã—ã¦ã‚‚ã€RawStringã‚’æ¶ˆã•ãªã„ã‚ˆã†ã«å¤‰æ›´
+	ã€Œå…¨ä½“å‰Šé™¤ã€ã•ã‚ŒãŸæ–‡(is_Japanese_Sentence==0)ã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆè§£æã›ãšã€--allã‚ªãƒ—ã‚·ãƒ§ãƒ³æ™‚ã«è§£æã™ã‚‹ã‚ˆã†ã«å¤‰æ›´
 
 2006-10-09  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -1151,12 +1305,12 @@
 2006-09-10  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/rename-all.sh:
-	³«»ÏÈÖ¹æ¤òÍ¿¤¨¤é¤ì¤ë¤è¤¦¤Ë½¤Àµ
+	é–‹å§‹ç•ªå·ã‚’ä¸ãˆã‚‰ã‚Œã‚‹ã‚ˆã†ã«ä¿®æ­£
 
 2006-09-09  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/extract-sentences.perl:
-	½õ»ì´ŞÍ­Î¨¤ÎïçÃÍ¤ò¥ª¥×¥·¥ç¥ó¤Ç»ØÄê²ÄÇ½¤Ë¤·¤¿
+	åŠ©è©å«æœ‰ç‡ã®é–¾å€¤ã‚’ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§æŒ‡å®šå¯èƒ½ã«ã—ãŸ
 
 	* scripts/rename-all.sh:
 	added.
@@ -1164,15 +1318,15 @@
 2006-09-06  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* www2sf-tar.sh:
-	rename-continuously.sh¤ò¸Æ¤Ö¤è¤¦¤Ë¤·¤¿
+	rename-continuously.shã‚’å‘¼ã¶ã‚ˆã†ã«ã—ãŸ
 
 	* scripts/extract-sentences.perl:
-	read-zaodata¤¬½ĞÎÏ¤¹¤ëURL¾ğÊó¤òÆÉ¤ß¼è¤ë¤è¤¦¤Ë½¤Àµ
+	read-zaodataãŒå‡ºåŠ›ã™ã‚‹URLæƒ…å ±ã‚’èª­ã¿å–ã‚‹ã‚ˆã†ã«ä¿®æ­£
 
 2006-09-04  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/rename-continuously.sh:
-	h????, x????Î¾Êı¤òrename¤¹¤ë¤è¤¦¤Ë½¤Àµ
+	h????, x????ä¸¡æ–¹ã‚’renameã™ã‚‹ã‚ˆã†ã«ä¿®æ­£
 
 2006-09-03  Daisuke Kawahara  <dk@nict.go.jp>
 
@@ -1182,8 +1336,8 @@
 2006-09-01  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/read-zaodata.sh:
-	tar.gz¤Ç¸Ç¤á¤ë¤Î¤ò¤ä¤Ï¤êdefault¤Ë¤·¤¿
-	tar.gz¤Ç¸Ç¤á¤Ê¤¤¥ª¥×¥·¥ç¥ó(-r)¤ÎÄÉ²Ã
+	tar.gzã§å›ºã‚ã‚‹ã®ã‚’ã‚„ã¯ã‚Šdefaultã«ã—ãŸ
+	tar.gzã§å›ºã‚ãªã„ã‚ªãƒ—ã‚·ãƒ§ãƒ³(-r)ã®è¿½åŠ 
 
 	* www2sf.sh, www2sf-tar.sh, html2sf.sh:
 	slightly modified.
@@ -1191,11 +1345,11 @@
 2006-08-31  Daisuke Kawahara  <dk@nict.go.jp>
 
 	* scripts/read-zaodata.perl:
-	offset¤ò»ØÄê¤Ç¤­¤ë¤è¤¦¤Ë¤·¤¿
+	offsetã‚’æŒ‡å®šã§ãã‚‹ã‚ˆã†ã«ã—ãŸ
 
 	* scripts/read-zaodata.sh:
-	offset¤ò-o¤Ç»ØÄê¤Ç¤­¤ë¤è¤¦¤Ë¤·¤¿
-	tar.gz¤Ç¸Ç¤á¤ë¤Î¤ò¥ª¥×¥·¥ç¥ó(-t)¤Ë¤·¤¿
+	offsetã‚’-oã§æŒ‡å®šã§ãã‚‹ã‚ˆã†ã«ã—ãŸ
+	tar.gzã§å›ºã‚ã‚‹ã®ã‚’ã‚ªãƒ—ã‚·ãƒ§ãƒ³(-t)ã«ã—ãŸ
 
 2006-08-31  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
@@ -1205,49 +1359,49 @@
 
 2006-08-29  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* www2sf.sh: xml¤Î½ĞÎÏ¤¬0¤Î¾ì¹ç¡¢ºï½ü¤¹¤ë¤è¤¦¤Ë¤·¤¿
+	* www2sf.sh: xmlã®å‡ºåŠ›ãŒ0ã®å ´åˆã€å‰Šé™¤ã™ã‚‹ã‚ˆã†ã«ã—ãŸ
 
 	* www2sf.sh: added.
 
-	* html2sf.sh: Ãæ´Ö¥Õ¥¡¥¤¥ë¤ÎÌ¾Á°¤ÎÊÑ¹¹¤Ê¤É
+	* html2sf.sh: ä¸­é–“ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã®å¤‰æ›´ãªã©
 
 	* scripts/extract-sentences.perl:
-	½õ»ì´ŞÍ­Î¨¤ò¥Á¥§¥Ã¥¯¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	åŠ©è©å«æœ‰ç‡ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 	* scripts/extract-sentences.perl, html2sf.sh:
-	sentence-filter-xml.perl¤ò¥â¥¸¥å¡¼¥ë²½¤·¤Æextract-sentences¤ÎÃæ¤ËÆş¤ì¤ë¤³¤È¤Ë¤è¤ê¡¢¼ã´³¹âÂ®²½
+	sentence-filter-xml.perlã‚’ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«åŒ–ã—ã¦extract-sentencesã®ä¸­ã«å…¥ã‚Œã‚‹ã“ã¨ã«ã‚ˆã‚Šã€è‹¥å¹²é«˜é€ŸåŒ–
 
 	* perl/SentenceFilter.pm: added.
 
 2006-08-28  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
 	* scripts/read-zaodata.perl:
-	rename¤¹¤ëÉ¬Í×¤Î¤Ê¤¤¤è¤¦¤Ë¡¢¥Õ¥¡¥¤¥ëÌ¾¤òÊÑ¹¹
+	renameã™ã‚‹å¿…è¦ã®ãªã„ã‚ˆã†ã«ã€ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å¤‰æ›´
 
 	* scripts/read-zaodata.perl:
-	¥Ú¡¼¥¸Æâ¤Î½õ»ì´ŞÍ­Î¨¤ò¥Á¥§¥Ã¥¯¤¹¤ë¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	ãƒšãƒ¼ã‚¸å†…ã®åŠ©è©å«æœ‰ç‡ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
-	* html2sf.sh: rm¤Ë-f¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã
+	* html2sf.sh: rmã«-fã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ 
 
 	* html2sf.sh:
-	Ãæ´Ö¥Õ¥¡¥¤¥ë¤ò½ĞÎÏ¤·¤Æ¡¢Juman/KNP¤Î²òÀÏ·ë²Ì¤òÆÉ¤á¤ë¤è¤¦¤Ë½¤Àµ
+	ä¸­é–“ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å‡ºåŠ›ã—ã¦ã€Juman/KNPã®è§£æçµæœã‚’èª­ã‚ã‚‹ã‚ˆã†ã«ä¿®æ­£
 
 	* scripts/extract-rawstring.perl: added.
 
 	* scripts/add-knp-result.perl:
-	Juman/KNP.pm¤ò»È¤ï¤º¤Ë¡¢²òÀÏ·ë²Ì¤òÆÉ¤ó¤Çxml¤ËÁŞÆş¤¹¤ë¤è¤¦¤Ë½¤Àµ
+	Juman/KNP.pmã‚’ä½¿ã‚ãšã«ã€è§£æçµæœã‚’èª­ã‚“ã§xmlã«æŒ¿å…¥ã™ã‚‹ã‚ˆã†ã«ä¿®æ­£
 
-	* scripts/add-knp-result.perl: RawString¤¬¶õ¤Î¾ì¹ç¡¢next¤¹¤ë¤è¤¦¤Ë
+	* scripts/add-knp-result.perl: RawStringãŒç©ºã®å ´åˆã€nextã™ã‚‹ã‚ˆã†ã«
 
-	* scripts/format-www-xml.perl: Á´Ê¸ºï½ü¤Î»ş¤ÏRawString¤ò¶õ¤Ë¤¹¤ë¤è¤¦¤Ë½¤Àµ
+	* scripts/format-www-xml.perl: å…¨æ–‡å‰Šé™¤ã®æ™‚ã¯RawStringã‚’ç©ºã«ã™ã‚‹ã‚ˆã†ã«ä¿®æ­£
 
 2006-08-24  Tomohide Shibata  <shibata@nlp.kuee.kyoto-u.ac.jp>
 
-	* scripts/extract-sentences.perl: process_encoding¤ÎÉôÊ¬¤Ë¥â¥¸¥å¡¼¥ë¤òÍøÍÑ
+	* scripts/extract-sentences.perl: process_encodingã®éƒ¨åˆ†ã«ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’åˆ©ç”¨
 
 	* scripts/read-zaodata.perl: added.
 
-	* scripts/add-knp-result.perl: Juman/KNP²òÀÏ·ë²Ì¤òÁŞÆş
+	* scripts/add-knp-result.perl: Juman/KNPè§£æçµæœã‚’æŒ¿å…¥
 
 	* scripts/read-sf.perl: added.
 
