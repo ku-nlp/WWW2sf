@@ -1,5 +1,5 @@
 USAGE:
-  WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u|-U] [-z] [-c somewhere/cns.cdb] [-S] [-T] [-e|-E] [-x] [-a] [-d SynGraphPath] hdir xdir
+  WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u|-U] [-z] [-c somewhere/cns.cdb] [-S] [-T] [-e|-E] [-x] [-a] [-d SynGraphPath] [-v] hdir xdir
 
 OPTION:
   -j    ... jumanの解析結果を埋め込む.
@@ -32,6 +32,8 @@ OPTION:
   -a    ... KNPにおいて省略解析を行う.
 
   -d    ... SynGraphのパスを指定する.
+
+  -v    ... verboseモード.
 
   hdir  ... HTML文書が収められたディレクトリ.
             (utf8化されていないもの, gzipされていないもの)

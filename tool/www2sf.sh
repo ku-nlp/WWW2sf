@@ -11,6 +11,7 @@ usage() {
 
 html2sf_extra_args=
 ext=
+verbose=0
 
 # ファイルサイズの閾値(default 5M)
 fsize_threshold=5242880
@@ -21,7 +22,7 @@ ref_time=0
 base_dir=`dirname $0`
 
 flag_of_make_urldb=0
-while getopts ajkshS:c:uUzOTFt:C:eExn:d: OPT
+while getopts ajkshS:c:uUzOTFt:C:eExn:d:v OPT
 do
     case $OPT in
 	a)  html2sf_extra_args="-a $html2sf_extra_args"
@@ -63,6 +64,8 @@ do
 	    ;;
 	d)  html2sf_extra_args="-d $OPTARG $html2sf_extra_args"
 	    ;;
+	v)  verbose=1
+	    ;;
         h)  usage
             ;;
     esac
@@ -93,7 +96,9 @@ do
     fsize=`wc -c $f | awk '{print $1}'`
     # ファイルサイズが$fsize_threshold以下、最終修正時刻が基準epoch timeより後(default: 全てOK)なら
     if [ $fsize -lt $fsize_threshold -a $mtime -gt $ref_time ]; then
-	echo $f
+	if [ $verbose -eq 1 ]; then
+	    echo $f
+	fi
 	# 各htmlに対するinfoファイル(URL encoding)があれば
 	if [ -f $hdir/$base_f.info ]; then
 	    html2sf_info_args="-i $hdir/$base_f.info"
