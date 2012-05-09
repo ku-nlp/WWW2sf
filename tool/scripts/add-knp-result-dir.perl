@@ -58,6 +58,7 @@ GetOptions(\%opt,
 	   'wikipedia_entry_db=s',
 	   'imi_list_db=s',
 	   'find_recursive',
+	   'embed_result_in_xml',
 	   'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
