@@ -5,8 +5,6 @@
 use XML::LibXML;
 use Encode qw(decode);
 use encoding 'utf8';
-binmode STDERR, ':encoding(utf8)';
-binmode STDOUT, ':encoding(utf8)';
 use Getopt::Long;
 use File::Basename;
 use Juman;
@@ -16,9 +14,12 @@ use AddKNPResult;
 use Error qw(:try);
 use HTML::Entities;
 use Data::Dumper;
-use Error qw(:try);
 
+select(STDERR);
+$| = 1; # auto-flush STDERR
+select(STDOUT);
 
+my $PRINT_PROGRESS_INTERVAL = 10; # -print_progress時に、何文書ごとに*を表示するか
 
 my (%opt);
 GetOptions(\%opt,
@@ -59,6 +60,7 @@ GetOptions(\%opt,
 	   'imi_list_db=s',
 	   'find_recursive',
 	   'embed_result_in_xml',
+	   'print_progress',
 	   'debug');
 
 if (!$opt{indir} || !$opt{outdir}) {
@@ -173,11 +175,12 @@ unless ($opt{nologfile}) {
 }
 
 open(LOG, ">> $opt{logfile}") or die $! unless $opt{nologfile};
-
+my $count = 1;
 foreach my $file (@files) {
     # 既に解析済みのファイルはスキップ
     next if (!$opt{nologfile} && exists $alreadyAnalyzedFiles{$file});
 
+    print STDERR '*' if $opt{print_progress} && !($count % $PRINT_PROGRESS_INTERVAL);
     syswrite LOG, "$file " unless $opt{nologfile};
     if ($file =~ /\.gz$/) {
 	unless (open F, "zcat $file |") {
@@ -247,6 +250,7 @@ foreach my $file (@files) {
 
 	syswrite LOG, "success\n" unless $opt{nologfile};
 	print STDERR "$file is success\n" if ($opt{debug});
+	$count++;
     } catch Error with {
 	syswrite LOG, "timeout\n";
 	my $err = shift;
@@ -257,6 +261,7 @@ foreach my $file (@files) {
     };
 }
 
+print STDERR "\n" if $opt{print_progress};
 print LOG "finish.\n" unless $opt{nologfile};
 close (LOG) unless $opt{nologfile};
 
