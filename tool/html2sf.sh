@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a] [-d SynGraphPath] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a] [-d SynGraphPath] [-D DetectBlocksPath] input.html > output.xml"
     exit 1
 }
 
@@ -27,11 +27,12 @@ usage() {
 # -x: 解析結果をXMLとして埋め込む
 # -a: KNPにおいて省略解析を行う
 # -d: SynGraphのパスを指定する
+# -D: DetectBlocksのパスを指定する
 
 # Change this for SynGraph annotation
-CVS_DIR=$HOME/cvs
 syngraph_home=$HOME/cvs/SynGraph
 syndb_path=$syngraph_home/syndb/`uname -m`
+detectblocks_home=$HOME/cvs/DetectBlocks
 
 base_dir=`dirname $0`
 
@@ -51,7 +52,7 @@ ipsj_metadb=
 configfile=$base_dir/conf/configure
 infofile=
 
-while getopts abfjkspPhBwc:umMUOTFt:C:eExi:d: OPT
+while getopts abfjkspPhBwc:umMUOTFt:C:eExi:d:D: OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
@@ -112,6 +113,8 @@ do
 	    ;;
 	d)  syngraph_home=$OPTARG
 	    syndb_path=$syngraph_home/syndb/`uname -m`
+	    ;;
+	D)  detectblocks_home=$OPTARG
 	    ;;
         h)  usage
             ;;
@@ -205,7 +208,7 @@ fi
 if [ $annotate_blocktype -eq 1 ]
 then
     OPTION="-add_class2html -add_blockname2alltag -without_juman"
-    perl -I $CVS_DIR/DetectBlocks/perl $base_dir/scripts/embed-region-info.perl $OPTION < $utf8file > $utf8file_w_annotate_blocktype
+    perl -I $detectblocks_home/perl $base_dir/scripts/embed-region-info.perl $OPTION < $utf8file > $utf8file_w_annotate_blocktype
 else
     cat $utf8file > $utf8file_w_annotate_blocktype
 fi

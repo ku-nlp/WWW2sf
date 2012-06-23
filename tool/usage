@@ -33,6 +33,8 @@ OPTION:
 
   -d    ... SynGraphのパスを指定する.
 
+  -D    ... DetectBlocksのパスを指定する.
+
   -v    ... verboseモード.
 
   hdir  ... HTML文書が収められたディレクトリ.

@@ -22,7 +22,7 @@ ref_time=0
 base_dir=`dirname $0`
 
 flag_of_make_urldb=0
-while getopts ajkshS:c:uUzOTFt:C:eExn:d:v OPT
+while getopts ajkshS:c:uUzOTFt:C:eExn:d:D:v OPT
 do
     case $OPT in
 	a)  html2sf_extra_args="-a $html2sf_extra_args"
@@ -63,6 +63,8 @@ do
 	n)  ref_time=$OPTARG
 	    ;;
 	d)  html2sf_extra_args="-d $OPTARG $html2sf_extra_args"
+	    ;;
+	D)  html2sf_extra_args="-D $OPTARG $html2sf_extra_args"
 	    ;;
 	v)  verbose=1
 	    ;;
