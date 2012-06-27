@@ -28,6 +28,7 @@ usage() {
 # -a: KNPにおいて省略解析を行う
 # -d: SynGraphのパスを指定する
 # -D: DetectBlocksのパスを指定する
+# -t: tmp_dirを指定する
 
 # Change this for SynGraph annotation
 syngraph_home=$HOME/cvs/SynGraph
@@ -35,6 +36,7 @@ syndb_path=$syngraph_home/syndb/`uname -m`
 detectblocks_home=$HOME/cvs/DetectBlocks
 
 base_dir=`dirname $0`
+tmp_dir=/tmp/$USER/html2sf_tmp.$$
 
 extract_std_args="--checkzyoshi --checkjapanese --checkencoding"
 extract_args=
@@ -103,7 +105,7 @@ do
 	    ;;
 	T)  annotate_blocktype=1
 	    ;;
-	t)  ipsj_metadb=$OPTARG
+	t)  tmp_dir=$OPTARG
 	    ;;
 	F)  file_cmd_filter=1
 	    ;;
@@ -132,7 +134,8 @@ if [ ! -f "$1" ]; then
 fi
 
 f=$1
-base_f=`expr $f : "\(.*\)\.[^\.]*$"`
+base_f_w_org_path=`expr $f : "\(.*\)\.[^\.]*$"`
+base_f=$tmp_dir/`basename $base_f_w_org_path`
 utf8file="$base_f.$$.utf8.html"
 utf8file_w_annotate_blocktype="$utf8file.w.block"
 sentencesfile="$base_f.sentences"
@@ -147,6 +150,7 @@ clean_tmpfiles() {
     if [ ! $save_utf8file -eq 1 ]; then
 	rm -f $utf8file
     fi
+    rm -rf $tmp_dir
 }
 
 trap 'clean_tmpfiles; exit 1' 1 2 3 15
@@ -156,7 +160,7 @@ if [ $file_cmd_filter -eq 1 ]; then
     file $f | grep text > /dev/null
     if [ $? -eq 1 ]; then
 	echo "ERROR: $f is *NOT* a text file." 1>&2
-	exit
+	exit 1
     fi
 fi
 
@@ -178,7 +182,11 @@ fi
 lnum=`wc -l $f | awk '{print $1}'`
 if [ $lnum -gt 5000 ]; then
     echo "ERROR: $f has too much lines ($lnum)." 1>&2
-    exit
+    exit 1
+fi
+
+if [ ! -d $tmp_dir ]; then
+    mkdir -p $tmp_dir
 fi
 
 # 英語以外はutf8変換
@@ -200,7 +208,7 @@ else
     if [ $? -ne 0 ]; then
 	echo "$f - UTF-8 変換で失敗しました" 1>&2
 	rm -f $utf8file
-	exit
+	exit 1
     fi
 fi
 
@@ -224,19 +232,11 @@ perl -I $base_dir/perl $base_dir/scripts/set-offset-and-length.perl -html $utf8f
 # 助詞のチェックで日本語ページとは判定されなかったもの
 if [ ! -s $xmlfile1 ]; then
     echo "$f - 日本語ページではありません" 1>&2
-    rm -f $utf8file
-    rm -f $utf8file_w_annotate_blocktype
-    rm -f $xmlfile0
-    rm -f $xmlfile1
-    exit
+    clean_tmpfiles
+    exit 1
 fi
 
-if [ -z $ipsj_metadb ]; then
-    cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
-else
-    file2id=`grep file2id= $configfile | grep -v \# | cut -f 2 -d =`
-    perl $base_dir/scripts/ipsj-embed-metadata.perl -cdb $ipsj_metadb -file $xmlfile1 -file2id $file2id | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
-fi
+cat $xmlfile1 | perl -I $base_dir/perl $base_dir/scripts/format-www-xml.perl $formatwww_args > $rawfile
 
 if [ -n "$annotation" ]; then
 
