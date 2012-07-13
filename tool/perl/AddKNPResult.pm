@@ -9,8 +9,6 @@ use strict;
 use Error qw(:try);
 use Data::Dumper;
 
-binmode(STDERR, ':encoding(euc-jp)');
-
 our %pf_order = (id => 0, head => 1, category => 2, feature => 3, dpndtype => 4); # print order of phrase attributes
 our %wf_order = (id => 0, str => 1, lem => 2, read => 3, pos => 4, repname => 5, conj => 6, feature => 99); # print order of word attributes
 our %synnodesf_order = (head => 0, phraseid => 1);
