@@ -206,9 +206,9 @@ else
     fi
     # 文字コードが推定できないなどの理由でutf8化されたページが得られない場合は終了
     if [ $? -ne 0 ]; then
-	echo "$f - UTF-8 変換で失敗しました" 1>&2
-	rm -f $utf8file
-	exit 1
+	echo "$f - UTF-8 変換で失敗しました (強制的にUTF-8と判断しました)" 1>&2
+	# 強制的にutf8と判断する
+	perl -CIOE -I $base_dir/perl $base_dir/scripts/to_utf8.perl -force $f > $utf8file
     fi
 fi
 
