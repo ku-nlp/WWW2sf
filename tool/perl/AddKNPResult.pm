@@ -13,6 +13,7 @@ our %pf_order = (id => 0, head => 1, category => 2, feature => 3, dpndtype => 4)
 our %wf_order = (id => 0, str => 1, lem => 2, read => 3, pos => 4, repname => 5, conj => 6, feature => 99); # print order of word attributes
 our %synnodesf_order = (head => 0, phraseid => 1);
 our %synnodef_order = (wordid => 0, synid => 1, score => 2);
+our %case_map = ('ガ' => 'ga', 'ヲ' => 'wo', 'ニ' => 'ni', 'カラ' => 'kara', 'ヘ' => 'he', 'ヨリ' => 'yori', 'ト' => 'to', 'デ' => 'de', 'ノ' => 'no', 'ガ２' => 'ga2');
 
 sub new {
     my ($clazz, $opt) = @_;
@@ -233,7 +234,16 @@ sub Annotation2XMLforKNP {
     my ($this, $writer, $result, $annotation_node) = @_;
 
     my $version = $result->version;
-    $annotation_node->setAttribute('tool', "KNP:$version");
+
+    my $JUMAN_tool_node = $writer->createElement('Annotation');
+    $JUMAN_tool_node->setAttribute('tool', 'JUMAN');
+    $JUMAN_tool_node->setAttribute('version', '7.0'); # とりあえず
+    $annotation_node->appendChild($JUMAN_tool_node);
+
+    my $KNP_tool_node = $writer->createElement('Annotation');
+    $KNP_tool_node->setAttribute('tool', 'KNP');
+    $KNP_tool_node->setAttribute('version', $version);
+    $annotation_node->appendChild($KNP_tool_node);
 
     my ($prob) = ($result->comment =~ /SCORE:([\-\d\.]+)/);
     $annotation_node->setAttribute('score', $prob);
@@ -241,24 +251,34 @@ sub Annotation2XMLforKNP {
     my $abs_wnum = 0;
     my $pnum = 0;
 
+    my %head_id;
+    for my $tag ($result->tag) {
+	for my $mrph (reverse $tag->mrph) {
+	    if ($mrph->fstring =~ /<(?:準)?内容語>/) {
+		$head_id{$tag->id} = $mrph->id;
+		last;
+	    }
+	}
+    }
+
     for my $bnst ($result->bnst) {
-	my @tags = $bnst->tag_list;
+	my @tags = $this->{opt}{bnst} ? ( $bnst ) : $bnst->tag_list;
 	my $bnst_end_pnum = $pnum + @tags - 1;
 	for my $tag_num (0 .. @tags - 1) {
 	    my $bnst_start_flag = 1 if $tag_num == 0;
 	    my $tag = $tags[$tag_num];
 	    my (%pf);
 
-	    $pf{id} = $pnum;
+	    $pf{id} = 'c' . $pnum;
 
 	    # 係り先
 	    if ($tag->parent) {
-		$pf{head} = $tag->parent->id;
-		$pf{dpndtype} = $tag->dpndtype;
+		$pf{head} = 'c' . $tag->parent->id;
+		$pf{type} = $tag->dpndtype;
 	    }
 	    else {
-		$pf{head} = -1;
-		$pf{dpndtype} = 'D';
+		$pf{head} = 'c' . '-1';
+		$pf{type} = 'D';
 	    }
 
 	    # feature processing
@@ -284,22 +304,47 @@ sub Annotation2XMLforKNP {
 
 	    $pf{feature} .= '...' if $this->{opt}{filter_fstring};
 
-	    my $phrase_node = $writer->createElement('phrase');
+	    my $phrase_node = $writer->createElement('Chunk');
 	    for my $key (sort {$pf_order{$a} <=> $pf_order{$b}} keys %pf) {
 		$phrase_node->setAttribute($key, $pf{$key});
 	    }
 
  	    # synnode
 	    my %synnode;
- 	    for my $synnode ($tag->synnode) {
-		my %synnode_f;
-		my $word_id = $synnode->tagid; # 要修正
-		my $last_word_id = (split(',', $word_id))[-1]; # 最後の単語idにsynnodeを付与する
-		$synnode_f{synid} = $synnode->synid;
-		$synnode_f{score} = $synnode->score;
-		$synnode_f{wordid} = $word_id;
+	    if (!$this->{opt}{bnst}) { 
+		for my $synnode ($tag->synnode) {
+		    my %synnode_f;
+		    my $word_id = $synnode->tagid; # 要修正
+		    my $last_word_id = (split(',', $word_id))[-1]; # 最後の単語idにsynnodeを付与する
+		    $synnode_f{synid} = $synnode->synid;
+		    $synnode_f{score} = $synnode->score;
+		    # 例: t0 t0,t1など
+		    my @out_word_ids;
+		    for my $word_id (split(',', $word_id)) {
+			push @out_word_ids, 't' . $word_id;
+		    }
+		    $synnode_f{wordid} = join(',', @out_word_ids);
 
-		push @{$synnode{$last_word_id}}, { word_id => $word_id, f => \%synnode_f };
+		    push @{$synnode{$last_word_id}}, { f => \%synnode_f };
+		}
+	    }
+	    # 格解析結果
+	    # 見る:動80:ガ/E/不特定:人/-/-/-;ヲ/C/出来上がり/2/0/tsubame00-0000000100-12-5;外の関係/U/-/-/-/-;ノ/U/-/-/-/-
+	    my ($case_analysis_result_string, $tag_id) = $this->GetCaseAnalysisResultString($fstring, $bnst);
+	    my %case_analysis_result;
+
+	    if ($case_analysis_result_string) {
+		my $case_components = (split(':', $case_analysis_result_string))[2];
+		for my $cc (split(';', $case_components)) {
+		    my ($case, $type, $midasi, $tid, $sid, $id) = split('/', $cc);
+		    next if $tid eq '-';
+		    if (defined $case_map{$case}) {
+			$case_analysis_result{$case_map{$case}} = $tid;
+		    }
+		    else {
+			print STDERR "Undefined Case Map: $case\n";
+		    }
+		}
 	    }
 
 	    # word
@@ -338,23 +383,36 @@ sub Annotation2XMLforKNP {
 		    $content_p = 0;
 		}
 
-		my %wf = (str => $mrph->midasi,
-			  lem => $mrph->genkei,
+		my %wf = (surf => $mrph->midasi,
+			  orig => $mrph->genkei,
 			  read => $mrph->yomi,
 			  repname => $rep, 
-			  pos => $mrph->hinsi,
+			  pos1 => $mrph->hinsi,
 			  conj => $conj,
-			  id => $abs_wnum,
+			  id => 't' . $abs_wnum,
 			  content_p => $content_p,
 			 );
-		$wf{pos} .= ':' . $mrph->bunrui if ($mrph->bunrui ne '*');
+		$wf{pos2} .= $mrph->bunrui if ($mrph->bunrui ne '*');
+		$wf{pos3} .= $mrph->katuyou1 if ($mrph->katuyou1 ne '*');
+		$wf{pos4} .= $mrph->katuyou2 if ($mrph->katuyou2 ne '*');
 
 		$wf{feature} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) . '...' : $fstring;
 
-		my $word_node = $writer->createElement('word');
+		my $word_node = $writer->createElement('Token');
 		for my $key (sort {$wf_order{$a} <=> $wf_order{$b}} keys %wf) {
 		    $word_node->setAttribute($key, $wf{$key});
 		}
+
+		# 格解析結果の付与
+		# 要修正
+		if ($content_p && %case_analysis_result && ($this->{opt}{bnst} && $head_id{$tag_id} eq $abs_wnum || !$this->{opt}{bnst})) {
+		    my $predicate_node = $writer->createElement('Predicate');
+		    for my $case (keys %case_analysis_result) {
+			$predicate_node->setAttribute($case, $head_id{$case_analysis_result{$case}});
+		    }
+		    $word_node->appendChild($predicate_node);
+		}
+
 		for my $synnode (@{$synnode{$abs_wnum}}) {
 		    my $syn_node = $writer->createElement('synnode');
 		    for my $key (sort {$synnodef_order{$a} <=> $synnodef_order{$b}} keys %{$synnode->{f}}) {
@@ -373,6 +431,23 @@ sub Annotation2XMLforKNP {
     }
 
     return $annotation_node;
+}
+
+sub GetCaseAnalysisResultString {
+    my ($this, $fstring, $bnst) = @_;
+
+    if ($this->{opt}{bnst}) {
+	for my $tag (reverse $bnst->tag) {
+	    if ($tag->fstring =~ /<格解析結果:([^\s\"\>]+)/) {
+		return ($1, $tag->id);
+	    }
+	}
+    }
+    else {
+	if ($fstring =~ /<格解析結果:([^\s\"\>]+)/) {
+	    return $1;
+	}
+    }
 }
 
 # CoNLL結果をXML化する
