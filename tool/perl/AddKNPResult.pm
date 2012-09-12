@@ -231,7 +231,7 @@ sub AddKnpResult {
 
 # KNPオブジェクトをXML化する
 sub Annotation2XMLforKNP {
-    my ($this, $writer, $result, $annotation_node) = @_;
+    my ($this, $writer, $result, $annotation_node, $option) = @_;
 
     my $version = $result->version;
 
@@ -245,8 +245,10 @@ sub Annotation2XMLforKNP {
     $KNP_tool_node->setAttribute('version', $version);
     $annotation_node->appendChild($KNP_tool_node);
 
-    my ($prob) = ($result->comment =~ /SCORE:([\-\d\.]+)/);
-    $annotation_node->setAttribute('score', $prob);
+    if (!$option->{simple}) {
+	my ($prob) = ($result->comment =~ /SCORE:([\-\d\.]+)/);
+	$annotation_node->setAttribute('score', $prob);
+    }
 
     my $abs_wnum = 0;
     my $pnum = 0;
@@ -284,25 +286,27 @@ sub Annotation2XMLforKNP {
 	    # feature processing
 	    my $fstring = $tag->fstring;
 
-	    # phrase category
-	    # 判定詞は 用言:判
-	    if ($fstring =~ s/<(用言[^>]*)>//) {
-		$pf{category} = $1;
-	    }
-	    elsif ($fstring =~ s/<(体言[^>]*)>//) {
-		$pf{category} = $1;
-	    }
-	    else {
-		$pf{category} = 'NONE';
-	    }
+	    if (!$option->{simple}) {
+		# phrase category
+		# 判定詞は 用言:判
+		if ($fstring =~ s/<(用言[^>]*)>//) {
+		    $pf{category} = $1;
+		}
+		elsif ($fstring =~ s/<(体言[^>]*)>//) {
+		    $pf{category} = $1;
+		}
+		else {
+		    $pf{category} = 'NONE';
+		}
 
-	    # feature残り
-	    $pf{feature} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) : $fstring;
+		# feature残り
+		$pf{feature} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) : $fstring;
 
-	    # 文節
-	    $pf{feature} .= sprintf("<文節:%d-%d>", $pnum, $bnst_end_pnum) if $bnst_start_flag;
+		# 文節
+		$pf{feature} .= sprintf("<文節:%d-%d>", $pnum, $bnst_end_pnum) if $bnst_start_flag;
 
-	    $pf{feature} .= '...' if $this->{opt}{filter_fstring};
+		$pf{feature} .= '...' if $this->{opt}{filter_fstring};
+	    }
 
 	    my $phrase_node = $writer->createElement('Chunk');
 	    for my $key (sort {$pf_order{$a} <=> $pf_order{$b}} keys %pf) {
@@ -341,9 +345,6 @@ sub Annotation2XMLforKNP {
 		    if (defined $case_map{$case}) {
 			$case_analysis_result{$case_map{$case}} = $tid;
 		    }
-		    else {
-			print STDERR "Undefined Case Map: $case\n";
-		    }
 		}
 	    }
 
@@ -361,7 +362,6 @@ sub Annotation2XMLforKNP {
 		    $rep = $1;
 		}
 		else {
-		    # $lem = $mrph->genkei . '/' . $mrph->yomi;
 		    $rep = $mrph->genkei . '/' . $mrph->genkei;
 		}
 
@@ -388,15 +388,17 @@ sub Annotation2XMLforKNP {
 			  read => $mrph->yomi,
 			  repname => $rep, 
 			  pos1 => $mrph->hinsi,
-			  conj => $conj,
 			  id => 't' . $abs_wnum,
-			  content_p => $content_p,
 			 );
+		if (!$option->{simple}) {
+		    $wf{content_p} = $content_p;
+		    $wf{conj} = $conj;
+		    $wf{feature} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) . '...' : $fstring;
+		}
+
 		$wf{pos2} .= $mrph->bunrui if ($mrph->bunrui ne '*');
 		$wf{pos3} .= $mrph->katuyou1 if ($mrph->katuyou1 ne '*');
 		$wf{pos4} .= $mrph->katuyou2 if ($mrph->katuyou2 ne '*');
-
-		$wf{feature} = $this->{opt}{filter_fstring} ? &filter_fstring($fstring) . '...' : $fstring;
 
 		my $word_node = $writer->createElement('Token');
 		for my $key (sort {$wf_order{$a} <=> $wf_order{$b}} keys %wf) {
@@ -404,7 +406,6 @@ sub Annotation2XMLforKNP {
 		}
 
 		# 格解析結果の付与
-		# 要修正
 		if ($content_p && %case_analysis_result && ($this->{opt}{bnst} && $head_id{$tag_id} eq $abs_wnum || !$this->{opt}{bnst})) {
 		    my $predicate_node = $writer->createElement('Predicate');
 		    for my $case (keys %case_analysis_result) {
@@ -419,7 +420,6 @@ sub Annotation2XMLforKNP {
 			$syn_node->setAttribute($key, $synnode->{f}{$key});
 		    }
 		    $word_node->appendChild($syn_node);
-		    # $writer->emptyTag('synnode', map({$_ => $synnode->{f}{$_}} sort {$synnodef_order{$a} <=> $synnodef_order{$b}} keys %{$synnode->{f}}));
 		}
 
 		$phrase_node->appendChild($word_node);
