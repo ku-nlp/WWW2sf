@@ -22,7 +22,7 @@ ref_time=0
 base_dir=`dirname $0`
 
 flag_of_make_urldb=0
-while getopts ajkshS:c:uUzOTFt:C:eExn:d:D:vf OPT
+while getopts ajkshS:c:uUzOTFt:C:eExn:d:D:vfr OPT
 do
     case $OPT in
 	a)  html2sf_extra_args="-a $html2sf_extra_args"
@@ -67,6 +67,8 @@ do
 	D)  html2sf_extra_args="-D $OPTARG $html2sf_extra_args"
 	    ;;
 	f)  html2sf_extra_args="-f $html2sf_extra_args"
+	    ;;
+	r)  html2sf_extra_args="-r $html2sf_extra_args"
 	    ;;
 	v)  verbose=1
 	    ;;
@@ -115,6 +117,9 @@ do
 	if [ ! -s $xdir/$base_f.xml ]; then
             rm -f $xdir/$base_f.xml
 	fi
+    else
+	# 空ファイルを作る
+	: > $xdir/$base_f.xml
     fi
 
     if [ "$ext" = ".gz" ]; then

@@ -29,6 +29,7 @@ usage() {
 # -d: SynGraphのパスを指定する
 # -D: DetectBlocksのパスを指定する
 # -t: tmp_dirを指定する
+# -r: 入力ファイルを厳しくチェックする (fileコマンドでテキスト、5000行以下)
 
 # Change this for SynGraph annotation
 syngraph_home=$HOME/cvs/SynGraph
@@ -53,8 +54,9 @@ language=japanese
 ipsj_metadb=
 configfile=$base_dir/conf/configure
 infofile=
+strict_check_flag=0
 
-while getopts abfjkspPhBwc:umMUOTFt:C:eExi:d:D: OPT
+while getopts abfjkspPhBwc:umMUOTFt:C:eExi:d:D:r OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
@@ -118,6 +120,9 @@ do
 	    ;;
 	D)  detectblocks_home=$OPTARG
 	    ;;
+	r)  strict_check_flag=1
+	    file_cmd_filter=1
+	    ;;
         h)  usage
             ;;
     esac
@@ -179,10 +184,12 @@ if [ -n "$infofile" -a -f "$infofile" ]; then
 fi
 
 # 入力ファイルの行数が5000行を超える場合は怪しいファイルと見なす
-lnum=`wc -l $f | awk '{print $1}'`
-if [ $lnum -gt 5000 ]; then
-    echo "ERROR: $f has too much lines ($lnum)." 1>&2
-    exit 1
+if [ $strict_check_flag -eq 1 ]; then
+    lnum=`wc -l $f | awk '{print $1}'`
+    if [ $lnum -gt 5000 ]; then
+	echo "ERROR: $f has too many lines ($lnum)." 1>&2
+	exit 1
+    fi
 fi
 
 if [ ! -d $tmp_dir ]; then
