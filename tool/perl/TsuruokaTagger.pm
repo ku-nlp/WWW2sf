@@ -13,6 +13,7 @@ use Cwd;
 
 our $TaggerDir = "$ENV{HOME}/share/tool/postagger-1.0";
 our $TaggerCommand = 'tagger';
+our %TaggerCommandArguments;
 
 sub new {
     my ($this, $opt) = @_;
@@ -22,10 +23,13 @@ sub new {
     $TaggerCommand = $opt->{tagger_command} if ($opt->{tagger_command});
 
     my $TaggerCommandFullPath = "$TaggerDir/$TaggerCommand";
+    if ($TaggerCommand eq 'lapos') { # laposの場合はモデルの指定
+	%TaggerCommandArguments = ('-m' => 'model_wsj02-21');
+    }
 
     my $cwd = getcwd;
     chdir($TaggerDir);
-    my $pid = open3(\*WTR, \*RDR, \*ERR, $TaggerCommandFullPath);
+    my $pid = open3(\*WTR, \*RDR, \*ERR, $TaggerCommandFullPath, %TaggerCommandArguments);
     $this = {opt => $opt, WTR => \*WTR, RDR => \*RDR, ERR => \*ERR, pid => $pid, lemmatizer => undef};
     $this->{RDR}->autoflush(1);
     $this->{WTR}->autoflush(1);
