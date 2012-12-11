@@ -12,18 +12,20 @@ use FileHandle;
 use Cwd;
 
 our $TaggerDir = "$ENV{HOME}/share/tool/postagger-1.0";
-our $TaggerCommand = "$TaggerDir/tagger";
+our $TaggerCommand = 'tagger';
 
 sub new {
     my ($this, $opt) = @_;
 
     # Tagger がインストールされているディレクトリの変更
     $TaggerDir = $opt->{tagger_dir} if ($opt->{tagger_dir});
-    $TaggerCommand = "$TaggerDir/tagger";
+    $TaggerCommand = $opt->{tagger_command} if ($opt->{tagger_command});
+
+    my $TaggerCommandFullPath = "$TaggerDir/$TaggerCommand";
 
     my $cwd = getcwd;
     chdir($TaggerDir);
-    my $pid = open3(\*WTR, \*RDR, \*ERR, $TaggerCommand);
+    my $pid = open3(\*WTR, \*RDR, \*ERR, $TaggerCommandFullPath);
     $this = {opt => $opt, WTR => \*WTR, RDR => \*RDR, ERR => \*ERR, pid => $pid, lemmatizer => undef};
     $this->{RDR}->autoflush(1);
     $this->{WTR}->autoflush(1);
