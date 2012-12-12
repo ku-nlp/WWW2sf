@@ -24,7 +24,7 @@ sub new {
 
     my $TaggerCommandFullPath = "$TaggerDir/$TaggerCommand";
     if ($TaggerCommand eq 'lapos') { # laposの場合はモデルの指定
-	%TaggerCommandArguments = ('-m' => 'model_wsj02-21');
+	%TaggerCommandArguments = ('-m' => 'model_wsj02-21', '-t' => undef);
     }
 
     my $cwd = getcwd;
