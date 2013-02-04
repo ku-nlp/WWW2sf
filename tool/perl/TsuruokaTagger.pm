@@ -73,13 +73,18 @@ sub tagged2conll {
     my $buf;
     my $i = 1;
     for my $pair (split(' ', $str)) {
-	my ($word, $pos) = split('/', $pair, 2);
-	$pos = &change_parenthesis_pos($pos);
-	my $h = 0;
-	my $rel = '_';
-	my $lemma = $this->{opt}{lemmatize} ? $this->lemmatize($word, $pos) : '_';
-	$buf .= sprintf("%d\t%s\t%s\t%s\t%s\t\_\t%d\t%s\t\_\t\_\n", $i, $word, $lemma, $pos, $pos, $h, $rel);
-	$i++;
+	if ($pair =~ m|^(.+)/([^/]+)$|) {
+	    my ($word, $pos) = ($1, $2);
+	    $pos = &change_parenthesis_pos($pos);
+	    my $h = 0;
+	    my $rel = '_';
+	    my $lemma = $this->{opt}{lemmatize} ? $this->lemmatize($word, $pos) : '_';
+	    $buf .= sprintf("%d\t%s\t%s\t%s\t%s\t\_\t%d\t%s\t\_\t\_\n", $i, $word, $lemma, $pos, $pos, $h, $rel);
+	    $i++;
+	}
+	else {
+	    warn("Invalid pair: $pair\n");
+	}
     }
     $buf .= "\n";
 
