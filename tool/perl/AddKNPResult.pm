@@ -8,11 +8,8 @@ use utf8;
 use strict;
 use Error qw(:try);
 use Data::Dumper;
+use StandardFormatLib;
 
-our %pf_order = (id => 0, head => 1, category => 2, feature => 3, dpndtype => 4); # print order of phrase attributes
-our %wf_order = (id => 0, str => 1, lem => 2, read => 3, pos => 4, repname => 5, conj => 6, feature => 99); # print order of word attributes
-our %synnodesf_order = (head => 0, phraseid => 1);
-our %synnodef_order = (wordid => 0, synid => 1, score => 2);
 our %case_map = ('ガ' => 'ga', 'ヲ' => 'wo', 'ニ' => 'ni', 'カラ' => 'kara', 'ヘ' => 'he', 'ヨリ' => 'yori', 'ト' => 'to', 'デ' => 'de', 'ノ' => 'no', 'ガ２' => 'ga2');
 
 sub new {
@@ -35,6 +32,7 @@ sub new {
 	&createKnpObject($this);
 	&createSynGraphObject($this);
 	&createMaltParserObject($this);
+	&createEnjuObject($this);
     }
 
     if ($this->{opt}{use_knpresult_cache}) {
@@ -108,9 +106,20 @@ sub createSynGraphObject {
 sub createMaltParserObject {
     my ($this) = @_;
 
-    if ($this->{opt}{english}) {
+    if ($this->{opt}{english} && !$this->{opt}{enju}) {
 	require MaltParser;
-	$this->{maltparser} = new MaltParser({lemmatize => 1});
+	$this->{english_parser} = new MaltParser({lemmatize => 1, output_sf => 1, 
+						  parser_dir => $this->{opt}{english_parser_dir}, 
+						  java_command => $this->{opt}{javacmd}});
+    }
+}
+
+sub createEnjuObject {
+    my ($this) = @_;
+
+    if ($this->{opt}{enju}) {
+	require EnjuWrapper;
+	$this->{english_parser} = new EnjuWrapper(parser_dir => $this->{opt}{english_parser_dir});
     }
 }
 
@@ -179,7 +188,11 @@ sub AddKnpResult {
 			    elsif ($this->{opt}{knp}) {
 				$this->AppendNode($doc, $sentence, $text, 'Knp', $jap_sent_flag);
 			    }
-			    # 英語
+			    # 英語 (Enju)
+			    elsif ($this->{opt}{enju}) {
+				$this->AppendNode($doc, $sentence, $text, 'Enju', $jap_sent_flag);
+			    }
+			    # 英語: CoNLL format
 			    elsif ($this->{opt}{english}) {
 				$this->AppendNode($doc, $sentence, $text, 'CoNLL', $jap_sent_flag);
 			    }
@@ -309,7 +322,7 @@ sub Annotation2XMLforKNP {
 	    }
 
 	    my $phrase_node = $writer->createElement('Chunk');
-	    for my $key (sort {$pf_order{$a} <=> $pf_order{$b}} keys %pf) {
+	    for my $key (sort {$StandardFormatLib::pf_order{$a} <=> $StandardFormatLib::pf_order{$b}} keys %pf) {
 		$phrase_node->setAttribute($key, $pf{$key});
 	    }
 
@@ -401,7 +414,7 @@ sub Annotation2XMLforKNP {
 		$wf{pos4} .= $mrph->katuyou2 if ($mrph->katuyou2 ne '*');
 
 		my $word_node = $writer->createElement('Token');
-		for my $key (sort {$wf_order{$a} <=> $wf_order{$b}} keys %wf) {
+		for my $key (sort {$StandardFormatLib::wf_order{$a} <=> $StandardFormatLib::wf_order{$b}} keys %wf) {
 		    $word_node->setAttribute($key, $wf{$key});
 		}
 
@@ -416,7 +429,7 @@ sub Annotation2XMLforKNP {
 
 		for my $synnode (@{$synnode{$abs_wnum}}) {
 		    my $syn_node = $writer->createElement('synnode');
-		    for my $key (sort {$synnodef_order{$a} <=> $synnodef_order{$b}} keys %{$synnode->{f}}) {
+		    for my $key (sort {$StandardFormatLib::synnodef_order{$a} <=> $StandardFormatLib::synnodef_order{$b}} keys %{$synnode->{f}}) {
 			$syn_node->setAttribute($key, $synnode->{f}{$key});
 		    }
 		    $word_node->appendChild($syn_node);
@@ -450,32 +463,19 @@ sub GetCaseAnalysisResultString {
     }
 }
 
-# CoNLL結果をXML化する
-sub Annotation2XMLforCoNLL {
-    my ($this, $writer, $result, $annotation_node) = @_;
+# XML結果をXML化する
+sub Annotation2XMLforXML {
+    my ($this, $writer, $result, $annotation_node, $type) = @_;
 
-    $annotation_node->setAttribute('tool', "CoNLL");
+    $annotation_node->setAttribute('tool', $type);
 
-    for my $line (split("\n", $result)) {
-	last if $line =~ /^EOS/;
-	my @line = split(/\t/, $line);
-	my %pf = (id => $line[0], head => $line[6], dpndtype => $line[7]);
-	my %wf = (id => $line[0], str => $line[1], lem => $line[2], pos => $line[3]);
+    require XML::LibXML;
+    my $parser = new XML::LibXML;
+    my $doc = $parser->parse_string($result);
 
-	my $phrase_node = $writer->createElement('phrase');
-	for my $key (sort {$pf_order{$a} <=> $pf_order{$b}} keys %pf) {
-	    $phrase_node->setAttribute($key, $pf{$key});
-	}
-
-	my $word_node = $writer->createElement('word');
-	for my $key (sort {$wf_order{$a} <=> $wf_order{$b}} keys %wf) {
-	    $word_node->setAttribute($key, $wf{$key});
-	}
-
-	$phrase_node->appendChild($word_node);
+    for my $phrase_node ($doc->getElementsByTagName('Chunk')) {
 	$annotation_node->appendChild($phrase_node);
     }
-
     return $annotation_node;
 }
 
@@ -508,8 +508,8 @@ sub AppendNode {
 	if ($type eq 'Juman') {
 	    die "Embedding the result of JUMAN in XML is not supported.\n";
 	}
-	elsif ($type eq 'CoNLL') {
-	    $this->Annotation2XMLforCoNLL($doc, $result_string, $newchild); # Annotation($newchild)を渡して中で追加
+	elsif ($type eq 'CoNLL' || $type eq 'Enju') {
+	    $this->Annotation2XMLforXML($doc, $result_string, $newchild, $type); # Annotation($newchild)を渡して中で追加
 	}
 	else {
 	    if ($result_string) {
@@ -586,9 +586,8 @@ sub linguisticAnalysis {
 	    return;
 	};
     }
-    elsif ($type eq 'CoNLL') { # 英語: CoNLL format
-	$result_string = $this->{maltparser}->analyze($text);
-	$result_string =~ s/\n\n$/\nEOS\n/;
+    elsif ($type eq 'CoNLL' || $type eq 'Enju') { # 英語: CoNLL or Enju
+	$result_string = $this->{english_parser}->analyze($text);
     }
 
     return $result_string;
