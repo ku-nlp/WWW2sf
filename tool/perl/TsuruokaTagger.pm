@@ -52,11 +52,18 @@ sub analyze {
     my ($this, $str) = @_;
 
     return undef if !$str or $str =~ /^\s*$/;
-    $str .= "\n" unless $str =~ /\n$/;
 
+    my $buf;
+    if ($str =~ /^(\#+)([^\#]+)/) { # '#' at BOS is not analyzed
+	my $sharps = $1;
+	$str = $2;
+	$buf = '#/# ' x length($sharps); # make the analysis of #+
+    }
+
+    $str .= "\n" unless $str =~ /\n$/;
     $this->{WTR}->print($str);
 
-    my $buf = $this->{RDR}->getline; # read one line
+    $buf .= $this->{RDR}->getline; # read one line
 
     if (exists($this->{opt}{format}) and lc($this->{opt}{format}) eq 'conll') { # CoNLL format
 	return $this->tagged2conll($buf);
