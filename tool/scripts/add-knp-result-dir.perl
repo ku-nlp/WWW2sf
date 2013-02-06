@@ -236,26 +236,15 @@ foreach my $file (@files) {
 	# 時間内に終了すればタイムアウトの設定を解除
 	alarm 0;
 
-
-	# 解析結果が埋め込まれたXMLデータを取得
-	my $string = $doc->toString();
-
-	# XML-LibXML 1.63以降ではバイト列が返ってくるので、decodeする
-	unless (utf8::is_utf8($string)) {
-	    $string = decode($doc->actualEncoding(), $string);
-	}
-
-
-	my $outfilename = $opt{outdir} . '/' . basename($file);
-	$outfilename =~ s/\.gz$//;
-	open F, '>:encoding(utf8)', $outfilename or die;
-	print F $string;
-	close F;
+	# 結果のXMLを書き込み
+	&writeFile($doc, $file);
 
 	syswrite LOG, "success\n" unless $opt{nologfile};
 	print STDERR "$file is success\n" if ($opt{debug});
 	$count++;
     } catch Error with {
+	&writeFile($doc, $file);
+
 	syswrite LOG, "timeout\n";
 	my $err = shift;
 	my $file = $err->{-file};
@@ -268,6 +257,24 @@ foreach my $file (@files) {
 print STDERR "\n" if $opt{print_progress};
 print LOG "finish.\n" unless $opt{nologfile};
 close (LOG) unless $opt{nologfile};
+
+sub writeFile {
+    my ($doc, $file) = @_;
+
+    # 解析結果が埋め込まれたXMLデータを取得
+    my $string = $doc->toString();
+
+    # XML-LibXML 1.63以降ではバイト列が返ってくるので、decodeする
+    unless (utf8::is_utf8($string)) {
+	$string = decode($doc->actualEncoding(), $string);
+    }
+
+    my $outfilename = $opt{outdir} . '/' . basename($file);
+    $outfilename =~ s/\.gz$//;
+    open F, '>:encoding(utf8)', $outfilename or die;
+    print F $string;
+    close F;
+}
 
 sub findFiles {
     my ($files, $dir) = @_;
