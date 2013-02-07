@@ -82,7 +82,7 @@ sub analyze_from_conll {
 sub analyze {
     my ($this, $str) = @_;
 
-    $this->{tagger} = new TsuruokaTagger({format => 'conll', lemmatize => $this->{opt}{lemmatize}}) unless defined($this->{tagger});
+    $this->{tagger} = new TsuruokaTagger({format => 'conll', lemmatize => $this->{opt}{lemmatize}, tagger_dir => $this->{opt}{tagger_dir}}) unless defined($this->{tagger});
 
     my $tagged_result = $this->{tagger}->analyze($str);
     return undef unless $tagged_result;
