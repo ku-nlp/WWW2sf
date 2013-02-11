@@ -13,9 +13,12 @@ use FileHandle;
 use TsuruokaTagger;
 
 our $MEMsize = '1024m';
-our $ParserDir = "$ENV{HOME}/share/tool/malt-1.3.1";
-our $JavaCommand = "$ENV{HOME}/share/tool/jdk1.6.0_17/bin/java";
-our $ParserCommand = "$JavaCommand -Xmx$MEMsize -jar $ParserDir/malt.jar -w $ParserDir -c engmalt -m parse";
+our $ParserDir = "$ENV{HOME}/share/tool/maltparser-1.7.2";
+our $JavaCommand = "$ENV{HOME}/share/tool/jdk1.6.0_29/bin/java";
+our $ParserJarFile = 'maltparser-1.7.2.jar';
+our $ParserModelFile = 'engmalt.linear-1.7.mco';
+our $ParserCommand;
+our $ParserOptions;
 
 sub new {
     my ($this, $opt) = @_;
@@ -24,7 +27,25 @@ sub new {
     $MEMsize     = $opt->{mem_size}     if ($opt->{mem_size});
     $ParserDir   = $opt->{parser_dir}   if ($opt->{parser_dir});
     $JavaCommand = $opt->{java_command} if ($opt->{java_command});
-    $ParserCommand = "$JavaCommand -Xmx$MEMsize -jar $ParserDir/malt.jar -w $ParserDir -c engmalt -m parse";
+    $ParserJarFile = $opt->{parser_jar_file} if ($opt->{parser_jar_file});
+    $ParserModelFile = $opt->{parser_model_file} if ($opt->{parser_model_file});
+    if ($opt->{parser_options}) {
+	$ParserOptions = $opt->{parser_options};
+    }
+    else {
+	if (! -f "$ParserDir/$ParserJarFile") {
+	    die("Cannot find: $ParserDir/$ParserJarFile\n");
+	}
+	if (! -f "$ParserDir/$ParserModelFile") {
+	    die("Cannot find: $ParserDir/$ParserModelFile\n");
+	}
+	$ParserOptions = "-jar $ParserDir/$ParserJarFile -w $ParserDir -c $ParserModelFile -m parse";
+    }
+    $ParserCommand = "$JavaCommand -Xmx$MEMsize $ParserOptions";
+
+    if (! -x $JavaCommand) {
+	die("Cannot execute: $JavaCommand\n");
+    }
 
     # delete the directory generated when an error occurred
     if (-d "$ParserDir/engmalt") {
