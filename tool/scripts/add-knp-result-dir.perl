@@ -217,7 +217,10 @@ foreach my $file (@files) {
 	my $err = shift;
 	printf STDERR ("[SKIP] An exception was detected in %s (file: %s, line: %s, msg; %s)\n", $file, $err->{-file}, $err->{-line}, $err->{-text});
     };
-    next unless ($doc);
+    unless ($doc) {
+	&writeFile(undef, $file); # 空ファイル出力
+	next;
+    }
 
     try {
 	# タイムアウトの設定
@@ -260,13 +263,16 @@ close (LOG) unless $opt{nologfile};
 
 sub writeFile {
     my ($doc, $file) = @_;
+    my $string;
 
-    # 解析結果が埋め込まれたXMLデータを取得
-    my $string = $doc->toString();
+    if ($doc) {
+	# 解析結果が埋め込まれたXMLデータを取得
+	$string = $doc->toString();
 
-    # XML-LibXML 1.63以降ではバイト列が返ってくるので、decodeする
-    unless (utf8::is_utf8($string)) {
-	$string = decode($doc->actualEncoding(), $string);
+	# XML-LibXML 1.63以降ではバイト列が返ってくるので、decodeする
+	unless (utf8::is_utf8($string)) {
+	    $string = decode($doc->actualEncoding(), $string);
+	}
     }
 
     my $outfilename = $opt{outdir} . '/' . basename($file);
