@@ -6,10 +6,12 @@ package TsuruokaTagger;
 # http://www-tsujii.is.s.u-tokyo.ac.jp/~tsuruoka/postagger/
 
 use strict;
+use utf8;
 use warnings;
 use IPC::Open3;
 use FileHandle;
 use Cwd;
+use Encode;
 
 our $TaggerDir = "$ENV{HOME}/share/tool/postagger-1.0";
 our $TaggerCommand = 'tagger';
@@ -62,6 +64,7 @@ sub analyze {
 
     if ($str) {
 	$str .= "\n" unless $str =~ /\n$/;
+	$str = encode('utf-8', $str);
 	$this->{WTR}->print($str);
 
 	$buf .= $this->{RDR}->getline; # read one line
