@@ -351,7 +351,7 @@ sub Annotation2XMLforKNP {
 	    my %case_analysis_result;
 
 	    if ($case_analysis_result_string) {
-		my $case_components = (split(':', $case_analysis_result_string))[2];
+		my $case_components = (split(':', $case_analysis_result_string, 3))[2];
 		for my $cc (split(';', $case_components)) {
 		    my ($case, $type, $midasi, $tid, $sid, $id) = split('/', $cc);
 		    next if $tid eq '-';
@@ -422,7 +422,7 @@ sub Annotation2XMLforKNP {
 		if ($content_p && %case_analysis_result && ($this->{opt}{bnst} && $head_id{$tag_id} eq $abs_wnum || !$this->{opt}{bnst})) {
 		    my $predicate_node = $writer->createElement('Predicate');
 		    for my $case (keys %case_analysis_result) {
-			$predicate_node->setAttribute($case, $head_id{$case_analysis_result{$case}});
+			$predicate_node->setAttribute($case, 't' . $head_id{$case_analysis_result{$case}});
 		    }
 		    $word_node->appendChild($predicate_node);
 		}
