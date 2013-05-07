@@ -31,8 +31,7 @@ sub new {
 	&createJumanObject($this);
 	&createKnpObject($this);
 	&createSynGraphObject($this);
-	&createMaltParserObject($this);
-	&createEnjuObject($this);
+	&createEnglishParserObject($this);
     }
 
     if ($this->{opt}{use_knpresult_cache}) {
@@ -103,24 +102,28 @@ sub createSynGraphObject {
     }
 }
 
-sub createMaltParserObject {
+sub createEnglishParserObject {
     my ($this) = @_;
 
     if ($this->{opt}{english} && !$this->{opt}{enju}) {
-	require MaltParser;
-	$this->{english_parser} = new MaltParser({lemmatize => 1, output_sf => 1, 
-						  parser_dir => $this->{opt}{english_parser_dir}, 
-						  java_command => $this->{opt}{javacmd}});
+	if ($this->{opt}{english_parser_dir} =~ /stanford-parser/) { # stanford parser is specified in parser dir
+	    require StanfordParser;
+	    $this->{english_parser} = new StanfordParser({lemmatize => 1, output_sf => 1, 
+							  parser_dir => $this->{opt}{english_parser_dir}, 
+							  java_command => $this->{opt}{javacmd}});
+	}
+	else {
+	    require MaltParser;
+	    $this->{english_parser} = new MaltParser({lemmatize => 1, output_sf => 1, 
+						      parser_dir => $this->{opt}{english_parser_dir}, 
+						      java_command => $this->{opt}{javacmd}});
+	}
     }
-}
-
-sub createEnjuObject {
-    my ($this) = @_;
-
-    if ($this->{opt}{enju}) {
+    elsif ($this->{opt}{enju}) {
 	require EnjuWrapper;
 	$this->{english_parser} = new EnjuWrapper(parser_dir => $this->{opt}{english_parser_dir});
     }
+
 }
 
 
