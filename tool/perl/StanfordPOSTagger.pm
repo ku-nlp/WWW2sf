@@ -11,6 +11,7 @@ use warnings;
 use IPC::Open3;
 use FileHandle;
 use Cwd;
+use Tokenize;
 
 our $MEMsize = '300m';
 our $TaggerDir = "$ENV{HOME}/share/tool/stanford-postagger-full-2013-04-04";
@@ -40,12 +41,13 @@ sub new {
 	if (! -f "$TaggerDir/$TaggerModelFile") {
 	    die("Cannot find: $TaggerDir/$TaggerModelFile\n");
 	}
-	$TaggerOptions = "-cp $TaggerDir/$TaggerJarFile edu.stanford.nlp.tagger.maxent.MaxentTagger -model $TaggerDir/$TaggerModelFile";
+	$TaggerOptions = "-cp $TaggerDir/$TaggerJarFile edu.stanford.nlp.tagger.maxent.MaxentTagger -model $TaggerDir/$TaggerModelFile -sentenceDelimiter newline -tokenize false";
     }
     $TaggerCommand = "$JavaCommand -Xmx$MEMsize $TaggerOptions";
 
     my $pid = open3(\*WTR, \*RDR, \*ERR, $TaggerCommand);
-    $this = {opt => $opt, WTR => \*WTR, RDR => \*RDR, ERR => \*ERR, pid => $pid, lemmatizer => undef};
+    $this = {opt => $opt, WTR => \*WTR, RDR => \*RDR, ERR => \*ERR, pid => $pid, lemmatizer => undef, 
+	     tokenizer => new Tokenize};
     $this->{RDR}->autoflush(1);
     $this->{WTR}->autoflush(1);
 
@@ -69,6 +71,7 @@ sub analyze {
 
     my $buf;
     if ($str) {
+	$str = $this->{tokenizer}->tokenize($str); # do tokenize by myself
 	$str .= "\n" unless $str =~ /\n$/;
 	$this->{WTR}->print($str);
 
