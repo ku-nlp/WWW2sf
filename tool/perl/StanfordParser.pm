@@ -8,9 +8,12 @@ package StanfordParser;
 
 use strict;
 use warnings;
+use utf8;
 use File::Path;
 use IPC::Open3;
 use FileHandle;
+use Encode;
+use Tokenize;
 
 our $MEMsize = '600m';
 our $ParserDir = "$ENV{HOME}/share/tool/stanford-parser-2013-04-05";
@@ -36,7 +39,7 @@ sub new {
 	if (! -d $ParserDir) {
 	    die("Cannot find: ParserDir\n");
 	}
-	$ParserOptions = "-cp $ParserDir/$ParserJarFile edu.stanford.nlp.parser.lexparser.LexicalizedParser -outputFormat typedDependencies -sentences newline $ParserModel -";
+	$ParserOptions = "-cp $ParserDir/$ParserJarFile edu.stanford.nlp.parser.lexparser.LexicalizedParser -outputFormat typedDependencies -sentences newline -tokenized -escaper edu.stanford.nlp.process.PTBEscapingProcessor $ParserModel -";
 
     }
     $ParserCommand = "$JavaCommand -Xmx$MEMsize $ParserOptions";
@@ -49,7 +52,8 @@ sub new {
     $opt->{lemmatize} = 1 unless exists($opt->{lemmatize}); # default: turn on lemmatization
 
     my $pid = open3(\*WTR, \*RDR, \*ERR, $ParserCommand);
-    $this = {opt => $opt, WTR => \*WTR, RDR => \*RDR, ERR => \*ERR, pid => $pid, lemmatizer => undef};
+    $this = {opt => $opt, WTR => \*WTR, RDR => \*RDR, ERR => \*ERR, pid => $pid, lemmatizer => undef, 
+	     tokenizer => new Tokenize};
     $this->{RDR}->autoflush(1);
     $this->{WTR}->autoflush(1);
 
@@ -77,7 +81,9 @@ sub analyze {
 
     my $buf;
     if ($str) {
+	$str = $this->{tokenizer}->tokenize($str); # do tokenize by myself
 	$str .= "\n" unless $str =~ /\n$/;
+	$str = encode_utf8($str) if Encode::is_utf8($str);
 	$this->{WTR}->print($str);
 
 	while (1) {
@@ -102,6 +108,9 @@ sub analyze {
 sub dependencies2sf {
     my ($this, $result) = @_;
 
+    # decode_utf8 if a wide character is contained
+    # $result = decode_utf8($result, Encode::FB_CROAK) if $result; # && $result =~ /[^\x00-\x7f]/;
+
     my $doc = XML::LibXML::Document->new('1.0');
     my $sf_node = $doc->createElement('StandardFormat');
     my $sentence_node = $doc->createElement('S');
@@ -109,44 +118,60 @@ sub dependencies2sf {
     my $annotation_node = $doc->createElement('Annotation');
     $sentence_node->appendChild($annotation_node);
 
-    my (%words, %arguments);
-    my $count = 1;
-    for my $line (split("\n", $result)) {
-	if ($line =~ /^(.+)\(([^,]+)-(\d+), ([^, ]+)-(\d+)\)$/) {
-	    my ($rel, $head_str, $head_id, $mod_str, $mod_id) = ($1, $2, $3, $4, $5);
-	    $words{$mod_id} = {id => $count, origid => $mod_id, str => $mod_str, rel => $rel, head_origid => $head_id};
-	    $arguments{$head_id}{$rel} = $count; # new id
-	    $count++;
-	}
-    }
-
-    for my $word_hr (sort {$a->{origid} <=> $b->{origid}} values %words) {
-	my $head = $word_hr->{head_origid} == 0 ? 'c-1' : 'c' . $words{$word_hr->{head_origid}}{id};
-	my %pf = (id => 'c' . $word_hr->{id}, head => $head, type => $word_hr->{rel});
-	my %wf = (id => 't' . $word_hr->{id}, surf => $word_hr->{str}, 
-		  orig => $this->{opt}{lemmatize} ? $this->lemmatize($word_hr->{str}) : '_'); # pos1 => $word_hr->{pos}
-
-	my $phrase_node = $doc->createElement('Chunk');
-	for my $key (sort {$StandardFormatLib::pf_order{$a} <=> $StandardFormatLib::pf_order{$b}} keys %pf) {
-	    $phrase_node->setAttribute($key, $pf{$key});
-	}
-
-	my $word_node = $doc->createElement('Token');
-	for my $key (sort {$StandardFormatLib::wf_order{$a} <=> $StandardFormatLib::wf_order{$b}} keys %wf) {
-	    $word_node->setAttribute($key, $wf{$key});
-	}
-
-	# predicate-argument structure
-	if (exists($arguments{$word_hr->{origid}})) {
-	    my $predicate_node = $doc->createElement('Predicate');
-	    for my $rel (keys %{$arguments{$word_hr->{origid}}}) {
-		$predicate_node->setAttribute($rel, 't' . $arguments{$word_hr->{origid}}{$rel});
+    if ($result) {
+	my (%words, %arguments);
+	my $count = 1;
+	for my $line (split("\n", $result)) {
+	    # decode_utf8 if a wide character is contained
+	    eval {
+		$line = decode_utf8($line, Encode::FB_QUIET);
+	    };
+	    if ($@) {
+		print STDERR "$@\n";
+		next;
 	    }
-	    $word_node->appendChild($predicate_node);
+
+	    if ($line =~ /^(.+)\((.+)-(\d+), ([^ ]+)-(\d+)\)$/) {
+		my ($rel, $head_str, $head_id, $mod_str, $mod_id) = ($1, $2, $3, $4, $5);
+		$words{$mod_id} = {id => $count, origid => $mod_id, str => $mod_str, rel => $rel, head_origid => $head_id};
+		$arguments{$head_id}{$rel} = $count; # new id
+		$count++;
+	    }
 	}
 
-	$phrase_node->appendChild($word_node);
-	$annotation_node->appendChild($phrase_node);
+	for my $word_hr (sort {$a->{origid} <=> $b->{origid}} values %words) {
+	    if ($word_hr->{head_origid} != 0 && !exists($words{$word_hr->{head_origid}})) {
+		printf STDERR "%s\n", $word_hr->{head_origid};
+		print STDERR $result;
+		next;
+	    }
+	    my $head = $word_hr->{head_origid} == 0 ? 'c-1' : 'c' . $words{$word_hr->{head_origid}}{id};
+	    my %pf = (id => 'c' . $word_hr->{id}, head => $head, type => $word_hr->{rel});
+	    my %wf = (id => 't' . $word_hr->{id}, surf => $word_hr->{str}, 
+		      orig => $this->{opt}{lemmatize} ? $this->lemmatize($word_hr->{str}) : '_'); # pos1 => $word_hr->{pos}
+
+	    my $phrase_node = $doc->createElement('Chunk');
+	    for my $key (sort {$StandardFormatLib::pf_order{$a} <=> $StandardFormatLib::pf_order{$b}} keys %pf) {
+		$phrase_node->setAttribute($key, $pf{$key});
+	    }
+
+	    my $word_node = $doc->createElement('Token');
+	    for my $key (sort {$StandardFormatLib::wf_order{$a} <=> $StandardFormatLib::wf_order{$b}} keys %wf) {
+		$word_node->setAttribute($key, $wf{$key});
+	    }
+
+	    # predicate-argument structure
+	    if (exists($arguments{$word_hr->{origid}})) {
+		my $predicate_node = $doc->createElement('Predicate');
+		for my $rel (keys %{$arguments{$word_hr->{origid}}}) {
+		    $predicate_node->setAttribute($rel, 't' . $arguments{$word_hr->{origid}}{$rel});
+		}
+		$word_node->appendChild($predicate_node);
+	    }
+
+	    $phrase_node->appendChild($word_node);
+	    $annotation_node->appendChild($phrase_node);
+	}
     }
 
     $doc->setDocumentElement($sf_node);
