@@ -76,7 +76,7 @@ if (!$opt{indir} || !$opt{outdir}) {
 # 処理全体の timeout 時間
 $opt{timeout} = 60 unless ($opt{timeout});
 # th_of_knp_use文ごとに KNP を new する
-$opt{th_of_knp_use} = 100 unless ($opt{th_of_knp_use});
+$opt{th_of_knp_use} = 250 unless ($opt{th_of_knp_use});
 
 $opt{usemodule} = 1;
 
