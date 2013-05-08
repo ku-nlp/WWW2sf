@@ -111,17 +111,20 @@ sub createEnglishParserObject {
 	    $this->{english_parser} = new StanfordParser({lemmatize => 1, output_sf => 1, 
 							  parser_dir => $this->{opt}{english_parser_dir}, 
 							  java_command => $this->{opt}{javacmd}});
+	    $this->{english_parser_name} = 'StanfordParser';
 	}
 	else {
 	    require MaltParser;
 	    $this->{english_parser} = new MaltParser({lemmatize => 1, output_sf => 1, 
 						      parser_dir => $this->{opt}{english_parser_dir}, 
 						      java_command => $this->{opt}{javacmd}});
+	    $this->{english_parser_name} = 'MaltParser';
 	}
     }
     elsif ($this->{opt}{enju}) {
 	require EnjuWrapper;
 	$this->{english_parser} = new EnjuWrapper(parser_dir => $this->{opt}{english_parser_dir});
+	$this->{english_parser_name} = 'Enju';
     }
 
 }
@@ -191,13 +194,9 @@ sub AddKnpResult {
 			    elsif ($this->{opt}{knp}) {
 				$this->AppendNode($doc, $sentence, $text, 'Knp', $jap_sent_flag);
 			    }
-			    # 英語 (Enju)
-			    elsif ($this->{opt}{enju}) {
-				$this->AppendNode($doc, $sentence, $text, 'Enju', $jap_sent_flag);
-			    }
-			    # 英語: CoNLL format
-			    elsif ($this->{opt}{english}) {
-				$this->AppendNode($doc, $sentence, $text, 'CoNLL', $jap_sent_flag);
+			    # 英語
+			    elsif ($this->{opt}{english} || $this->{opt}{enju}) {
+				$this->AppendNode($doc, $sentence, $text, 'Parse.en', $jap_sent_flag);
 			    }
 			}
 		    }
@@ -470,7 +469,7 @@ sub GetCaseAnalysisResultString {
 sub Annotation2XMLforXML {
     my ($this, $writer, $result, $annotation_node, $type) = @_;
 
-    $annotation_node->setAttribute('tool', $type);
+    $annotation_node->setAttribute('tool', $type eq 'Parse.en' ? $this->{english_parser_name} : $type);
 
     require XML::LibXML;
     my $parser = new XML::LibXML;
@@ -497,7 +496,7 @@ sub filter_fstring {
 }
 
 # ノードを追加する
-# $type: Juman or Knp or SynGraph or CoNLL
+# $type: Juman or Knp or SynGraph or Parse.en
 sub AppendNode {
     my ($this, $doc, $sentence, $text, $type, $jap_sent_flag) = @_;
 
@@ -511,7 +510,7 @@ sub AppendNode {
 	if ($type eq 'Juman') {
 	    die "Embedding the result of JUMAN in XML is not supported.\n";
 	}
-	elsif ($type eq 'CoNLL' || $type eq 'Enju') {
+	elsif ($type eq 'Parse.en') {
 	    $this->Annotation2XMLforXML($doc, $result_string, $newchild, $type); # Annotation($newchild)を渡して中で追加
 	}
 	else {
@@ -533,7 +532,7 @@ sub AppendNode {
 }
 
 # typeに対応したツールで言語解析を行う
-# $type: Juman or Knp or SynGraph or CoNLL
+# $type: Juman or Knp or SynGraph or Parse.en
 sub linguisticAnalysis {
     my ($this, $text, $type, $jap_sent_flag, $returnKnpObj) = @_;
 
@@ -561,7 +560,6 @@ sub linguisticAnalysis {
 		    # 格解析,省略解析オプションが指定されていない場合, もしくは日本語文でない場合
 		    $result = $this->{knp}->parse_mlist($this->{knp}->juman($text));
 		}
-		$this->{num_of_knp_use}++;
 		if ($this->{num_of_knp_use} > $this->{th_of_knp_use}) {
 		    # KNP を close する
 		    $this->{num_of_knp_use} = 0;
@@ -589,10 +587,16 @@ sub linguisticAnalysis {
 	    return;
 	};
     }
-    elsif ($type eq 'CoNLL' || $type eq 'Enju') { # 英語: CoNLL or Enju
+    elsif ($type eq 'Parse.en') { # English
 	$result_string = $this->{english_parser}->analyze($text);
+	if ($this->{num_of_knp_use} > $this->{th_of_knp_use} && $this->{english_parser_name} eq 'StanfordParser') { # if Stanford Parser is used, it stops in the middle -> restart
+	    undef $this->{english_parser};
+	    $this->createEnglishParserObject(); # restart
+	    $this->{num_of_knp_use} = -1;
+	}
     }
 
+    $this->{num_of_knp_use}++;
     return $result_string;
 }
 
@@ -615,7 +619,7 @@ sub ReadResult {
 	$scheme = 'Knp';
     }
     elsif ($this->{opt}{english}) {
-	$scheme = 'CoNLL';
+	$scheme = 'Parse.en';
     }
 
     if ($this->{opt}{jmn} or $this->{opt}{knp} or $this->{opt}{syngraph}) {
