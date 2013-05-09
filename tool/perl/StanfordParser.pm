@@ -141,8 +141,8 @@ sub dependencies2sf {
 
 	for my $word_hr (sort {$a->{origid} <=> $b->{origid}} values %words) {
 	    if ($word_hr->{head_origid} != 0 && !exists($words{$word_hr->{head_origid}})) {
-		printf STDERR "%s\n", $word_hr->{head_origid};
-		print STDERR $result;
+		# printf STDERR "Error: Head of %s cannot be found.\n", $word_hr->{head_origid};
+		# print STDERR $result;
 		next;
 	    }
 	    my $head = $word_hr->{head_origid} == 0 ? 'c-1' : 'c' . $words{$word_hr->{head_origid}}{id};
