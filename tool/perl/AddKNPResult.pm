@@ -589,7 +589,8 @@ sub linguisticAnalysis {
     }
     elsif ($type eq 'Parse.en') { # English
 	$result_string = $this->{english_parser}->analyze($text);
-	if ($this->{num_of_knp_use} > $this->{th_of_knp_use} && $this->{english_parser_name} eq 'StanfordParser') { # if Stanford Parser is used, it stops in the middle -> restart
+	if ($this->{opt}{usemodule} && 
+	    $this->{num_of_knp_use} > $this->{th_of_knp_use} && $this->{english_parser_name} eq 'StanfordParser') { # if Stanford Parser is used, it stops in the middle -> restart
 	    undef $this->{english_parser};
 	    $this->createEnglishParserObject(); # restart
 	    $this->{num_of_knp_use} = -1;
