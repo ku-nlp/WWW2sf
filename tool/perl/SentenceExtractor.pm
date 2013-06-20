@@ -1,7 +1,7 @@
 package SentenceExtractor;
 
 # 文章 -> 文 フィルタ
-# from TextExtor.pm (Japanese), sentence-boundary.pl (English)
+# from TextExtor.pm (Japanese, Chinese), sentence-boundary.pl (English)
 
 # $Id$
 
@@ -39,7 +39,7 @@ sub new
    if ($language eq 'english') {
        @{$this->{sentences}} = &SplitEnglish($paragraph);
    }
-   else {
+   else { # for Japanese, Chinese
        @{$this->{sentences}} = &SplitJapanese($paragraph);
    }
 
