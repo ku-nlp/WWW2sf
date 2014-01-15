@@ -96,6 +96,13 @@ sub new {
 	delete($TAG_DELIMITER{p});
     }
 
+    # 複合名詞のデータベースをtie
+    my ($cndb, %CN2DF);
+    if ($opt->{cndbfile}) {
+	require CDB_File;
+	$cndb = tie %CN2DF, 'CDB_File', $opt->{cndbfile} or die;
+    }
+
     my $title = '';        # <TITLE>
     my $title_offset;      # titleのoffset(バイト単位)
     my $title_length;      # titleのバイト長
@@ -122,6 +129,9 @@ sub new {
     my $mode_script = 0;   # スクリプト
     my $mode_form = 0;     # フォーム
     my $mode_style = 0;    # スタイルシート
+    my $mode_link = 0;     # <a>
+
+    my $link_buf;
 
     my @text;              # テキスト
     my @property;          # テキストの属性(連想配列へのリファレンス)
@@ -203,6 +213,8 @@ sub new {
 		$mode_form = 1;
 	    } elsif ($tag eq 'style') {
 		$mode_style = 1;
+	    } elsif ($tag eq 'a') {
+		$mode_link = 1;
 	    }
 
 	# 終了タグ
@@ -210,6 +222,11 @@ sub new {
             my $tag = $token->[1];
 
             if (defined $TAG_DELIMITER{$tag}) {
+		# <a>タグの中身がbufに残っている場合
+		if ($link_buf) {
+		    $text[$count] .= $link_buf;
+		    $link_buf = '';
+		}
                 $count++;
 		$num++;
             }
@@ -245,6 +262,8 @@ sub new {
 		$mode_form = 0;
 	    } elsif ($tag eq 'style') {
 		$mode_style = 0;
+	    } elsif ($tag eq 'a') {
+		$mode_link = 0;
 	    }
 
 	# テキスト
@@ -257,7 +276,15 @@ sub new {
 		$title_length = $length;
 	    } elsif ($mode_script or $mode_style) {
 	    } else {
-		$text[$count] .= $text;
+		# 複合名詞データベースが指定されている場合
+		if ($opt->{cndbfile}) {
+		    # <a>タグを処理する
+		    &process_a_tag($mode_link, \$link_buf, \$text, \@text, \$count, \%CN2DF);
+		}
+		else {
+		    $text[$count] .= $text;
+		}
+
 		$property[$count]->{num} = $num;
 		$property[$count]->{body} = $body;
 		if (defined($property[$count]->{offset})) {
@@ -476,6 +503,10 @@ sub new {
 	}
     }
 
+    if ($opt->{cndbfile}) {
+	untie %CN2DF;
+    }
+
     bless $this = {
 		   TEXT => \@s_text,
 		   PROPERTY => \@s_property,
@@ -528,6 +559,47 @@ sub z2h{
 	Encode::JP::H2Z::h2z(\$string);
 	  return $string;
       }
+}
+
+# <a>タグを処理する
+sub process_a_tag {
+    my ($mode_link, $link_buf, $text, $ar_text, $count, $CN2DF) = @_;
+
+    # <a>タグの場合
+    if ($mode_link) {
+	# 直前も<a>タグの場合、連結した文字列で複合名詞データベースをひく
+	# 複合名詞であれば、連結し、そうでなければ、別の文にする
+	if ($$link_buf) {
+	    my $cn_candidate = $$link_buf . $$text;
+	    Encode::from_to($cn_candidate, 'euc-jp', 'utf8');
+	    my $df = $CN2DF->{$cn_candidate};
+	    my $df_longest = $CN2DF->{"$cn_candidate@"};
+	    if (defined $df) {
+		print "CN $cn_candidate $df $df_longest\n";
+
+		$ar_text->[$$count] .= $$link_buf;
+	    }
+	    else {
+		$ar_text->[$$count++] .= $$link_buf;
+	    }
+	    $$link_buf = $$text;
+	}
+	# 
+	else {
+	    $$link_buf = $$text;
+	}
+    }
+    # <a>タグでない場合
+    else {
+	# 直前が<a>タグならそのまま連結
+	if ($$link_buf) {
+	    $ar_text->[$$count] .= $$link_buf . $$text;
+	    $$link_buf = '';
+	}
+	else {
+	    $ar_text->[$$count] .= $$text;
+	}
+    }
 }
 
 1;
