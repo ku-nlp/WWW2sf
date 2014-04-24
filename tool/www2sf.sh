@@ -121,6 +121,9 @@ do
 	# 空ファイルを作る
 	: > $xdir/$base_f.xml
     fi
+    if [ "$ext" = ".gz" -a -f $xdir/$base_f.xml ]; then
+		gzip $xdir/$base_f.xml 
+	fi
 
     if [ "$ext" = ".gz" ]; then
 	rm -f $f

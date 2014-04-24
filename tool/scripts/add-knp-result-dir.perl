@@ -277,8 +277,13 @@ sub writeFile {
     }
 
     my $outfilename = $opt{outdir} . '/' . basename($file);
-    $outfilename =~ s/\.gz$//;
-    open F, '>:encoding(utf8)', $outfilename or die;
+    if ($outfilename =~ /\.gz$/) {
+	open F, '>:encoding(utf8):gzip', $outfilename or die;
+	binmode (F, ':utf8');
+    }
+    else {
+	open F, '>:encoding(utf8)', $outfilename or die;
+    }
     print F $string;
     close F;
 }
