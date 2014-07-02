@@ -59,3 +59,65 @@ cd scripts
 ./read-zaodata.sh tsubame00 doc0000000627
 ./read-zaodata.sh -o 628 tsubame01 doc0000000000
 ：
+
+言語解析結果
+------------
+
+以下のようなXMLで表されている。
+
+<?xml version="1.0" encoding="utf-8"?>
+<StandardFormat Url="http://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q1216491207" OriginalEncoding="utf8" CrawlTime="2010-09-07 10:23
+:42 GMT" NoCache="0" NoIndex="0" FormatTime="2014-04-09 18:44:35 JST" FormatProgVersion="1.0">
+  <Header>
+    <Title JapaneseScore="" Offset="1128" Length="138" is_Normal_Sentence="1">
+      <RawString>大学生活…昔はこれに憧れて勉強して大学に入ったつもりが入ってみると一人ぼっちの．．．　−　Ｙａｈｏｏ！知恵袋</RawString>
+      <Annotation Scheme="SynGraph" score="86.00000"><Annotation tool="JUMAN" version="7.0"/>
+      <Annotation tool="KNP" version="4.0-20140226"/>
+      <Chunk id="c0" head="c1" category="体言" feature="&lt;SM-主体&gt; ... " type="D">
+       <Token pos2="普通名詞" id="t0" content_p="1" surf="大学" orig="大学" read="だいがく" pos1="名詞" repname="大学/だいがく" conj="" feature="&lt;代表表記:大学/だいがく&gt; ... "><synnode wordid="t0" synid="大学/だいがく" score="1"/></Token>
+      </Chunk>
+     <Chunk id="c1" head="c2" category="体言" feature="&lt;BGH:生活/せいかつ&gt; ... " type="D">
+      <Token pos2="サ変名詞" id="t1" content_p="1" surf="生活" orig="生活" read="せいかつ" pos1="名詞" repname="生活/せいかつ" conj="" feature="&lt;代表表記:生活/せいかつ&gt; ...">
+       <synnode wordid="t1" synid="生活/せいかつ" score="1/>
+       <synnode wordid="t1" synid="s3420:暮らし向き/くらしむき" score="0.99"/>
+      </Token>
+     ...
+
+XMLタグの説明は以下のとおり。
+
+- StandardFormat: 標準フォーマットのルートタグ
+-- Url: ソースのアドレス
+-- OriginalEncoding: ソースの文字コード
+-- FormatTime: 標準フォーマットが作成された日時（「yyyy-mm-dd hh:mm:ss」形式）
+-- Version: 標準フォーマットバージョン (本形式は2.0)
+- Header: 文書のヘッダ部分
+- Text: 文書のテキスト部分
+- S: 文を表すタグ
+-- blockType: 領域名 (header, footer, link, img, form, maintext, unknown_block)
+- RawString: 原文
+- Annotation: 解析結果を表すタグ
+-- tool: 解析ツール名
+-- score: ツールの出力スコア（任意）
+- phrase: 句
+-- id: 句ID
+-- head: 係り先
+--- 二つ以上ある場合は「/」で連結
+-- category: カテゴリ
+-- feature: 属性列
+-- dpndtype: ラベル(主語, 目的語, ...)
+- word: 単語
+-- id: 単語ID
+-- str: 出現形
+-- lem: 見出し語
+-- read: 読み
+-- pos: 品詞
+-- repname: 代表表記(表記ゆれ吸収用ID)
+-- conj: 活用
+-- content_p: 内容語なら1
+-- feature: 属性列
+- synnode: 同義ノード
+-- wordid: 対応するwordのid
+--- 複数ある場合は「,」で連結し、主辞のwordのところにsynnodeタグを入れる。例: wordidを3,4とし、wordidが4の<word>のところに入れる。
+-- synid: 同義グループID
+--- 日本語では同義グループにID(=synid)をふって管理している
+-- score: 元の表現との類似度 (1: 元の表現, 0.99: 同義関係)
