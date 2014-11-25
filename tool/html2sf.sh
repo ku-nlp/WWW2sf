@@ -3,12 +3,13 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a] [-d SynGraphPath] [-D DetectBlocksPath] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a|-N] [-d SynGraphPath] [-D DetectBlocksPath] input.html > output.xml"
     exit 1
 }
 
 # -j: JUMANの解析結果を埋め込む
 # -k: KNPの解析結果を埋め込む
+# -N: KNP にassignf オプションを渡し，係り受け解析をしない
 # -s: SynGraphの解析結果を埋め込む
 # -b: <br>と<p>を無視 (extract-sentences.perl --ignore_br)
 # -B: Movable Type用オプション (extract-sentences.perl --blog mt)
@@ -56,7 +57,7 @@ configfile=$base_dir/conf/configure
 infofile=
 strict_check_flag=0
 
-while getopts abfjkspPhBwc:umMUOTFt:C:eExi:d:D:r OPT
+while getopts abfjkspPhBwc:umMNUOTFt:C:eExi:d:D:r OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
@@ -85,6 +86,9 @@ do
 	k)  addknp_args="--knp $addknp_args"
 	    annotation=knp
 	    ;;
+    N)  addknp_args="--assignf $addknp_args"
+        annotation=knp
+        ;;
 	s)  annotation=syngraph
 	    ;;
 	x)  addknp_args="--embed_result_in_xml $addknp_args"
