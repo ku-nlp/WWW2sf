@@ -82,9 +82,15 @@ sub main {
 	if (!$crawler_html || $flag > 0) {
 	    $htmldat .= $_;
 	} else {
-	    $ignored_chars .= $_;
-	    if ($_ =~ /^(\x0D\x0A|\x0D|\x0A)$/) {
+	    if ($_ =~ /<html/i) {
 		$flag = 1;
+		$htmldat .= $_;
+	    }
+	    else {
+		$ignored_chars .= $_;
+		if ($_ =~ /^(\x0D\x0A|\x0D|\x0A)$/) {
+		    $flag = 1;
+		}
 	    }
 	}
     }
