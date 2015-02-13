@@ -28,6 +28,7 @@ GetOptions(\%opt,
 	   'knp',
 	   'case',
 	   'anaphora',
+	   'assignf',
 	   'syngraph',
 	   'english',
 	   'enju',
@@ -211,6 +212,7 @@ foreach my $file (@files) {
     $buf =~ tr/\x00-\x09\x0b-\x1f\x7f-\x9f//d;
 
     my $parser = new XML::LibXML;
+    my $parser = XML::LibXML->new({huge=>1});
     my $doc;
     try {
 	$doc = $parser->parse_string($buf);

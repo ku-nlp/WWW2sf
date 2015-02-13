@@ -128,6 +128,10 @@ while (<HTML>) {
 	if ($_ =~ /^(\x0D\x0A|\x0D|\x0A)$/) {
 	    $flag = 1;
 	}
+	if ($_ =~ /<html/i) {
+	    $flag = 1;
+	    $buf .= $_;
+	}
     }
 }
 close (HTML);

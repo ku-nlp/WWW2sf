@@ -70,25 +70,35 @@ sub createKnpObject {
     }
 
     if ($this->{opt}{anaphora}) {
-	if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
-	    my $knp = new KNP (-Command => $this->{opt}{knpcmd},
-			       -Rcfile => $this->{opt}{knprc},
-			       -JumanCommand => $this->{opt}{jmncmd},
-			       -JumanRcfile => $this->{opt}{jmnrc},
-			       -JumanOption => '-i \#',
-			       -Option => '-tab -postprocess -anaphora-normal -relation-noun -ne-crf');
-	    $this->{knp_w_anaphora} = $knp;
-	}
-    }
-
-    if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
-	my $knp = new KNP (-Command => $this->{opt}{knpcmd},
-			   -Rcfile => $this->{opt}{knprc},
-			   -JumanCommand => $this->{opt}{jmncmd},
-			   -JumanRcfile => $this->{opt}{jmnrc},
-			   -JumanOption => '-i \#',
-			   -Option => '-tab -dpnd -postprocess');
-	$this->{knp} = $knp;
+        if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
+            my $knp = new KNP (-Command => $this->{opt}{knpcmd},
+                -Rcfile => $this->{opt}{knprc},
+                -JumanCommand => $this->{opt}{jmncmd},
+                -JumanRcfile => $this->{opt}{jmnrc},
+                -JumanOption => '-i \#',
+                -Option => '-tab -postprocess -anaphora-normal -relation-noun -ne-crf');
+            $this->{knp_w_anaphora} = $knp;
+        }
+    }elsif ($this->{opt}{assignf}){
+        if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
+            my $knp = new KNP (-Command => $this->{opt}{knpcmd},
+                -Rcfile => $this->{opt}{knprc},
+                -JumanCommand => $this->{opt}{jmncmd},
+                -JumanRcfile => $this->{opt}{jmnrc},
+                -JumanOption => '-i \#',
+                -Option => '-tab -assignf -postprocess');
+            $this->{knp} = $knp;
+        }
+    }else{
+        if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
+            my $knp = new KNP (-Command => $this->{opt}{knpcmd},
+                -Rcfile => $this->{opt}{knprc},
+                -JumanCommand => $this->{opt}{jmncmd},
+                -JumanRcfile => $this->{opt}{jmnrc},
+                -JumanOption => '-i \#',
+                -Option => '-tab -dpnd -postprocess');
+            $this->{knp} = $knp;
+        }
     }
 }
 
