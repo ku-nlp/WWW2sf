@@ -40,13 +40,14 @@ sub usage {
 
 
 our (%opt, $writer, $filter);
-&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s', 'cndbfile=s', 'uniq_br_and_linebreak', 'make_urldb', 'verbose');
+&GetOptions(\%opt, 'language=s', 'url=s', 'xml', 'wget', 'checkjapanese', 'checkzyoshi', 'zyoshi_threshold=f', 'checkencoding', 'ignore_br', 'blog=s', 'cndbfile=s', 'uniq_br_and_linebreak', 'make_urldb', 'verbose');
 $opt{language} = 'japanese' unless $opt{language}; # デフォルト言語: japanese
 $opt{blog} = 'none' unless $opt{blog};
 
 # --checkencoding: encodingをチェックして、日本語ではないエンコーディングなら何も出力せず終了する
 # --checkjapanese: 日本語(ひらがな、カタカナ、漢字)含有率をチェックする
 # --checkzyoshi:   助詞含有率をチェックする
+# --wget 入力形式が wget --save-headersスタイルのとき
 
 my ($VERSION, $CRAWL_DATE, $buf, $crawlTime, $url, $nocache, $noindex);
 
@@ -62,15 +63,17 @@ if (-e $version_file) {
 }
 
 
-# Date: がない場合用にクロール日をあらかじめ記述したファイルをロード
-my $crawldate_file = sprintf("%s/../data/CRAWL_DATE", dirname($INC{'TextExtractor.pm'}));
-if (-e $crawldate_file) {
-    open F, "< $crawldate_file" or die $!;
-    $CRAWL_DATE = <F>;
-    chomp $CRAWL_DATE;
-    close F;
-} else {
-    print STDERR "[WARNING] data/CRAWL_DATE file was not found.\n";
+if (! $opt{wget}) {
+    # Date: がない場合用にクロール日をあらかじめ記述したファイルをロード
+    my $crawldate_file = sprintf("%s/../data/CRAWL_DATE", dirname($INC{'TextExtractor.pm'}));
+    if (-e $crawldate_file) {
+        open F, "< $crawldate_file" or die $!;
+        $CRAWL_DATE = <F>;
+        chomp $CRAWL_DATE;
+        close F;
+    } else {
+        print STDERR "[WARNING] data/CRAWL_DATE file was not found.\n";
+    }
 }
 
 
@@ -99,7 +102,14 @@ my $dir = `dirname $htmlfile`; chop $dir;
 
 open (HTML, $htmlfile) or die "$!";
 while (<HTML>) {
-    if (/^HTML (.+?)[\r|\n]+$/ && $flag < 0) { # 1行目からURLを取得(read-zaodataが出力している)
+    if ($opt{wget}){
+        if ($flag > 0){
+        } elsif ($_ =~ /^Date: (.+)$/) {
+	    $crawlTime = &convertTimeFormat($1);
+        } elsif (length($_) <= 2){ #空行はヘッダ行の終わりを示す
+	    $flag = 1;
+        };
+    }elsif (/^HTML (.+?)[\r|\n]+$/ && $flag < 0) { # 1行目からURLを取得(read-zaodataが出力している)
 	my @args = split (/ /, $1);
 	my $next_url = shift @args;
 	my $option = join (' ', @args);

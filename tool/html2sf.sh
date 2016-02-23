@@ -32,6 +32,7 @@ usage() {
 # -t: tmp_dirを指定する
 # -r: 入力ファイルを厳しくチェックする (fileコマンドでテキスト、5000行以下)
 # -l: URLを指定する
+# -W:  (extract-sentences.perl --wget)
 
 # Change this for SynGraph annotation
 syngraph_home=$HOME/cvs/SynGraph
@@ -131,6 +132,8 @@ do
         h)  usage
             ;;
 	l)  extract_args="--url ${OPTARG} $extract_args"
+	    ;;
+	W)  extract_args="--wget $extract_args"
 	    ;;
     esac
 done
