@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a|-N] [-d SynGraphPath] [-D DetectBlocksPath] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a|-N] [-d SynGraphPath] [-D DetectBlocksPath] [-l URL] input.html > output.xml"
     exit 1
 }
 
@@ -31,6 +31,7 @@ usage() {
 # -D: DetectBlocksのパスを指定する
 # -t: tmp_dirを指定する
 # -r: 入力ファイルを厳しくチェックする (fileコマンドでテキスト、5000行以下)
+# -l: URLを指定する
 
 # Change this for SynGraph annotation
 syngraph_home=$HOME/cvs/SynGraph
@@ -57,7 +58,7 @@ configfile=$base_dir/conf/configure
 infofile=
 strict_check_flag=0
 
-while getopts abfjkspPhBwc:umMNUOTFt:C:eExi:d:D:r OPT
+while getopts abfjkspPhBwc:umMNUOTFt:C:eExi:d:l:D:r OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
@@ -129,6 +130,8 @@ do
 	    ;;
         h)  usage
             ;;
+	l)  extract_args="--url ${OPTARG} $extract_args"
+	    ;;
     esac
 done
 shift `expr $OPTIND - 1`
