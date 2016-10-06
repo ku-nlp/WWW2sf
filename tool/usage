@@ -2,9 +2,11 @@ USAGE:
   WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u|-U] [-z] [-c somewhere/cns.cdb] [-S] [-T] [-e|-E] [-x] [-a] [-d SynGraphPath] [-v] hdir xdir
 
 OPTION:
-  -j    ... jumanの解析結果を埋め込む.
+  -j    ... JUMANの解析結果を埋め込む.
 
-  -k    ... knpの解析結果を埋め込む.
+  -J    ... JUMAN++の解析結果を埋め込む.
+
+  -k    ... KNPの解析結果を埋め込む.
 
   -s    ... SynGraphの解析結果を埋め込む.
 

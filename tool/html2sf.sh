@@ -8,6 +8,7 @@ usage() {
 }
 
 # -j: JUMANの解析結果を埋め込む
+# -J: JUMAN++の解析結果を埋め込む
 # -k: KNPの解析結果を埋め込む
 # -N: KNP にassignf オプションを渡し，係り受け解析をしない
 # -s: SynGraphの解析結果を埋め込む
@@ -59,7 +60,7 @@ configfile=$base_dir/conf/configure
 infofile=
 strict_check_flag=0
 
-while getopts abfjkspPhBwc:umMNUOTFt:C:eExi:d:l:D:r OPT
+while getopts abfjJkspPhBwc:umMNUOTFt:C:eExi:d:l:D:r OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
@@ -83,6 +84,9 @@ do
 	f)  extract_std_args=""
 	    ;;
 	j)  addknp_args="--jmn $addknp_args"
+	    annotation=jmn
+	    ;;
+	J)  addknp_args="--jmn --use_jmnpp $addknp_args"
 	    annotation=jmn
 	    ;;
 	k)  addknp_args="--knp $addknp_args"
