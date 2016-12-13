@@ -41,7 +41,8 @@ shibata <shibata@i.kyoto-u.ac.jp>	2006-08-31 modified.
 ./html2sf.sh [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-T] sample.html > sample.sf
 
  - 複合名詞データベースcns.cdbについては、../READMEを参照。
-
+ - オプションについてはhtmls2sf.shの最初を参照。
+ 
 # h0000ディレクトリ以下のhtmlを標準フォーマットに変換して、x0000以下に出力
 
 ./www2sf.sh [-j|-k] h0000 x0000
