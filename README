@@ -1,21 +1,21 @@
 ===============================
-Web�ڡ�����ɸ��ե����ޥåȴ�Ϣ
+Webページ用標準フォーマット関連
 ===============================
 
-doc/		���ͽ�
-samples/	ɸ��ե����ޥåȤΥ���ץ�
-tool/		HTML������Ѵ��ġ���
+doc/		仕様書
+samples/	標準フォーマットのサンプル
+tool/		HTMLからの変換ツール
 
 
 ======
-�Ȥ���
+使い方
 ======
 
-  WWW2sf/tool/www2sf.sh -u -c somewhere/cns.cdb hdir xdir
+  WWW2sf/tool/www2sf.sh -u -c somewhere/cns.100M.cls.df1000.cdb hdir xdir
 
 
-  * ���餫����ʲ��Υ��ޥ�ɤ�ʣ��̾��DB(747MB)�����������ɤ��Ƥ����Ʋ�����.
+  * あらかじめ以下のコマンドで複合名詞DB(747MB)をダウンロードしておいて下さい.
 
-    wget http://reed.kuee.kyoto-u.ac.jp/~skeiji/data/cns.cdb somewhere
+    wget http://nlp.ist.i.kyoto-u.ac.jp/nl-resource/TSUBAKI/data/cns.100M.cls.df1000.cdb somewhere
 
-  * ���ץ����ˤĤ��Ƥ�WWW2sf/tool/www2sf.sh -h �����������. 
+  * オプションについてはWWW2sf/tool/www2sf.sh -h を御覧下さい.

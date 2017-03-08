@@ -48,55 +48,59 @@ sub createJumanObject {
     my ($this) = @_;
 
     if ($this->{opt}{jmn}) {
-	$this->{juman} = new Juman (-Command => $this->{opt}{jmncmd},
-				    -Rcfile => $this->{opt}{jmnrc},
-				    -Option => '-i \#');
+	my $opt = {
+	    -Command => $this->{opt}{jmncmd},
+	    -Rcfile => $this->{opt}{jmnrc},
+	    -Option => '-i \#'
+		
+	};
+	if ($this->{opt}->{use_jmnpp}) {
+	    $opt->{-Option} = '';
+	    $opt->{-Rcfile} = '';
+	}
+	$this->{juman} = new Juman (%$opt);
     }
 }
 
 sub createKnpObject {
     my ($this) = @_;
 
+    my $opt = {
+	-Command => $this->{opt}{knpcmd},
+	-Rcfile => $this->{opt}{knprc},
+	-JumanCommand => $this->{opt}{jmncmd},
+	-JumanRcfile => $this->{opt}{jmnrc},
+	-JumanOption => '-i \#'
+    };
+    if ($this->{opt}->{use_jmnpp}) {
+	$opt->{-JumanOption} = '';
+	$opt->{-JumanRcfile} = '';
+    }
+
     if ($this->{opt}{case}) {
 	if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
-	    my $knp = new KNP (-Command => $this->{opt}{knpcmd},
-			       -Rcfile => $this->{opt}{knprc},
-			       -JumanCommand => $this->{opt}{jmncmd},
-			       -JumanRcfile => $this->{opt}{jmnrc},
-			       -JumanOption => '-i \#',
-			       -Option => '-tab -postprocess');
+	    $opt->{-Option} = '-tab'; # '-tab -postprocess'
+	    my $knp = new KNP (%$opt);
 	    $this->{knp_w_case} = $knp;
 	}
     }
 
     if ($this->{opt}{anaphora}) {
         if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
-            my $knp = new KNP (-Command => $this->{opt}{knpcmd},
-                -Rcfile => $this->{opt}{knprc},
-                -JumanCommand => $this->{opt}{jmncmd},
-                -JumanRcfile => $this->{opt}{jmnrc},
-                -JumanOption => '-i \#',
-                -Option => '-tab -postprocess -anaphora-normal -relation-noun -ne-crf');
+	    $opt->{-Option} = '-tab -postprocess -anaphora-normal -relation-noun -ne-crf';
+            my $knp = new KNP (%$opt);
             $this->{knp_w_anaphora} = $knp;
         }
     }elsif ($this->{opt}{assignf}){
         if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
-            my $knp = new KNP (-Command => $this->{opt}{knpcmd},
-                -Rcfile => $this->{opt}{knprc},
-                -JumanCommand => $this->{opt}{jmncmd},
-                -JumanRcfile => $this->{opt}{jmnrc},
-                -JumanOption => '-i \#',
-                -Option => '-tab -assignf -postprocess');
+	    $opt->{-Option} = '-tab -assignf -postprocess';
+            my $knp = new KNP (%$opt);
             $this->{knp} = $knp;
         }
     }else{
         if ($this->{opt}{knp} || $this->{opt}{syngraph}) {
-            my $knp = new KNP (-Command => $this->{opt}{knpcmd},
-                -Rcfile => $this->{opt}{knprc},
-                -JumanCommand => $this->{opt}{jmncmd},
-                -JumanRcfile => $this->{opt}{jmnrc},
-                -JumanOption => '-i \#',
-                -Option => '-tab -dpnd -postprocess');
+	    $opt->{-Option} = '-tab -dpnd -postprocess';
+            my $knp = new KNP (%$opt);
             $this->{knp} = $knp;
         }
     }

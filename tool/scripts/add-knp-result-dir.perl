@@ -46,6 +46,7 @@ GetOptions(\%opt,
 	   'knpcmd=s',
 	   'jmnrc=s',
 	   'knprc=s',
+	   'use_jmnpp',
 	   'english_parser_dir=s',
 	   'javacmd=s',
 	   'syndb_on_memory',
@@ -280,7 +281,7 @@ sub writeFile {
 
     my $outfilename = $opt{outdir} . '/' . basename($file);
     if ($outfilename =~ /\.gz$/) {
-	open F, '>:encoding(utf8):gzip', $outfilename or die;
+	open F, '>:encoding(utf8):gzip', $outfilename or die $! . $outfilename;
 	binmode (F, ':utf8');
     }
     else {

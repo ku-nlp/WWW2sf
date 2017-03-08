@@ -16,12 +16,14 @@ ParseCMD=knp
 KNParg="-dpnd-use-ncf -tab -postprocess"
 RCarg=
 
-while getopts k:r: OPT
+while getopts k:r:c: OPT
 do  
     case $OPT in
 	k)  KNParg=$OPTARG
 	    ;;
 	r)  RCarg="-r $OPTARG"
+	    ;;
+	c)  ParseCMD=$OPTARG
 	    ;;
         h)  usage
             ;;

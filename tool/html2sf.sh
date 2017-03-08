@@ -3,11 +3,12 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a|-N] [-d SynGraphPath] [-D DetectBlocksPath] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a|-N] [-d SynGraphPath] [-D DetectBlocksPath] [-l URL] input.html > output.xml"
     exit 1
 }
 
 # -j: JUMANの解析結果を埋め込む
+# -J: JUMAN++の解析結果を埋め込む
 # -k: KNPの解析結果を埋め込む
 # -N: KNP にassignf オプションを渡し，係り受け解析をしない
 # -s: SynGraphの解析結果を埋め込む
@@ -31,6 +32,8 @@ usage() {
 # -D: DetectBlocksのパスを指定する
 # -t: tmp_dirを指定する
 # -r: 入力ファイルを厳しくチェックする (fileコマンドでテキスト、5000行以下)
+# -l: URLを指定する
+# -W:  (extract-sentences.perl --wget)
 
 # Change this for SynGraph annotation
 syngraph_home=$HOME/cvs/SynGraph
@@ -57,7 +60,7 @@ configfile=$base_dir/conf/configure
 infofile=
 strict_check_flag=0
 
-while getopts abfjkspPhBwc:umMNUOTFt:C:eExi:d:D:r OPT
+while getopts abfjJkspPhBwc:umMNUOTFt:C:eExi:d:l:D:r OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
@@ -81,6 +84,9 @@ do
 	f)  extract_std_args=""
 	    ;;
 	j)  addknp_args="--jmn $addknp_args"
+	    annotation=jmn
+	    ;;
+	J)  addknp_args="--jmn --use_jmnpp $addknp_args"
 	    annotation=jmn
 	    ;;
 	k)  addknp_args="--knp $addknp_args"
@@ -129,6 +135,10 @@ do
 	    ;;
         h)  usage
             ;;
+	l)  extract_args="--url ${OPTARG} $extract_args"
+	    ;;
+	W)  extract_args="--wget $extract_args"
+	    ;;
     esac
 done
 shift `expr $OPTIND - 1`
