@@ -4,7 +4,7 @@ USAGE:
 OPTION:
   -j    ... JUMANの解析結果を埋め込む.
 
-  -J    ... JUMAN++の解析結果を埋め込む.
+  -J    ... JUMANの代わりにJUMAN++を用いる
 
   -k    ... KNPの解析結果を埋め込む.
 

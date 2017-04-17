@@ -11,7 +11,9 @@
 
 use XML::LibXML;
 use Encode qw(decode);
-use encoding 'utf8';
+use utf8;
+binmode STDIN, ':encoding(utf8)';
+binmode STDOUT, ':encoding(utf8)';
 binmode STDERR, ':encoding(utf8)';
 use Getopt::Long;
 use Juman;

@@ -8,7 +8,7 @@ usage() {
 }
 
 # -j: JUMANの解析結果を埋め込む
-# -J: JUMAN++の解析結果を埋め込む
+# -J: JUMANの代わりにJUMAN++を用いる
 # -k: KNPの解析結果を埋め込む
 # -N: KNP にassignf オプションを渡し，係り受け解析をしない
 # -s: SynGraphの解析結果を埋め込む
@@ -59,6 +59,7 @@ ipsj_metadb=
 configfile=$base_dir/conf/configure
 infofile=
 strict_check_flag=0
+jumanpp_cmd=`which jumanpp`
 
 while getopts abfjJkspPhBwc:umMNUOTFt:C:eExi:d:l:D:r OPT
 do
@@ -86,8 +87,15 @@ do
 	j)  addknp_args="--jmn $addknp_args"
 	    annotation=jmn
 	    ;;
-	J)  addknp_args="--jmn --use_jmnpp $addknp_args"
-	    annotation=jmn
+	J)  if [ -z "$jumanpp_cmd" ]; then
+		echo "jumanpp is not found!"
+		usage
+	    fi
+	    if [ -z "$annotation" ]; then
+		annotation=jmn
+		addknp_args="--jmn $addknp_args"
+	    fi
+	    addknp_args="--use_jmnpp --jmncmd $jumanpp_cmd $addknp_args"
 	    ;;
 	k)  addknp_args="--knp $addknp_args"
 	    annotation=knp
