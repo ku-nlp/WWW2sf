@@ -1,5 +1,5 @@
 USAGE:
-  WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u|-U] [-z] [-c somewhere/cns.cdb] [-S] [-T] [-e|-E] [-x] [-a] [-d SynGraphPath] [-v] hdir xdir
+  WWW2sf/tool/www2sf.sh [-j|-k|-s] [-u|-U] [-z] [-c somewhere/cns.cdb] [-S] [-T] [-e|-E] [-x] [-A|-a] [-d SynGraphPath] [-v] hdir xdir
 
 OPTION:
   -j    ... JUMANの解析結果を埋め込む.
@@ -31,6 +31,8 @@ OPTION:
 
   -x    ... 解析結果をXMLとして埋め込む.
 
+  -A    ... KNPにおいて格解析を行う.
+  
   -a    ... KNPにおいて省略解析を行う.
 
   -d    ... SynGraphのパスを指定する.

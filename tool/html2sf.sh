@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-a|-N] [-d SynGraphPath] [-D DetectBlocksPath] [-l URL] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-A|-a|-N] [-d SynGraphPath] [-D DetectBlocksPath] [-l URL] input.html > output.xml"
     exit 1
 }
 
@@ -27,6 +27,7 @@ usage() {
 # -e: 英語モード
 # -C: 設定ファイルの指定
 # -x: 解析結果をXMLとして埋め込む
+# -A: KNPにおいて格解析を行う
 # -a: KNPにおいて省略解析を行う
 # -d: SynGraphのパスを指定する
 # -D: DetectBlocksのパスを指定する
@@ -61,10 +62,12 @@ infofile=
 strict_check_flag=0
 jumanpp_cmd=`which jumanpp`
 
-while getopts abfjJkspPhBwc:umMNUOTFt:C:eExi:d:l:D:r OPT
+while getopts aAbfjJkspPhBwc:umMNUOTFt:C:eExi:d:l:D:r OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
+	    ;;
+	A)  addknp_args="--case $addknp_args"
 	    ;;
 	b)  extract_args="--ignore_br $extract_args"
 	    ;;
