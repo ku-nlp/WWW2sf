@@ -29,7 +29,7 @@ base_dir=`dirname $0`
 
 flag_of_make_urldb=0
 flag_of_use_add_knp_result_dir=0
-while getopts aANjJkshS:c:uUzOTFt:C:eExn:d:D:vfr OPT
+while getopts aANjJkshS:c:uUzOTFt:C:eExn:d:D:vfrm:M:p:P: OPT
 do
     case $OPT in
 	a)  add_knp_result_dir_extra_args="--anaphora $add_knp_result_dir_extra_args"
@@ -46,6 +46,14 @@ do
 	    ;;
 	J)  add_knp_result_dir_extra_args="-jmn -use_jmnpp $add_knp_result_dir_extra_args"
 	    flag_of_use_add_knp_result_dir=1
+	    ;;
+	m)  add_knp_result_dir_extra_args="-jmncmd $OPTARG $add_knp_result_dir_extra_args"
+	    ;;
+	M)  add_knp_result_dir_extra_args="-jmnrc $OPTARG $add_knp_result_dir_extra_args"
+	    ;;
+	p)  add_knp_result_dir_extra_args="-knpcmd $OPTARG $add_knp_result_dir_extra_args"
+	    ;;
+	P)  add_knp_result_dir_extra_args="-knprc $OPTARG $add_knp_result_dir_extra_args"
 	    ;;
 	k)  add_knp_result_dir_extra_args="-knp $add_knp_result_dir_extra_args"
 	    flag_of_use_add_knp_result_dir=1
