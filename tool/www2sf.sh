@@ -10,8 +10,10 @@ usage() {
 }
 
 html2sf_extra_args=
+add_knp_result_dir_extra_args="--sentence_length_max 130 --all"
 ext=
 verbose=0
+syngraph=0
 
 # ファイルサイズの閾値(default 5M)
 fsize_threshold=5242880
@@ -19,25 +21,38 @@ fsize_threshold=5242880
 # ある日時より新しいファイルだけ処理するための基準epoch time (-nで指定)
 ref_time=0
 
+# Change this for SynGraph annotation
+syngraph_home=$HOME/cvs/SynGraph
+syndb_path=$syngraph_home/syndb/`uname -m`
+
 base_dir=`dirname $0`
 
 flag_of_make_urldb=0
+flag_of_use_add_knp_result_dir=0
 while getopts aANjJkshS:c:uUzOTFt:C:eExn:d:D:vfr OPT
 do
     case $OPT in
-	a)  html2sf_extra_args="-a $html2sf_extra_args"
+	a)  add_knp_result_dir_extra_args="--anaphora $add_knp_result_dir_extra_args"
+	    flag_of_use_add_knp_result_dir=1
 	    ;;
-	A)  html2sf_extra_args="-A $html2sf_extra_args"
+	A)  add_knp_result_dir_extra_args="--case $add_knp_result_dir_extra_args"
+	    flag_of_use_add_knp_result_dir=1
 	    ;;
-    N)  html2sf_extra_args="-N $html2sf_extra_args"
+	N)  html2sf_extra_args="-N $html2sf_extra_args"
+	    flag_of_use_add_knp_result_dir=1
         ;;
-	j)  html2sf_extra_args="-j $html2sf_extra_args"
+	j)  add_knp_result_dir_extra_args="-jmn $add_knp_result_dir_extra_args"
+	    flag_of_use_add_knp_result_dir=1
 	    ;;
-	J)  html2sf_extra_args="-J $html2sf_extra_args"
+	J)  add_knp_result_dir_extra_args="-jmn -use_jmnpp $add_knp_result_dir_extra_args"
+	    flag_of_use_add_knp_result_dir=1
 	    ;;
-	k)  html2sf_extra_args="-k $html2sf_extra_args"
+	k)  add_knp_result_dir_extra_args="-knp $add_knp_result_dir_extra_args"
+	    flag_of_use_add_knp_result_dir=1
 	    ;;
-	s)  html2sf_extra_args="-s $html2sf_extra_args"
+	s)  add_knp_result_dir_extra_args="-syngraph $add_knp_result_dir_extra_args"
+	    flag_of_use_add_knp_result_dir=1
+	    syngraph=1
 	    ;;
 	S)  fsize_threshold=$OPTARG
 	    ;;
@@ -68,7 +83,8 @@ do
 	    ;;
 	n)  ref_time=$OPTARG
 	    ;;
-	d)  html2sf_extra_args="-d $OPTARG $html2sf_extra_args"
+	d)  syngraph_home=$OPTARG
+	    syndb_path=$syngraph_home/syndb/`uname -m`
 	    ;;
 	D)  html2sf_extra_args="-D $OPTARG $html2sf_extra_args"
 	    ;;
@@ -91,6 +107,27 @@ if [ ! -d $xdir ]; then
     mkdir -p $xdir
 fi
 
+if [ $flag_of_use_add_knp_result_dir -eq 1 ]; then
+    xdir_orig=$xdir
+    xdir_tmp=$xdir.$$
+    mkdir -p $xdir_tmp
+    
+    xdir=$xdir_tmp
+fi
+
+clean_tmpdir() {
+if [ $flag_of_use_add_knp_result_dir -eq 1 ]; then
+    rm -fr $xdir_tmp
+fi
+}
+
+trap 'clean_tmpdir; exit 1' 1 2 3 15
+
+if [ $syngraph -eq 1 ]; then
+    syngraph_args="--syndbdir $syndb_path --antonymy --syndb_on_memory"
+    add_knp_result_dir_extra_args="$syngraph_args $add_knp_result_dir_extra_args"
+fi
+    
 for in_f in $hdir/*.html$ext
 do
     f=$in_f
@@ -136,6 +173,14 @@ do
     fi
 done
 
+############
+# 言語解析 #
+############
+
+if [ $flag_of_use_add_knp_result_dir -eq 1 ]; then
+    perl -I$base_dir/perl -I$syngraph_home/perl $base_dir/scripts/add-knp-result-dir.perl -nologfile -indir $xdir -outdir $xdir_orig $add_knp_result_dir_extra_args
+fi
+
 ############################
 # アウトリンク情報をまとめる
 ############################
@@ -145,3 +190,6 @@ if [ $flag_of_make_urldb -eq 1 ]; then
     for f in `ls $xdir | grep outlinks | sort` ; do rm  $xdir/$f ; done
     gzip $hdir.outlinks
 fi
+
+clean_tmpdir
+exit 0
