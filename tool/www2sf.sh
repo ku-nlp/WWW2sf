@@ -13,7 +13,6 @@ html2sf_extra_args=
 add_knp_result_dir_extra_args="--sentence_length_max 130 --all"
 ext=
 verbose=0
-syngraph=0
 
 # ファイルサイズの閾値(default 5M)
 fsize_threshold=5242880
@@ -25,29 +24,33 @@ ref_time=0
 syngraph_home=$HOME/cvs/SynGraph
 syndb_path=$syngraph_home/syndb/`uname -m`
 
+jumanpp_cmd=
+
 base_dir=`dirname $0`
 
 flag_of_make_urldb=0
-flag_of_use_add_knp_result_dir=0
+annotation=
+
 while getopts aANjJkshS:c:uUzOTFt:C:eExn:d:D:vfrm:M:p:P: OPT
 do
     case $OPT in
 	a)  add_knp_result_dir_extra_args="--anaphora $add_knp_result_dir_extra_args"
-	    flag_of_use_add_knp_result_dir=1
 	    ;;
 	A)  add_knp_result_dir_extra_args="--case $add_knp_result_dir_extra_args"
-	    flag_of_use_add_knp_result_dir=1
 	    ;;
 	N)  html2sf_extra_args="-N $html2sf_extra_args"
-	    flag_of_use_add_knp_result_dir=1
         ;;
-	j)  add_knp_result_dir_extra_args="-jmn $add_knp_result_dir_extra_args"
-	    flag_of_use_add_knp_result_dir=1
+	j)  annotation=-jmn
 	    ;;
-	J)  add_knp_result_dir_extra_args="-jmn -use_jmnpp $add_knp_result_dir_extra_args"
-	    flag_of_use_add_knp_result_dir=1
+	J)  add_knp_result_dir_extra_args="-use_jmnpp $add_knp_result_dir_extra_args"
+	    if [ -z "$annotation" ]; then
+		annotation=-jmn
+	    fi
+	    if [ -z "$jumanpp_cmd" ]; then
+		jumanpp_cmd=`which jumanpp`
+	    fi
 	    ;;
-	m)  add_knp_result_dir_extra_args="-jmncmd $OPTARG $add_knp_result_dir_extra_args"
+	m)  jumanpp_cmd=$OPTARG
 	    ;;
 	M)  add_knp_result_dir_extra_args="-jmnrc $OPTARG $add_knp_result_dir_extra_args"
 	    ;;
@@ -55,12 +58,9 @@ do
 	    ;;
 	P)  add_knp_result_dir_extra_args="-knprc $OPTARG $add_knp_result_dir_extra_args"
 	    ;;
-	k)  add_knp_result_dir_extra_args="-knp $add_knp_result_dir_extra_args"
-	    flag_of_use_add_knp_result_dir=1
+	k)  annotation=-knp
 	    ;;
-	s)  add_knp_result_dir_extra_args="-syngraph $add_knp_result_dir_extra_args"
-	    flag_of_use_add_knp_result_dir=1
-	    syngraph=1
+	s)  annotation=-syngraph
 	    ;;
 	S)  fsize_threshold=$OPTARG
 	    ;;
@@ -115,7 +115,7 @@ if [ ! -d $xdir ]; then
     mkdir -p $xdir
 fi
 
-if [ $flag_of_use_add_knp_result_dir -eq 1 ]; then
+if [ -n "$annotation" ]; then
     xdir_orig=$xdir
     xdir_tmp=$xdir.$$
     mkdir -p $xdir_tmp
@@ -124,18 +124,26 @@ if [ $flag_of_use_add_knp_result_dir -eq 1 ]; then
 fi
 
 clean_tmpdir() {
-if [ $flag_of_use_add_knp_result_dir -eq 1 ]; then
+if [ -n "$annotation" ]; then
     rm -fr $xdir_tmp
 fi
 }
 
 trap 'clean_tmpdir; exit 1' 1 2 3 15
 
-if [ $syngraph -eq 1 ]; then
+if [ -n "$annotation" ]; then
+    add_knp_result_dir_extra_args="$annotation $add_knp_result_dir_extra_args"
+fi    
+
+if [ -n "$jumanpp_cmd" ]; then
+    add_knp_result_dir_extra_args="-jmncmd $jumanpp_cmd $add_knp_result_dir_extra_args"
+fi
+
+if [ "$annotation" = "-syngraph" ]; then
     syngraph_args="--syndbdir $syndb_path --antonymy --syndb_on_memory"
     add_knp_result_dir_extra_args="$syngraph_args $add_knp_result_dir_extra_args"
 fi
-    
+
 for in_f in $hdir/*.html$ext
 do
     f=$in_f
@@ -185,7 +193,7 @@ done
 # 言語解析 #
 ############
 
-if [ $flag_of_use_add_knp_result_dir -eq 1 ]; then
+if [ -n "$annotation" ]; then
     perl -I$base_dir/perl -I$syngraph_home/perl $base_dir/scripts/add-knp-result-dir.perl -nologfile -indir $xdir -outdir $xdir_orig $add_knp_result_dir_extra_args
 fi
 
