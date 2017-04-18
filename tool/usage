@@ -4,7 +4,15 @@ USAGE:
 OPTION:
   -j    ... JUMANの解析結果を埋め込む.
 
-  -J    ... JUMANの代わりにJUMAN++を用いる
+  -J    ... JUMANの代わりにJUMAN++を用いる.
+
+  -m    ... JUMAN COMMANDを指定.
+
+  -M    ... JUMAN RCFILEを指定.
+
+  -p    ... KNP COMMANDを指定.
+
+  -P    ... KNP RCFILEを指定.
 
   -k    ... KNPの解析結果を埋め込む.
 
