@@ -17,6 +17,7 @@ use AddKNPResult;
 use Error qw(:try);
 use HTML::Entities;
 use Data::Dumper;
+use PerlIO::gzip;
 
 select(STDERR);
 $| = 1; # auto-flush STDERR
@@ -283,7 +284,7 @@ sub writeFile {
 
     my $outfilename = $opt{outdir} . '/' . basename($file);
     if ($outfilename =~ /\.gz$/) {
-	open (F, "| gzip > $outfilename") or die $! . $outfilename;
+	open (F, '>:gzip', $outfilename) or die $! . $outfilename;
 	binmode (F, ':utf8');
     }
     else {
