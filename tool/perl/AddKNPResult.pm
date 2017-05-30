@@ -57,6 +57,7 @@ sub createJumanObject {
 	if ($this->{opt}->{use_jmnpp}) {
 	    $opt->{-Option} = '';
 	    $opt->{-Rcfile} = '';
+	    $opt->{-Timeout} = 360; # workaround for slow start
 	}
 	$this->{juman} = new Juman (%$opt);
     }
@@ -75,6 +76,7 @@ sub createKnpObject {
     if ($this->{opt}->{use_jmnpp}) {
 	$opt->{-JumanOption} = '';
 	$opt->{-JumanRcfile} = '';
+	$opt->{-JumanTimeout} = 360; # workaround for slow start
     }
 
     if ($this->{opt}{case}) {
