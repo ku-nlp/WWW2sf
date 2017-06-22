@@ -1,12 +1,19 @@
 #!/usr/bin/env perl
 
+# 長い文を分割する
+# 分割条件: 文が$LENGTH_THRESHOLDより長い
+#           文の30%-70%の位置(つまり中央)に、接続助詞の「が」(<ID:〜が>でチェック)がある
+# 分割した場合に、1文目は「が」より後の付属語を削除し、「。」を付加する
+
+# Usage: perl -I ../perl sentence-splitter.perl < text.txt | perl long-sentence-splitter.perl > text-splitted.txt
+
 use KNP;
 use strict;
 use utf8;
 binmode STDIN, ':utf8';
 binmode STDOUT, ':utf8';
 
-our $LENGTH_THRESHOLD = 80;
+our $LENGTH_THRESHOLD = 70;
 our $BEGINNING_CHECKED_DELIMITER = 0.3;
 our $ENDING_CHECKED_DELIMITER = 0.7;
 
@@ -18,7 +25,7 @@ while (<STDIN>) {
     my $ending_checked_pos = $len * $ENDING_CHECKED_DELIMITER;
     my $split_flag = 0;
     my (@pre_splitted, @post_splitted);
-    if ($len > $LENGTH_THRESHOLD) {
+    if ($len >= $LENGTH_THRESHOLD) {
 	# KNP
 	my $result = $knp->parse($_);
 	my $pos = 0;
