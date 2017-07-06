@@ -193,7 +193,7 @@ foreach my $file (@files) {
     print STDERR '*' if $opt{print_progress} && !($count % $PRINT_PROGRESS_INTERVAL);
     syswrite LOG, "$file " unless $opt{nologfile};
     if ($file =~ /\.gz$/) {
-	unless (open F, "zcat $file |") {
+	unless (open F, "gzip -dc $file |") {
 	    print STDERR "Can't open file: $file\n";
 	}
     } else {
