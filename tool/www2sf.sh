@@ -31,7 +31,7 @@ base_dir=`dirname $0`
 flag_of_make_urldb=0
 annotation=
 
-while getopts aANjJkshS:c:uUzOTFt:C:eExn:d:D:vfrm:M:p:P: OPT
+while getopts aANjJkshS:c:uUzOTFt:C:eExn:d:D:ovfrm:M:p:P: OPT
 do
     case $OPT in
 	a)  add_knp_result_dir_extra_args="--anaphora $add_knp_result_dir_extra_args"
@@ -95,6 +95,8 @@ do
 	    syndb_path=$syngraph_home/syndb/`uname -m`
 	    ;;
 	D)  html2sf_extra_args="-D $OPTARG $html2sf_extra_args"
+	    ;;
+	o)  html2sf_extra_args="-o $html2sf_extra_args"
 	    ;;
 	f)  html2sf_extra_args="-f $html2sf_extra_args"
 	    ;;
