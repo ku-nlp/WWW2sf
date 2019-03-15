@@ -24,7 +24,9 @@ GetOptions(\%opt,
 	   'rel2abs',
 	   'add_blockname2alltag',
 	   'without_juman',
-	   'juman=s'
+	   'juman=s',
+	   'disable_header',
+	   'disable_footer'
 	   );
 
 

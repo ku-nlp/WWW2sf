@@ -3,7 +3,7 @@
 # $Id$
 
 usage() {
-    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-A|-a|-N] [-d SynGraphPath] [-D DetectBlocksPath] [-l URL] input.html > output.xml"
+    echo "$0 [-j|-k|-s] [-b] [-B] [-f] [-c cns.cdb] [-p|-P] [-w] [-M] [-u] [-U] [-e] [-x] [-A|-a|-N] [-d SynGraphPath] [-D DetectBlocksPath] [-o] [-l URL] input.html > output.xml"
     exit 1
 }
 
@@ -31,6 +31,7 @@ usage() {
 # -a: KNPにおいて省略解析を行う
 # -d: SynGraphのパスを指定する
 # -D: DetectBlocksのパスを指定する
+# -o: DetectBlocks で Header と Footer の判定を行わない
 # -t: tmp_dirを指定する
 # -r: 入力ファイルを厳しくチェックする (fileコマンドでテキスト、5000行以下)
 # -l: URLを指定する
@@ -59,10 +60,11 @@ language=japanese
 ipsj_metadb=
 configfile=$base_dir/conf/configure
 infofile=
+no_header_footer=0
 strict_check_flag=0
 jumanpp_cmd=`which jumanpp`
 
-while getopts aAbfjJkspPhBwc:umMNUOTFt:C:eExi:d:l:D:r OPT
+while getopts aAbfjJkspPhBwc:umMNUOTFt:C:eExi:d:l:D:or OPT
 do
     case $OPT in
 	a)  addknp_args="--anaphora $addknp_args"
@@ -140,6 +142,8 @@ do
 	    syndb_path=$syngraph_home/syndb/`uname -m`
 	    ;;
 	D)  detectblocks_home=$OPTARG
+	    ;;
+	o)  no_header_footer=1
 	    ;;
 	r)  strict_check_flag=1
 	    file_cmd_filter=1
@@ -248,6 +252,9 @@ fi
 if [ $annotate_blocktype -eq 1 ]
 then
     OPTION="-add_class2html -add_blockname2alltag -without_juman"
+    if [ $no_header_footer -eq 1 ]; then
+      OPTION="$OPTION -disable_header -disable_footer"
+    fi
     perl -I $detectblocks_home/perl $base_dir/scripts/embed-region-info.perl $OPTION < $utf8file > $utf8file_w_annotate_blocktype
 else
     cat $utf8file > $utf8file_w_annotate_blocktype
