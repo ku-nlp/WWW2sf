@@ -11,8 +11,11 @@ use Getopt::Long;
 use XML::LibXML;
 use SentenceFormatter;
 use Encode qw(decode);
-use encoding 'utf8';
+use utf8;
 use strict;
+
+binmode(STDIN,  ':utf8');
+binmode(STDOUT, ':utf8');
 
 our (%opt);
 GetOptions(\%opt, 'include_paren', 'divide_paren', 'save_all');
