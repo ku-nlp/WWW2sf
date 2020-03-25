@@ -4,6 +4,8 @@ use utf8;
 use Encode;
 use strict;
 use File::Basename;
+use FindBin;
+use lib $FindBin::Bin;
 
 # read the emoticon dictionary
 our $EmoticonDic = require sprintf("%s/Emoticon.dic", dirname($INC{'Emoticon.pm'}));
