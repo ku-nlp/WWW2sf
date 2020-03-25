@@ -556,8 +556,6 @@ sub linguisticAnalysis {
     if ($type eq 'Juman') {
 	my $result = $this->{juman}->analysis($text);
 	$result_string = $result->all;
-	# 暫定的
-	$result_string .= "EOS\n";
     }
     elsif ($type eq 'Knp' || $type eq 'SynGraph') {
 	my $result;
